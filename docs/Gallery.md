@@ -1,21 +1,23 @@
-[Go to README](../README-en.md)<br/>
-***
+[Go back](../README-en.md)<br/>
+
+<hr>
+
 # CyberTelly - Screen shots with comments
 
-***
+<hr>
 
 ![CyberTelly](../Screenshots/CyberTelly02.png)<br>
 View: Context Menu<br/>
 Click right mouse button to open context menu.
 
-***
+<hr>
 
 ![CyberTelly](../Screenshots/CyberTelly03.png)<br>
 View: Channel List<br/>
 Context menu: Select Channel<br/>
 Doubleclick left mouse button or press Enter key to start streaming.
 
-***
+<hr>
 
 ![CyberTelly](../Screenshots/CyberTelly04.png)<br>
 View: Volume Control<br/>
