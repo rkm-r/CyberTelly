@@ -1,5 +1,4 @@
 [Seite anzeigen auf Deutsch](./README.md)<br/>
-***
 <H1>CyberTelly Qt</H1>
 Mediaplayer for TVHeadend and M3u Playlists<br/>
 
