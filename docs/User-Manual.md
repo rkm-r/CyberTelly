@@ -64,7 +64,7 @@ How to build your own list:<br/>
 <li>Drag m3u lists into playlist window</li>
 <li>Delete channels you don't like (Del)</li>
 <li>Rearrange channel order (Drag & Drop)</li>
-<li>Right click: Save playlist<br/> Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Fritzbox-Cable - How to create m3u list:</h3>
@@ -74,7 +74,7 @@ How to build your own list:<br/>
 <li>Drag & Drop: Channels > Playlist</li>
 <li>Open Playlist window</li>
 <li>Drag & Drop: Rearrange channels</li>
-<li>Right click: Save playlist<br/> Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Sat>IP Server - How to create m3u list</h3>
