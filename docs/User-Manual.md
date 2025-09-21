@@ -174,6 +174,7 @@ CyberTelly was developed using Python alongside with PySide6, the binding for Qt
 The deployment as debian package or windows setup file is not part of this publication. Information on that can be looked up in the following book: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (PyQt6 Edition), 5th Edition, p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
+Copyright (C) 2025 Rudolf Ringel<br/>
 This program is free software.  It is licensed
 under  the  terms  of the  GNU  General Public
 License 3 (GPLv3).  It is  distributed in  the
