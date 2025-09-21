@@ -1,13 +1,16 @@
 [Show page in English](./README-en.md)<br/>
+
+<hr>
+
 <H1>CyberTelly Qt</H1>
 Mediaplayer für TVHeadend und M3u-Playlists<br/>
 
-***
+<hr>
 
 ![CyberTelly.png](./Screenshots/CyberTelly01.png)<br>
 Downloads für Windows, Linux x64, Raspberry Pi OS siehe [releases](https://github.com/rkm-r/CyberTelly/releases)
 
-***
+<hr>
 
 <H2>Alles Wesentliche auf einen Blick:</H2><br/>
 CyberTelly ist ein frei verfügbares Programm zum Fernsehen am Windows- oder Linux-PC. Es beinhaltet zwei Arten des Fernsehempfangs:<br/>
