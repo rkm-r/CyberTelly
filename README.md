@@ -6,7 +6,7 @@ Mediaplayer für TVHeadend und M3u-Playlists<br/>
 ***
 
 ![CyberTelly.png](./Screenshots/CyberTelly01.png)<br>
-Downloads für Windows, Linux x64, Raspberry Pi OS siehe [releases](https://github.com/rkm-r/hello-world/releases)
+Downloads für Windows, Linux x64, Raspberry Pi OS siehe [releases](https://github.com/rkm-r/CyberTelly/releases)
 
 ***
 
