@@ -1,9 +1,10 @@
-[Go to README](../README-en.md)<br/>
+[Go back](../README-en.md)<br/>
 
-***
+<hr>
+
 <h1>CyberTelly - User Manual</h1>
 
-***
+<hr>
 
 <h2>Content:</h2>
 <ol>
