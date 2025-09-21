@@ -1,11 +1,10 @@
-[Show page in English](./README-en.md)<br/>
+<H1>CyberTelly</H1>
 
-<hr>
-
-<H1>CyberTelly Qt</H1>
 Mediaplayer für TVHeadend und M3u-Playlists<br/>
 
 <hr>
+
+[Show page in English](./README-en.md)<br/>
 
 ![CyberTelly.png](./Screenshots/CyberTelly01.png)<br>
 Downloads für Windows, Linux x64, Raspberry Pi OS siehe [releases](https://github.com/rkm-r/CyberTelly/releases)
