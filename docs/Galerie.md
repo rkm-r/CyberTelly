@@ -2,7 +2,7 @@
 
 <hr>
 
-# CyberTelly - Screenshots mit Kommentaren
+# CyberTelly Qt - Screenshots mit Kommentaren
 
 <hr>
 
