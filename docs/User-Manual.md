@@ -89,7 +89,7 @@ Example: sat.ip > 192.168.178.230<br/>
 If you like you can customize and store 
 your playlist then as described above.<br/>
 This procedure was successfully tested
-with a Megasat sat>ip server.
+with a Megasat Sat>IP server.
     
 <h3>TVHeadend Server HowTo:</h3>
 A TVHeadend server usually runs in the local network and serves as a source for streaming and recording live TV.<br/>
