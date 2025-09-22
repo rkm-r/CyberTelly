@@ -1,4 +1,4 @@
-<H1>CyberTelly</H1>
+<H1>CyberTelly Qt</H1>
 
 Mediaplayer for TVHeadend and M3u Playlists<br/>
 
