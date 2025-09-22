@@ -2,7 +2,7 @@
 
 <hr>
 
-<h1>CyberTelly - Benutzerhandbuch</h1>
+<h1>CyberTelly Qt - Benutzerhandbuch</h1>
 
 <hr>
 
