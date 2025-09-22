@@ -10,10 +10,10 @@
 <ol>
   <li>Tastenkürzel</li>
   <li>Mausbedienung des Programms</li>
-  <li>Tipps zur Bedienung des Programms  </li>
+  <li>Tipps zur Einrichtung der TV-Umgebung</li>
   <li>Tipps zur Fehlerbehebung</li>
   <li>Systemvoraussetzungen</li>
-  <li>Hinweise für Entwickler
+  <li>Hinweise für Entwickler</li>
   <li>Copyright und Lizenzierung</li>
 </ol>
 
@@ -47,7 +47,7 @@
   | Lautstärke regeln | Cursorposition im Programmfenster<br/> Mausrad drehen |
   | EPG anzeigen (nur TVHeadend) | Programmliste öffnen<br/> Cursor zu Sender bewegen<br/> Kurze Pause: Tooltip wird angezeigt<br/> Tooltip enthält 4 Einträge |
 
-<h2>Tipps zur Bedienung des Programms:</h2>
+<h2>Tipps zur Einrichtung der TV-Umgebung:</h2>
 
 <h3>Download fertiger IPTV-M3u-Playlists</h3>
 Links zu IPTV-M3u-Listen:<br/>
@@ -167,12 +167,12 @@ Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und be
 <h3>VLC-Mediaplayer Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Linux-Hinweis:<br/>
+Hinweis für Ubuntu und Flavours:<br/>
 VLC muss aus Repository installiert sein. Die Installation als Snap-App funktioniert nicht, da bei VLC als Snap kein Zugriff auf die VLC Bibliothek libvlc möglich ist.
 
 <h2>Hinweise für Entwickler</h2>
-Das Programm wurde entwickelt mit Python sowie PySide6, dem Python-Binding für Qt6 und python-vlc, dem Binding für VLC. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements-x64.txt bzw. requirements-arm64.txt dort zu installieren.<br/><br/>
-Die Bereitstellung des Programms als Debian-Paket bzw. Windows Setup-Datei ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (PyQt6 Edition), 5th Edition, S. 651ff.
+Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements-x64.txt bzw. requirements-arm64.txt dort zu installieren.<br/><br/>
+Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
 
 <h2>Copyright und Lizensierung:</h2>
 Copyright (C) 2025 Rudolf Ringel<br/>
