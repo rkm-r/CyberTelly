@@ -10,7 +10,7 @@
 <ol>
   <li>Keyboard Shortcuts</li>
   <li>Mouse Control</li>
-  <li>Useful hints</li>
+  <li>How to set up your TV environment</li>
   <li>Troubleshooting</li>
   <li>System Requirements</li>
   <li>Information for Developers</li>
@@ -47,7 +47,7 @@
   | adjust volume quickly | Position cursor inside the window<br/> Turn mouse wheel |
   | display EPG (TVHeadend only) | Open channel list<br/> Move cursor to the desired channel<br/> After a short delay tooltip pops up<br/> Tooltip has four entries |
 
-<h2>Useful hints:</h2>
+<h2>How to set up your TV environment:</h2>
 
 <h3>Download urls for IPTV m3u playlists:</h3>
 https://github.com/jnk22/kodinerds-iptv<br/>
@@ -120,15 +120,15 @@ Menu item: Configuration-Users-Passwords
 | Authentication type | Plain (insecure) |
 | Digest hash type | MD5 |
 
-Hint:<br/>
+Please note:<br/>
 CyberTelly only works with correct user and authentication settings!
 
-<h3>EPG - useful hint:</h3>
+<h3>EPG:</h3>
 EPG doesn't work with m3u playlists.
 
 <h2>Troubleshooting:</h2>
 
-<h3>No picture and sound</h3>
+<h3>No picture and sound:</h3>
 Streaming device (eg. FritzBox) in your local network has no picture and sound.<br/><br/>
 Solution:<br/>
 Enable inbound IP Address of the device in your firewall configuration
@@ -166,12 +166,12 @@ Due to lack of Apple hardware, CyberTelly could not be tested and deployed.
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Important hint for Linux machines:<br/>
+Important information for Ubuntu and flavours:<br/>
 VLC must be set up from the distibution repository. Snap installations don't work, because VLC as snap app has no access to VLC library (libvlc).
 
 <h2>Information for Developers</h2>
-CyberTelly was developed using Python alongside with PySide6, the binding for Qt6 and python-vlc, the binding for VLC. Everybody who would like to get an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and give it a try!<br/><br/>
-The deployment as debian package or windows setup file is not part of this publication. Information on that can be looked up in the following book: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (PyQt6 Edition), 5th Edition, p. 651ff.
+CyberTelly was developed using Python alongside with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who would like to get an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
+The program deployment is not part of this publication. Information on that can be looked up in the following book: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
 Copyright (C) 2025 Rudolf Ringel<br/>
@@ -180,6 +180,6 @@ under  the  terms  of the  GNU  General Public
 License 3 (GPLv3).  It is  distributed in  the
 hope that it will be  useful, but  WITHOUT ANY
 WARRANTY;  without even  the  implied warranty
-f MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
 PURPOSE.<br/>
 For more information see: https://www.gnu.org/licenses/
