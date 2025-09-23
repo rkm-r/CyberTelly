@@ -162,7 +162,7 @@ Successfully tested with:<br/>
 Program startup fails, because wayland is not supported by the currently linked VLC library libvlc.<br/>
 Hint: Almost all Debian based distros come with an option on the login screen to switch to X11.
 <h4>MacOS: Should be possible, but isn't implemented</h4>
-Due to lack of Apple hardware, CyberTelly could not be tested and deployed.
+Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
