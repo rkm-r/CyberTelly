@@ -30,11 +30,11 @@ de~programError~CyberTelly: Programmfehler aufgetreten
 de~programError~
 de~programError~Bitte senden Sie die Datei CyberTelly.log
 de~programError~zur Analyse und Fehlerbehebung per EMail
-de~programError~an info@cybertelly.de.
+de~programError~an info@cybertelly.tv
 de~programError~
 de~programError~Speicherort CyberTelly.log:
-de~programError~Windows: C:\Benutzer\<user>\.CyberTelly\
-de~programError~Linux:   /home/<user>/.CyberTelly/
+de~programError~Windows: C:\Benutzer\<user>\CyberTelly\
+de~programError~Linux:   /home/<user>/CyberTelly/
 
 en~waylandError~CyberTelly: Fatal error occurred
 en~waylandError~
@@ -67,8 +67,8 @@ en~vlcError~      5. Give it another try ...
 en~programError~CyberTelly: Error occurred
 en~programError~
 en~programError~Please send file CyberTelly.log for debugging and
-en~programError~bugfixing via email to info@cybertelly.de.
+en~programError~bugfixing via email to info@cybertelly.tv
 en~programError~
 en~programError~Where to find CyberTelly.log:
-en~programError~Windows: C:\users\<user>\.CyberTelly\
-en~programError~Linux:   /home/<user>/.CyberTelly/
+en~programError~Windows: C:\users\<user>\CyberTelly\
+en~programError~Linux:   /home/<user>/CyberTelly/

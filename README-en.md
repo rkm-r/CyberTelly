@@ -1,4 +1,4 @@
-<H1>CyberTelly</H1>
+<H1>CyberTelly Qt</H1>
 
 Mediaplayer for TVHeadend and M3u Playlists<br/>
 
@@ -7,7 +7,7 @@ Mediaplayer for TVHeadend and M3u Playlists<br/>
 [Seite anzeigen auf Deutsch](./README.md)<br/>
 
 ![CyberTelly.png](./Screenshots/CyberTelly02.png)<br>
-Download setup binaries for Windows, Linux x64, Raspberry Pi OS: [releases](https://github.com/rkm-r/CyberTelly/releases)
+Downloads for Windows, Linux x64 and Raspberry Pi OS see [releases](https://github.com/rkm-r/CyberTelly/releases)
 
 <hr>
 
@@ -15,7 +15,7 @@ Download setup binaries for Windows, Linux x64, Raspberry Pi OS: [releases](http
 CyberTelly is free software for watching TV on Windows or Linux PCs. It has two ways of receiving video streams:<br/>
 <ol>
 <li>TVHeadend: If you have a TVHServer in your local network it can be used as a source for live TV and EPG.</li>
-<li>M3u Playlists: They can contain addresses of publicly available IPTV streams on the internet or channel information of a locally installed Sat-IP server / FritzBox Cable.</li>
+<li>M3u Playlists: They can contain addresses of publicly available IPTV streams on the internet or channel information of a locally installed Sat>IP server / FritzBox Cable.</li>
 </ol>
 Getting started is very easy:
 <ol>

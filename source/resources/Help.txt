@@ -1,7 +1,7 @@
 de~Inhalt:
 de~  Tastenkürzel
 de~  Mausbedienung des Programms
-de~  Tipps zur Bedienung des Programms  
+de~  Tipps zur Einrichtung der TV-Umgebung
 de~  Tipps zur Fehlerbehebung
 de~  Systemvoraussetzungen
 de~  Copyright und Lizenzierung
@@ -26,45 +26,45 @@ de~  Strg-I ......... = Programminfo anzeigen
 de~
 de~Mausbedienung des Programms:
 de~  Kontextmenü öffnen:
-de~    Mausposition im Programmfenster
+de~    Cursorposition im Programmfenster
 de~    Rechte Maustaste
 de~  Fenster verschieben:
-de~    Mausposition im Programmfenster
+de~    Cursorposition im Programmfenster
 de~    Linke Maustaste + Drag & Drop
 de~  Fenstergröße ändern:
-de~    Mausposition Fensterecke rechts unten
+de~    Cursorposition Fensterecke rechts unten
 de~    Linke Maustaste + Drag & Drop
 de~  Vollbild ein-/ausschalten
-de~    Mausposition im Programmfenster
+de~    Cursorposition im Programmfenster
 de~    Doppelklick
 de~  Lautstärke regeln (lauter/leiser)
-de~    Mausposition im Programmfenster
+de~    Cursorposition im Programmfenster
 de~    Mausrad drehen
 de~  EPG anzeigen (nur TVHeadend):
 de~    Programmliste öffnen
-de~    Maus zu Sender bewegen
+de~    Cursor zu Sender bewegen
 de~    Kurze Pause: Tooltip wird angezeigt
 de~    Tooltip enthält 4 Einträge
 de~
-de~Tipps zur Bedienung des Programms:
-de~  Download fertiger IPTV-m3u-Playlists siehe:
+de~Tipps zur Einrichtung der TV-Umgebung:
+de~  Download fertiger IPTV-M3u-Playlists siehe:
 de~    https://github.com/jnk22/kodinerds-iptv
 de~    https://github.com/iptv-org/iptv (PLAYLISTS.md)
 de~    Speicherort: 
-de~      Ordner .CyberTelly/m3u im Homeverzeichnis
-de~  Zusammenstellen einer eigenen m3u-Playlist:
+de~      Ordner CyberTelly/m3u im Userverzeichnis
+de~  Zusammenstellen einer eigenen M3u-Playlist:
 de~    Voraussetzung: Internet-Download Playlists
 de~    Vorgehensweise:
-de~      m3u-Playlists im Dateimanager öffnen 
+de~      M3u-Playlists im Dateimanager öffnen 
 de~      VLC-Player öffnen
 de~      Menü: Ansicht-Wiedergabeliste
-de~      m3u-Dateien nach playlist[00:00] ziehen
+de~      M3u-Dateien nach playlist[00:00] ziehen
 de~      Nicht benötigte Sender löschen (Entf)
 de~      Gewünschte Sender umsortieren (Drag&Drop)
 de~      Rechtsklick: Playlist abspeichern
 de~    Speicherort: 
-de~      Ordner .CyberTelly/m3u im Homeverzeichnis
-de~  Fritzbox-Cable - m3u-Liste erzeugen:
+de~      Ordner CyberTelly/m3u im Userverzeichnis
+de~  Fritzbox-Cable - M3u-Liste erzeugen:
 de~    VLC-Player öffnen
 de~    Menü: 
 de~      Ansicht-Wiedergabeliste-Universal Plug&Play
@@ -75,19 +75,19 @@ de~    Playlist[00:00]-Fenster öffnen
 de~    Drag & Drop: Sender umsortieren
 de~    Rechtsklick: Playlist abspeichern
 de~    Speicherort: 
-de~      Ordner .CyberTelly/m3u im Homeverzeichnis
-de~  Sat>IP Server - m3u-Liste erzeugen:
-de~    Bei Sat>IP Servern können Sender - ähnlich
-de~    wie bei einer FritzBox-Cable - per m3u-Liste
-de~    abgespielt werden. Fertige m3u-Listen siehe:
+de~      Ordner CyberTelly/m3u im Userverzeichnis
+de~  Sat>IP-Server - M3u-Liste erzeugen:
+de~    Bei Sat>IP-Servern können Sender - ähnlich
+de~    wie bei einer FritzBox-Cable - per M3u-Liste
+de~    abgespielt werden. Fertige M3u-Listen siehe:
 de~    https://github.com/dersnyke/satipplaylists
 de~    Nach dem Download muss in der Playlist mit 
 de~    einem Texteditor 'sat.ip' noch ersetzt werden
-de~    durch die IP-Adresse des Sat>IP Servers:
+de~    durch die IP-Adresse des Sat>IP-Servers.
 de~    Beispiel: sat.ip > 192.168.178.230
 de~    Anschließend kann die Liste angepasst und
 de~    gespeichert werden wie oben beschieben.
-de~    Das Verfahren wurde mit einem Sat>IP Server
+de~    Das Verfahren wurde mit einem Sat>IP-Server
 de~    der Firma Megasat erfolgreich getestet.
 de~  Infos zum TVHeadend-Server:
 de~    Hardware: z.B. Raspi 4 mit Raspi OS lite
@@ -97,6 +97,8 @@ de~      Protokoll: http://
 de~      Server-IP: IPv4-Adresse des Servers
 de~      Port.....: 9981 (Voreinstellung TVHeadend)
 de~      Beispiel.: http://192.168.178.235:9981
+de~      Das Beispiel kann als Vorlage zur Eingabe
+de~      in den CyberTelly-Einstellungen dienen.
 de~    User-Einstellungen TVHeadend:
 de~      Configuration - Users - Access Entries
 de~      Configuration - Users - Passwords
@@ -109,7 +111,7 @@ de~    Hinweis:
 de~      CyberTelly funktioniert nur mit korrekten
 de~      User- und Authentifizierungs-Einstellungen!
 de~  Info zum EPG:
-de~    EPG funktioniert nicht mit m3u-Playlists.
+de~    EPG funktioniert nicht mit M3u-Playlists.
 de~
 de~Tipps zur Fehlerbehebung:
 de~  > Problem:
@@ -118,7 +120,7 @@ de~      (z.B. FritzBox) im lokalen Netzwerk.
 de~    Lösung:
 de~      IP-Adresse des Geräts in der Firewall frei-
 de~      schalten (eingehend).
-de~  > Problem mit Sender in m3u-Playlist:
+de~  > Problem mit Sender in M3u-Playlist:
 de~      Streaming startet nicht und zeigt sofort
 de~      einen Streamingfehler an.
 de~    Mögliche Ursache: Zertifikatsfehler
@@ -126,7 +128,7 @@ de~    Lösung:
 de~      Playlist mit Sender im Dateimanager öffnen 
 de~      VLC-Player öffnen
 de~      Menü: Ansicht-Wiedergabeliste
-de~      m3u-Playlist nach playlist[00:00] ziehen
+de~      M3u-Playlist nach playlist[00:00] ziehen
 de~      Doppelklick auf fehlerhaften Sender
 de~      Wenn ein 'Unsichere Seite'-Dialog erscheint:
 de~        Button 'Zertifikat anzeigen' anklicken
@@ -139,7 +141,7 @@ de~    Windows 10 / 11: getestet, ok
 de~    Linux mit Session-Type X11: ok
 de~      Erfolgreiche Tests mit:
 de~        Architektur x64 
-de~          Linux Mint 22.1 / 22.2
+de~          Linux Mint 22.2
 de~          Debian 13 (Trixie)
 de~          Ubuntu 24.04
 de~          Ubuntu 25.04
@@ -154,7 +156,7 @@ de~    MacOS: möglich, aber nicht implementiert
 de~  VLC-Mediaplayer Version 3
 de~    Windows: Version >= 3.0.21
 de~    Linux:   Version >= 3.0.20
-de~    Linux-Hinweis:
+de~    Hinweis für Ubuntu und Flavours:
 de~      VLC muss aus Repository installiert sein.
 de~      Installation als Snap-App funktioniert
 de~      nicht, da bei VLC als Snap kein Zugriff
@@ -176,7 +178,7 @@ de~  https://www.gnu.org/licenses/
 en~Content:
 en~  Keyboard Shortcuts
 en~  Mouse Control
-en~  Useful hints  
+en~  How to set up your TV environment
 en~  Troubleshooting
 en~  System Requirements
 en~  Copyright and Licensing
@@ -195,7 +197,7 @@ en~  Ctrl-L ... = Set Volume
 en~  Space Bar  = Audio muted / unmuted
 en~  Arrow up . = Volume up
 en~  Arrow down = Volume down
-en~  Ctrl-E ... = Open Settings dialog
+en~  Ctrl-E ... = Open Settings Dialog
 en~  F1 ....... = Show Help Dialog
 en~  Ctrl-I ... = Show About Dialog
 en~
@@ -207,26 +209,26 @@ en~  How to move the window:
 en~    Position cursor inside the window
 en~    Left mouse button + Drag & Drop
 en~  How to resize the window:
-en~    Move mouse to the right bottom corner
+en~    Move cursor to the right bottom corner
 en~    Left mouse button + Drag & Drop
-en~  How to turn fullscreen on or off
+en~  How to turn fullscreen on or off:
 en~    Position cursor inside the window
 en~    Double click left mouse button
-en~  How to adjust volume quickly
+en~  How to adjust volume quickly:
 en~    Position cursor inside the window
 en~    Turn mouse wheel
 en~  How to display EPG (TVHeadend only):
 en~    Open channel list
 en~    Move cursor to the desired channel
 en~    After a short delay tooltip pops up
-en~    Tooltip has four entrys
+en~    Tooltip has four entries
 en~
-en~Useful hints:
-en~  Download urls for iptv m3u playlists:
+en~How to set up your TV environment:
+en~  Download urls for IPTV m3u playlists:
 en~    https://github.com/jnk22/kodinerds-iptv
 en~    https://github.com/iptv-org/iptv (PLAYLISTS.md)
 en~    Where to save the playlists: 
-en~      Folder .CyberTelly/m3u in home directory
+en~      Folder CyberTelly/m3u in user directory
 en~  How to create your own m3u playlist:
 en~    Make sure you have downloaded m3u lists
 en~    How to build your own list:
@@ -238,7 +240,7 @@ en~      Delete channels you don't like (Del)
 en~      Rearrange channel order (Drag & Drop)
 en~      Right click: Save playlist
 en~    Where to save your playlist: 
-en~      Folder .CyberTelly/m3u in home directory
+en~      Folder CyberTelly/m3u in user directory
 en~  Fritzbox-Cable - How to create m3u list:
 en~    Open VLC media player
 en~    Menu View-Playlist-Universal Plug'n'Play
@@ -249,7 +251,7 @@ en~    Open Playlist window
 en~    Drag & Drop: Rearrange channels
 en~    Right click: Save playlist
 en~    Where to save the playlist: 
-en~      Folder .CyberTelly/m3u in home directory
+en~      Folder CyberTelly/m3u in user directory
 en~  Sat>IP Server - How to create m3u list:
 en~    M3u playlists also work with Sat>IP servers,
 en~    similar to a FritzBox-Cable. Almost ready
@@ -260,9 +262,9 @@ en~    text editor and replace 'sat.ip' with the
 en~    ip address of the server.
 en~    Example: sat.ip > 192.168.178.230
 en~    If you like you can customize and store 
-en~    your playlist then as described above.
+en~    your playlist as described above.
 en~    This procedure was successfully tested
-en~    with a Megasat sat>ip server.
+en~    with a Megasat Sat>IP server.
 en~  TVHeadend Server HowTo:
 en~    Hardware: e.g. Raspi 4 with Raspi OS lite
 en~    How to access the THV-Server:
@@ -271,6 +273,8 @@ en~      Protocol.: http://
 en~      Server IP: IPv4-Address of TVH server
 en~      Port.....: 9981 (TVHeadend default)
 en~      Example..: http://192.168.178.201:9981
+en~      The example can be used as a blue print
+en~      for the input in the settings dialog.
 en~    User Settings TVHeadend:
 en~      Configuration - Users - Access Entries
 en~      Configuration - Users - Passwords
@@ -279,10 +283,10 @@ en~      Configuration - General - Base
 en~        Http Server Settings
 en~          Authentication type: Plain (insecure)
 en~          Digest hash type:    MD5
-en~    Hint:
+en~    Please note:
 en~      CyberTelly only works with correct user
 en~      and authentication settings!
-en~  EPG - useful hint:
+en~  EPG:
 en~    EPG doesn't work with m3u playlists.
 en~
 en~Troubleshooting:
@@ -297,14 +301,14 @@ en~      Channel doesn't stream video and immediately
 en~      shows a streaming error indicator.
 en~    Possible reason: Certificate error
 en~    Solution:
-en~      Open list in file manager 
+en~      Open playlist in file manager 
 en~      Open VLC Player
-en~      Menu: View Playlist
+en~      Menu item: View Playlist
 en~      Drag m3u list into playlist window
 en~      Double click faulty channel
 en~      If 'Insecure site' dialog shows up:
 en~        Click on button 'View certificate'
-en~        CLick on button 'Accept permanently'
+en~        Click on button 'Accept permanently'
 en~        Channel should be permanently available now.
 en~
 en~System Requirements:
@@ -313,7 +317,7 @@ en~    Windows 10 / 11: tested, ok
 en~    Linux with Session Type X11: ok
 en~      Successfully tested with:
 en~        Architecture x64
-en~          Linux Mint 22.1 / 22.2
+en~          Linux Mint 22.2
 en~          Debian 13 (Trixie)
 en~          Ubuntu 24.04
 en~          Ubuntu 25.04
@@ -329,7 +333,7 @@ en~       Should be possible, but isn't implemented
 en~  VLC Media Player Version 3
 en~    Windows: Version >= 3.0.21
 en~    Linux:   Version >= 3.0.20
-en~    Important hint for Linux machines:
+en~    Important for Ubuntu and flavours:
 en~      VLC must be set up from the distibution
 en~      repository. Snap installations don't
 en~      work, because VLC as snap app has no

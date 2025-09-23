@@ -1,4 +1,4 @@
-# CyberTelly: Mediaplayer for TVHeadend and m3u playlists
+# CyberTelly: Mediaplayer for TVHeadend and M3u Playlists
 # Copyright (C) 2025  Rudolf Ringel
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/.
 
-# Contact: info@cybertelly.de
+# Contact: info@cybertelly.tv
 
 # Note on the usage of camel case notation:
 # Although snake case is the preferred notation type for Python programs,
@@ -43,7 +43,7 @@ sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
 version = '1.0.0'
-build = '250921'
+build = '250923'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
@@ -2824,7 +2824,7 @@ class BugManager():
             f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '  *\n')
             f.write('**********************************************\n')
             f.write('* For bug fixing you may send this file to:  *\n')
-            f.write('* >>>>>>>>>>> info@cybertelly.de <<<<<<<<<<  *\n')
+            f.write('* >>>>>>>>>>> info@cybertelly.tv <<<<<<<<<<  *\n')
             f.write('* Please add a short error description.      *\n')
             f.write('**********************************************\n')
             for errType in self.errorDic.keys():

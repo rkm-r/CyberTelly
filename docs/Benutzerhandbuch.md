@@ -2,7 +2,7 @@
 
 <hr>
 
-<h1>CyberTelly - Benutzerhandbuch</h1>
+<h1>CyberTelly Qt - Benutzerhandbuch</h1>
 
 <hr>
 
@@ -172,7 +172,7 @@ VLC muss aus Repository installiert sein. Die Installation als Snap-App funktion
 
 <h2>Hinweise für Entwickler</h2>
 Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements-x64.txt bzw. requirements-arm64.txt dort zu installieren.<br/><br/>
-Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
+Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
 
 <h2>Copyright und Lizensierung:</h2>
 Copyright (C) 2025 Rudolf Ringel<br/>

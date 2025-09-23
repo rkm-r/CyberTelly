@@ -2,7 +2,7 @@
 
 <hr>
 
-<h1>CyberTelly - User Manual</h1>
+<h1>CyberTelly Qt - User Manual</h1>
 
 <hr>
 
@@ -162,7 +162,7 @@ Successfully tested with:<br/>
 Program startup fails, because wayland is not supported by the currently linked VLC library libvlc.<br/>
 Hint: Almost all Debian based distros come with an option on the login screen to switch to X11.
 <h4>MacOS: Should be possible, but isn't implemented</h4>
-Due to lack of Apple hardware, CyberTelly could not be tested and deployed.
+Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
@@ -171,7 +171,7 @@ VLC must be set up from the distibution repository. Snap installations don't wor
 
 <h2>Information for Developers</h2>
 CyberTelly was developed using Python alongside with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who would like to get an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
-The program deployment is not part of this publication. Information on that can be looked up in the following book: Fritzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
+The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
 Copyright (C) 2025 Rudolf Ringel<br/>
