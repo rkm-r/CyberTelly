@@ -1,0 +1,74 @@
+de~waylandError~CyberTelly: Fehler mit Programmabbruch
+de~waylandError~
+de~waylandError~Session-Type wayland wurde erkannt.
+de~waylandError~Programm läuft nur mit X11!
+de~waylandError~Lösungstipp:
+de~waylandError~  Displaymanager gdm3 und sddm sollten
+de~waylandError~  auf dem Anmeldebildschirms Optionen
+de~waylandError~  zu Umstellung auf X11 haben: gdm3
+de~waylandError~  z.B. zeigt in der Ecke rechts unten
+de~waylandError~  ein Zahnrad-Symbol.
+
+de~vlcError~Fehler beim Öffnen des VLC-Players
+de~vlcError~----------------------------------
+de~vlcError~Mögliche Fehlerquellen:
+de~vlcError~  Alle Betriebssysteme:
+de~vlcError~    VLC-Player ist nicht installiert
+de~vlcError~  Ubuntu und evtl. auch andere Distros:
+de~vlcError~    VLC ist ggf. als Snap-App installiert.
+de~vlcError~    Bei Snap-Apps ist der Zugriff auf die
+de~vlcError~    VLC-Bibliothek libvlc blockiert.
+de~vlcError~    Lösung:
+de~vlcError~      1. VLC im Snap-Appzentrum deinstallieren
+de~vlcError~      2. Terminalfenster öffnen
+de~vlcError~      3. Befehl: sudo apt install vlc
+de~vlcError~         (VLC wird aus Repository installiert)
+de~vlcError~      4. CyberTelly neu starten
+de~vlcError~      5. Testen
+
+de~programError~CyberTelly: Programmfehler aufgetreten
+de~programError~
+de~programError~Bitte senden Sie die Datei CyberTelly.log
+de~programError~zur Analyse und Fehlerbehebung per EMail
+de~programError~an info@cybertelly.tv
+de~programError~
+de~programError~Speicherort CyberTelly.log:
+de~programError~Windows: C:\Benutzer\<user>\CyberTelly\
+de~programError~Linux:   /home/<user>/CyberTelly/
+
+en~waylandError~CyberTelly: Fatal error occurred
+en~waylandError~
+en~waylandError~System is using session type wayland.
+en~waylandError~Program only works with X11!
+en~waylandError~Possible solution:
+en~waylandError~  Displaymanagers gdm3 and sddm
+en~waylandError~  often have an option to switch
+en~waylandError~  to X11 on the logon screen:
+en~waylandError~  gdm3 e.g. shows a wheel icon
+en~waylandError~  at the right bottom corner.
+
+en~vlcError~Error opening VLC Mediaplayer
+en~vlcError~-----------------------------
+en~vlcError~Possible reasons can be:
+en~vlcError~  All Operating Systems:
+en~vlcError~    VLC Player ist not installed
+en~vlcError~  Ubuntu and possibly other Linux Distros:
+en~vlcError~    VLC is installed as Snap-App.
+en~vlcError~    Snap-Apps do not have access to the
+en~vlcError~    VLC library (libvlc).
+en~vlcError~    Solution:
+en~vlcError~      1. Remove VLC from the snap app center.
+en~vlcError~      2. Open a terminal window.
+en~vlcError~      3. Type: sudo apt install vlc
+en~vlcError~         (VLC is installed from the repository)
+en~vlcError~      4. Restart CyberTelly
+en~vlcError~      5. Give it another try ...
+
+en~programError~CyberTelly: Error occurred
+en~programError~
+en~programError~Please send file CyberTelly.log for debugging and
+en~programError~bugfixing via email to info@cybertelly.tv
+en~programError~
+en~programError~Where to find CyberTelly.log:
+en~programError~Windows: C:\users\<user>\CyberTelly\
+en~programError~Linux:   /home/<user>/CyberTelly/
