@@ -167,8 +167,8 @@ Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und be
 <h3>VLC-Mediaplayer Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Hinweis für Ubuntu und Flavours:<br/>
-VLC muss aus Repository installiert sein. Die Installation als Snap-App funktioniert nicht, da bei VLC als Snap kein Zugriff auf die VLC Bibliothek libvlc möglich ist.
+Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
+VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
 
 <h2>Hinweise für Entwickler</h2>
 Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements-x64.txt bzw. requirements-arm64.txt dort zu installieren.<br/><br/>

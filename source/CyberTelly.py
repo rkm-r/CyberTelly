@@ -23,6 +23,7 @@
 
 import sys, os, platform, shutil
 import subprocess
+import multiprocessing as mp
 import json
 import time
 from datetime import datetime, timedelta
@@ -42,8 +43,8 @@ configPath = ''
 sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
-version = '1.0.0'
-build = '250923'
+version = '1.1.0'
+build = '250927'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
@@ -60,6 +61,105 @@ try:
     import winreg
 except ImportError:
     pass
+
+# VLC process
+cmdQueue = mp.Queue()
+statusQueue = mp.Queue()
+bugQueue = mp.Queue()
+vlcProcess = None
+def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
+    vlcInstance = None
+    mediaPlayer = None
+    vlcSetupOk = False
+
+    def setupVlc(winID, errorType):
+        vlcInstance = None
+        mediaPlayer = None
+        vlcSetupOk = False
+        try:
+            if getattr(sys, 'frozen', False) and sys.platform.startswith('linux'):
+                # Bug fix for VLC / PyInstaller: Plugin-Folder is not found (Linux only)
+                # Sets environment var VLC_PLUGIN_PATH
+                result = subprocess.run(['whereis', 'vlc'],text= True,capture_output=True)
+                paths = str(result).split(' ')
+                for path in paths:
+                    pluginPath = os.path.join(path.strip(),'plugins')
+                    if os.path.isdir(pluginPath):
+                        os.environ['VLC_PLUGIN_PATH'] = pluginPath
+                        break
+        except:
+            pass
+        try:
+            vlcInstance = vlc.Instance()
+            mediaPlayer = vlcInstance.media_player_new()
+            vlcSetupOk = True
+        except:
+            vlcInstance = None
+            mediaPlayer = None
+            vlcSetupOk = False
+            bugQueue.put([errorType,'__init__: VLC-Error (Exception caught)', True])
+        if vlcSetupOk:
+            # Disable VLC video and mouse input: X11 / Win32 only! Not implemented in Mac OS.
+            try:
+                if sys.platform != "darwin":
+                    mediaPlayer.video_set_mouse_input(False)
+                    mediaPlayer.video_set_key_input(False)
+            except:
+                bugQueue.put([errorType,'__init__: Error disabling mouse/keyboard input (Exception caught)', True])
+            # Set up videoFrame to display VLC streams
+            try:
+                if sys.platform.startswith('linux'):
+                    if winID is not None:
+                        mediaPlayer.set_xwindow(winID)
+                elif sys.platform == "win32":
+                    mediaPlayer.set_hwnd(winID)
+                elif sys.platform == "darwin":
+                    mediaPlayer.set_nsobject(winID)
+            except:
+                bugQueue.put([errorType,'__init__: Error setting VLC videoframe (Exception caught)', True])
+        return vlcInstance, mediaPlayer, vlcSetupOk
+
+    def getInfo(infoTyp='process'):
+        result = None
+        if infoTyp == 'process':
+            result = 'ready'
+        elif infoTyp == 'vlcSetupOk':
+            result = vlcSetupOk
+        elif infoTyp == 'playerState':
+            result = mediaPlayer.get_state()
+        elif infoTyp == 'getVolume':
+            result = mediaPlayer.audio_get_volume()
+        elif infoTyp == 'getStateAndVolume':
+            state = mediaPlayer.get_state()
+            volume = mediaPlayer.audio_get_volume()
+            result = (state,volume)
+        return result
+
+    # Process main
+    cmd = ''
+    while cmd != 'exit':
+        try:
+            queueData = ['']
+            queueData = cmdQueue.get()
+            cmd = queueData[0]
+            if cmd == 'getInfo':
+                statusQueue.put(getInfo(queueData[1]))
+            elif cmd == 'setMedia':
+                url = queueData[1]
+                media = vlcInstance.media_new(url)
+                mediaPlayer.set_media(media)
+            elif cmd == 'play':
+                mediaPlayer.play()
+            elif cmd == 'stop':
+                mediaPlayer.stop()
+            elif cmd == 'setVolume':
+                volume = queueData[1]
+                if mediaPlayer.get_state() == vlc.State.Playing:
+                    mediaPlayer.audio_set_volume(volume*2)
+            elif cmd == 'setupVlc':
+                vlcInstance, mediaPlayer, vlcSetupOk = setupVlc(queueData[1], queueData[2])
+        except:
+            pass
 
 # Main program window
 class Window(QtWidgets.QMainWindow):
@@ -351,7 +451,7 @@ class Window(QtWidgets.QMainWindow):
             # -- Create and configure VideoManager 
             self.videoManager = VideoManager(self, configManager=self.configManager, videoFrame=self.videoFrame, indicatorDic=self.indicatorDic)
             # -- Create and configure SoundManager
-            self.soundManager = SoundManager(self, mediaPlayer=self.videoManager.mediaPlayer, indicatorDic=self.indicatorDic, volume=self.configManager.getVolume())
+            self.soundManager = SoundManager(self, indicatorDic=self.indicatorDic, volume=self.configManager.getVolume())
             self.videoManager.setSoundManager(self.soundManager)
             # -- Create and configure EPGManager
             self.epgManager = EpgManager(configManager=self.configManager, videoManager=self.videoManager)
@@ -1014,6 +1114,10 @@ class Window(QtWidgets.QMainWindow):
             bugManager.push(bugManager.configManager,'MainWindow.closeWindow')
             self.configManager.saveConfig(errorType=bugManager.configManager)
             bugManager.pop(bugManager.configManager)
+            bugManager.push(bugManager.configManager,'MainWindow.closeVlcProcess')
+            cmdQueue.put(['exit'])
+            vlcProcess.join(5)            
+            bugManager.pop(bugManager.configManager)
         # Show error message if bugManager has errors
         if bugManager.errorOccurred:
             dlg = QtWidgets.QMessageBox()
@@ -1619,8 +1723,6 @@ class VideoManager(QtWidgets.QDialog):
         self.configManager = configManager
         self.soundManager = None
         self.vlcSetupOk = False
-        self.vlcInstance = None
-        self.mediaPlayer = None
         self.indicatorDic = indicatorDic
         self.lbPageLogo = None
         self.lbVlcBusy = None
@@ -1636,37 +1738,20 @@ class VideoManager(QtWidgets.QDialog):
         self.videoFrame = videoFrame
         try:
             stackPos = bugManager.push(bugManager.videoManager,'__init__: Started')
-            # Init VLC Player
+
+            # Init VLC Player Process
+            bugManager.push(bugManager.videoManager,'__init__: Setup VLC Process')
+            while not statusQueue.empty():
+                r = statusQueue.get_nowait()
+            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), bugManager.videoManager])
+            cmdQueue.put(['getInfo','vlcSetupOk'])
             try:
-                self.vlcInstance = vlc.Instance()
-                self.mediaPlayer = self.vlcInstance.media_player_new()
-                self.vlcSetupOk = True
+                self.vlcSetupOk = statusQueue.get(timeout=20)
             except:
-                self.vlcInstance = None
-                self.mediaPlayer = None
                 self.vlcSetupOk = False
-                bugManager.push(bugManager.videoManager,'__init__: VLC-Error (Exception caught)', setError=True)
-            if self.vlcSetupOk:
-                # Disable VLC video and mouse input: X11 / Win32 only! Not implemented in Mac OS.
-                try:
-                    if sys.platform != "darwin":
-                        self.mediaPlayer.video_set_mouse_input(False)
-                        self.mediaPlayer.video_set_key_input(False)
-                except:
-                    bugManager.push(bugManager.videoManager,'__init__: Error disabling mouse/keyboard input (Exception caught)', setNotification=True)
-                # Set up videoFrame to display VLC streams
-                try:            
-                    winID=self.videoFrame.winId().__int__()
-                    if sys.platform.startswith('linux'):
-                        if winID is not None:
-                            self.mediaPlayer.set_xwindow(winID)
-                    elif sys.platform == "win32":
-                        self.mediaPlayer.set_hwnd(winID)
-                    elif sys.platform == "darwin":
-                        self.mediaPlayer.set_nsobject(winID)
-                except:
-                    bugManager.push(bugManager.videoManager,'__init__: Error setting VLC videoframe (Exception caught)', setError=True)
-            
+            bugManager.pushBugQueue()
+            bugManager.pop(bugManager.videoManager)
+
             # Setup GUI
             bugManager.push(bugManager.videoManager,'__init__: Setup Gui')
             self.setWindowFlags(QtCore.Qt.WindowType.Popup)
@@ -1707,7 +1792,7 @@ class VideoManager(QtWidgets.QDialog):
             self.volumeTimeout = 50 # 50 * 200ms = 10s
             self.volumeTimeoutCnt = 0
             self.busyCnt = 0
-            self.playerStatus = vlc.State.Stopped
+            self.playerState = vlc.State.Stopped
             self.statusTimer = QtCore.QTimer()
             self.statusTimer.setInterval(200)
             self.statusTimer.timeout.connect(self.timerGetStatus)
@@ -1717,7 +1802,7 @@ class VideoManager(QtWidgets.QDialog):
 
             bugManager.push(bugManager.videoManager,'__init__: Connect Signal-SLot')
             # self.channelList.itemDoubleClicked.connect(self.play) # Triggers itemActivated as well > work around: mouseDoubleClickEvent
-            self.channelList.itemActivated.connect(self.play)       # Return key triggers itemActivated
+            self.channelList.itemActivated.connect(self.play)
             bugManager.pop(bugManager.videoManager)
 
             # Setup Video config
@@ -1893,8 +1978,14 @@ class VideoManager(QtWidgets.QDialog):
                     while self.statusTimer.isActive() and waitTime > 0:
                         time.sleep(0.5)
                         waitTime -= 1
-                    self.mediaPlayer.stop()
-                    self.playerStatus = vlc.State.Stopped
+                    cmdQueue.put(['stop'])
+                    while not statusQueue.empty():
+                        statusQueue.get_nowait()
+                    cmdQueue.put(['getInfo','playerState'])
+                    try: 
+                        self.playerState = statusQueue.get(timeout=0.5)
+                    except:
+                        self.playerState = vlc.State.NothingSpecial
                 self.isPlaying = False
                 self.indicatorDic['pageLogoVisible'] = True
                 if self.lbMuted.isVisible():
@@ -1904,6 +1995,7 @@ class VideoManager(QtWidgets.QDialog):
                     self.lbPageLogo.raise_()
                 self.lbVlcBusy.hide()
                 self.lbPlayError.hide()
+                time.sleep(0.1)
                 self.videoFrame.update()
                 bugManager.pop(errorType)
             except:
@@ -1942,17 +2034,29 @@ class VideoManager(QtWidgets.QDialog):
                         self.indicatorDic['pageLogoVisible'] = False
                         self.lbPageLogo.hide()
                         self.lbPlayError.hide()
-                        if self.playerStatus == vlc.State.Playing:
-                            self.mediaPlayer.stop()
-                            self.playerStatus = vlc.State.Stopped
-                            self.videoFrame.update()
-                        media = self.vlcInstance.media_new(url)
-                        self.mediaPlayer.set_media(media)
-                        self.mediaPlayer.play()
+                        # Stop player
+                        cmdQueue.put(['stop'])
+                        while not statusQueue.empty():
+                            r = statusQueue.get_nowait()
+                        cmdQueue.put(['getInfo','playerState'])
+                        try:
+                            self.playerState = statusQueue.get(timeout=1.0)
+                        except:
+                            self.playerState = vlc.State.NothingSpecial
+                        # Update videoFrame = wipe screen
+                        self.videoFrame.update()
+                        # Get volume
                         if self.soundManager != None and self.soundManager.soundManagerOk:
                             self.volume = self.soundManager.getVolume()
                             if self.soundManager.isMuted():
                                 self.volume = 0
+                        # Start streaming
+                        while not statusQueue.empty():
+                            r = statusQueue.get_nowait()
+                        cmdQueue.put(['setMedia',url])
+                        cmdQueue.put(['play'])
+                        cmdQueue.put(['getInfo','getStateAndVolume'])
+                        # Set timer vars and objects and start statusTimer
                         self.volumeTimeoutCnt = 0
                         self.busyCnt = 0
                         self.lbVlcBusy.setPixmap(self.vlcBusyImages[0])
@@ -2013,32 +2117,58 @@ class VideoManager(QtWidgets.QDialog):
                         self.lbVlcBusy.raise_()
                     self.lbVlcBusy.setPixmap(self.vlcBusyImages[self.busyCnt % 4])
                     self.busyCnt += 1
+ 
+                    bugManager.push(bugManager.statusTimer,'timerGetStatus - Get player status')
                     # Get actual player status
-                    self.playerStatus = self.mediaPlayer.get_state()
-                    self.isPlaying = self.playerStatus == vlc.State.Playing
-                    # Show error indicator in case of error or irregularly ended streaming
-                    if self.playerStatus in [vlc.State.Ended, vlc.State.Error]:
-                        if self.configManager.getLanguage() == 'de':
-                          self.lbPlayError.setToolTip('Streamingfehler: ' + self.aktChannelName)
-                        else:
-                          self.lbPlayError.setToolTip('Streaming error: ' + self.aktChannelName)
-                        self.lbPlayError.show()
-                        self.lbPlayError.raise_()
-                    # Clean up in case of success
-                    if self.playerStatus in [vlc.State.Playing, vlc.State.Paused, vlc.State.Ended, vlc.State.Error, vlc.State.Stopped]:
-                        # Check if VLC sound is ready and skip cleaning up if it is not: Timeout 10s
-                        vlcSoundReady = False
-                        if self.playerStatus == vlc.State.Playing:
-                            self.mediaPlayer.audio_set_volume(self.volume*2)
-                            vlcSoundReady = self.mediaPlayer.audio_get_volume() != -1
-                            self.volumeTimeoutCnt += 1
-                        else:
-                            vlcSoundReady = True
-                        # Hide busy label and challel window if videostream is playing
-                        if vlcSoundReady or self.volumeTimeoutCnt >= self.volumeTimeout:
-                            self.lbVlcBusy.hide()
-                            self.statusTimer.stop()
-                            self.hide()
+                    if not statusQueue.empty():
+                        playerState = self.playerState
+                        volume = -1
+                        try:
+                            self.playerState, volume = statusQueue.get_nowait()
+                        except:
+                            self.playerState = playerState
+                            volume = -1
+                        cmdQueue.put(['setVolume',self.volume])
+                        cmdQueue.put(['getInfo','getStateAndVolume'])
+                        self.isPlaying = self.playerState == vlc.State.Playing
+                        bugManager.pop(bugManager.statusTimer)
+
+                        bugManager.push(bugManager.statusTimer,'timerGetStatus - Show Error Indicator')
+                        # Show error indicator in case of error or irregularly ended streaming
+                        if self.playerState in [vlc.State.Ended, vlc.State.Error]:
+                            if self.configManager.getLanguage() == 'de':
+                                self.lbPlayError.setToolTip('Streamingfehler: ' + self.aktChannelName)
+                            else:
+                                self.lbPlayError.setToolTip('Streaming error: ' + self.aktChannelName)
+                            self.lbPlayError.show()
+                            self.lbPlayError.raise_()
+                        bugManager.pop(bugManager.statusTimer)
+
+                        # Clean up in case of success
+                        bugManager.push(bugManager.statusTimer,'timerGetStatus - Clean up')
+                        if self.playerState in [vlc.State.Playing, vlc.State.Paused, vlc.State.Ended, vlc.State.Error, vlc.State.Stopped]:
+                            # Check if VLC sound is ready and skip cleaning up if it is not: Timeout 10s
+                            bugManager.push(bugManager.statusTimer,'timerGetStatus - Check if sound is ready')
+                            vlcSoundReady = False
+                            if self.playerState == vlc.State.Playing:
+                                vlcSoundReady = volume != -1
+                                self.volumeTimeoutCnt += 1
+                            else:
+                                vlcSoundReady = True
+                            bugManager.pop(bugManager.statusTimer)
+
+                            bugManager.push(bugManager.statusTimer,'timerGetStatus - Hide busy label an channel window')
+                            # Hide busy label and channel window if videostream is playing
+                            if vlcSoundReady or self.volumeTimeoutCnt >= self.volumeTimeout:
+                                while not statusQueue.empty():
+                                    p = statusQueue.get_nowait()
+                                self.lbVlcBusy.hide()
+                                self.statusTimer.stop()
+                                self.hide()
+                            bugManager.pop(bugManager.statusTimer)
+                        bugManager.pop(bugManager.statusTimer)
+                    else:
+                        cmdQueue.put(['getInfo','getStateAndVolume'])
                 else:
                     self.lbVlcBusy.hide()
                     self.statusTimer.stop()
@@ -2050,11 +2180,10 @@ class VideoManager(QtWidgets.QDialog):
 
 # Class SoundManager
 class SoundManager(QtWidgets.QDialog):
-    def __init__(self, parent=None, mediaPlayer=None, indicatorDic=None, volume=50):
+    def __init__(self, parent=None, indicatorDic=None, volume=50):
         super().__init__(parent)
         # Basic settings
         self.soundManagerOk = False
-        self.mediaPlayer = mediaPlayer
         try:
             bugManager.push(bugManager.soundManager,'__init__: Started')
 
@@ -2145,12 +2274,6 @@ class SoundManager(QtWidgets.QDialog):
 
             bugManager.pop(bugManager.soundManager)
 
-            # Init mediaplayer volume
-            bugManager.push(bugManager.soundManager,'__init__: Init mediaplayer volume')
-            if self.mediaPlayer != None:
-                self.mediaPlayer.audio_set_volume(self.volume*2)
-            bugManager.pop(bugManager.soundManager)
-
             # Connect Signals and Slots
             bugManager.push(bugManager.soundManager,'__init__: Set slots')
             self.vslVolume.valueChanged.connect(self.setVolume)
@@ -2217,7 +2340,7 @@ class SoundManager(QtWidgets.QDialog):
 
     # Set volume
     def setVolume(self, volume):
-        if self.mediaPlayer != None and self.soundManagerOk:
+        if self.soundManagerOk:
             errorType = bugManager.soundManager
             bugManager.push(errorType,'setVolume')
             try:
@@ -2248,7 +2371,7 @@ class SoundManager(QtWidgets.QDialog):
                 # VLC: set volume
                 bugManager.push(errorType,'setVolume: Set volume')
                 self.volume = volume
-                self.mediaPlayer.audio_set_volume(volume*2)
+                cmdQueue.put(['setVolume',volume])
                 bugManager.pop(errorType)
 
                 bugManager.pop(errorType)
@@ -2257,7 +2380,7 @@ class SoundManager(QtWidgets.QDialog):
 
     # Mute / unmute sound
     def toggleVolumeMuted(self, errorType=None):
-        if self.mediaPlayer != None and self.soundManagerOk:
+        if self.soundManagerOk:
             if errorType == None:
                 errorType = bugManager.soundManager
             bugManager.push(errorType,'toggleVolumeMuted')
@@ -2294,7 +2417,7 @@ class SoundManager(QtWidgets.QDialog):
                 self.vslVolume.valueChanged.disconnect(self.setVolume)
                 self.vslVolume.setValue(volume)
                 self.vslVolume.valueChanged.connect(self.setVolume)
-                self.mediaPlayer.audio_set_volume(volume*2)
+                cmdQueue.put(['setVolume',volume])
                 bugManager.pop(errorType)
 
                 bugManager.pop(errorType)
@@ -2794,6 +2917,23 @@ class BugManager():
                 self.errorDic[errorType]['infoStack'].append((-1,'-- ' + functionName))
         return indexPos
     
+    def pushBugQueue(self):
+        while bugQueue != None and not bugQueue.empty():
+            errorType = None
+            functionName = None
+            setError = None
+            setNotification = False
+            try:
+                bugInfo = bugQueue.get()
+                errorType = bugInfo[0]
+                functionName = bugInfo[1]
+                setError = bugInfo[2]
+                if len(bugInfo) > 3:
+                    setNotification = bugInfo[3]
+                self.push(errorType, functionName, setError, setNotification)
+            except:
+                pass
+    
     # Pop description of program step from stack
     def pop(self, errorType, stackPos=None):
         if errorType != None:
@@ -2886,16 +3026,6 @@ def setProgPaths():
         configPath = ''
         if getattr(sys, 'frozen', False):
             progPath = sys._MEIPASS
-            # Bug fix for VLC / PyInstaller: Plugin-Folder is not found (Linux only)
-            # Sets environment var VLC_PLUGIN_PATH
-            if sys.platform.startswith('linux'):
-                result = subprocess.run(['whereis', 'vlc'],text= True,capture_output=True)
-                paths = str(result).split(' ')
-                for path in paths:
-                    pluginPath = os.path.join(path.strip(),'plugins')
-                    if os.path.isdir(pluginPath):
-                        os.environ['VLC_PLUGIN_PATH'] = pluginPath
-                        break
         else:
             progPath = os.path.dirname(os.path.abspath(__file__))
         resourcePath = os.path.join(progPath,'resources')
@@ -3030,6 +3160,11 @@ def getVlcVersion():
 ###########################
 
 if __name__ == "__main__":
+    # Create and start VLC process - initialisation in VideoManager
+    mp.freeze_support()
+    vlcProcess = mp.Process(target=vlcProcessFunction, args=(cmdQueue, statusQueue, bugQueue))
+    vlcProcess.start()
+    # Setup an start Main process
     result = 1
     pathsOk, progPath, progName, resourcePath, configPath = setProgPaths()
     sysLanguage = getSystemLanguage()
