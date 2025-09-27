@@ -166,8 +166,8 @@ Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Important information for Ubuntu and flavours:<br/>
-VLC must be set up from the distibution repository. Snap installations don't work, because VLC as snap app has no access to VLC library (libvlc).
+Hint for Linux Snap/Flathub installations:<br/>
+VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
 <h2>Information for Developers</h2>
 CyberTelly was developed using Python alongside with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who would like to get an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
