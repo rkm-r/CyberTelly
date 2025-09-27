@@ -72,7 +72,6 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
     mediaPlayer = None
     vlcSetupOk = False
 
-
     def setupVlc(winID, errorType):
         vlcInstance = None
         mediaPlayer = None
