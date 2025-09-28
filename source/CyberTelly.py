@@ -44,14 +44,14 @@ sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
 version = '1.1.0'
-build = '250927'
+build = '250928'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
 # Setting for MS Windows to show taskbar icon
 try:
     from ctypes import windll
-    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-00'
+    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-10'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(cyberTellyAppId)
 except ImportError:
     pass
@@ -71,6 +71,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
     vlcInstance = None
     mediaPlayer = None
     vlcSetupOk = False
+    vlcErrorType = 1
 
     def setupVlc(winID, errorType):
         vlcInstance = None
@@ -88,7 +89,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                         os.environ['VLC_PLUGIN_PATH'] = pluginPath
                         break
         except:
-            pass
+            bugQueue.put([errorType,'setupVlc: Error setting VLC_PLUGIN_PATH', True])
         try:
             vlcInstance = vlc.Instance()
             mediaPlayer = vlcInstance.media_player_new()
@@ -97,7 +98,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
             vlcInstance = None
             mediaPlayer = None
             vlcSetupOk = False
-            bugQueue.put([errorType,'__init__: VLC-Error (Exception caught)', True])
+            bugQueue.put([errorType,'setupVlc: Error setting up vlcInstance/mediaPlayer', True])
         if vlcSetupOk:
             # Disable VLC video and mouse input: X11 / Win32 only! Not implemented in Mac OS.
             try:
@@ -105,7 +106,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                     mediaPlayer.video_set_mouse_input(False)
                     mediaPlayer.video_set_key_input(False)
             except:
-                bugQueue.put([errorType,'__init__: Error disabling mouse/keyboard input (Exception caught)', True])
+                bugQueue.put([errorType,'setupVlc: Error disabling mouse/keyboard input', True])
             # Set up videoFrame to display VLC streams
             try:
                 if sys.platform.startswith('linux'):
@@ -116,8 +117,8 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                 elif sys.platform == "darwin":
                     mediaPlayer.set_nsobject(winID)
             except:
-                bugQueue.put([errorType,'__init__: Error setting VLC videoframe (Exception caught)', True])
-        return vlcInstance, mediaPlayer, vlcSetupOk
+                bugQueue.put([errorType,'setupVlc: Error setting VLC videoframe', True])
+        return vlcInstance, mediaPlayer, vlcSetupOk, errorType
 
     def getInfo(infoTyp='process'):
         result = None
@@ -135,7 +136,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
             result = (state,volume)
         return result
 
-    # Process main
+    # VLC Process main
     cmd = ''
     while cmd != 'exit':
         try:
@@ -157,9 +158,9 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                 if mediaPlayer.get_state() == vlc.State.Playing:
                     mediaPlayer.audio_set_volume(volume*2)
             elif cmd == 'setupVlc':
-                vlcInstance, mediaPlayer, vlcSetupOk = setupVlc(queueData[1], queueData[2])
+                vlcInstance, mediaPlayer, vlcSetupOk, vlcErrorType = setupVlc(queueData[1], queueData[2])
         except:
-            pass
+            bugQueue.put([vlcErrorType,'cmdLoop: Error handling cmd ' + cmd, True])
 
 # Main program window
 class Window(QtWidgets.QMainWindow):
@@ -1107,16 +1108,24 @@ class Window(QtWidgets.QMainWindow):
     def closeWindow(self):
         # Save settings
         if self.mainWindowOk:
+            # Push VLC process errors on error stack
+            bugManager.pushBugQueue()
+
+            bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Save configuration')
             if not self.isFullScreen():
                 self.configManager.setGeometry(self.geometry())
                 self.configManager.setToolbarsetting(self.toolBar.isVisible())
             self.configManager.setVolume(self.soundManager.getVolume())
-            bugManager.push(bugManager.configManager,'MainWindow.closeWindow')
             self.configManager.saveConfig(errorType=bugManager.configManager)
             bugManager.pop(bugManager.configManager)
-            bugManager.push(bugManager.configManager,'MainWindow.closeVlcProcess')
+            
+            bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Close VLC process')
             cmdQueue.put(['exit'])
-            vlcProcess.join(5)            
+            vlcProcess.join(5)
+            if vlcProcess.is_alive():
+                vlcProcess.terminate()
+                time.sleep(0.1)
+                bugManager.push(bugManager.vlcProcess,'cmdLoop: Error closing process, termination forced.',setError=True)
             bugManager.pop(bugManager.configManager)
         # Show error message if bugManager has errors
         if bugManager.errorOccurred:
@@ -1743,10 +1752,10 @@ class VideoManager(QtWidgets.QDialog):
             bugManager.push(bugManager.videoManager,'__init__: Setup VLC Process')
             while not statusQueue.empty():
                 r = statusQueue.get_nowait()
-            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), bugManager.videoManager])
+            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), bugManager.vlcProcess])
             cmdQueue.put(['getInfo','vlcSetupOk'])
             try:
-                self.vlcSetupOk = statusQueue.get(timeout=20)
+                self.vlcSetupOk = statusQueue.get(timeout=30)
             except:
                 self.vlcSetupOk = False
             bugManager.pushBugQueue()
@@ -2745,20 +2754,21 @@ class BugManager():
         self.maxNotifications = 50
         # Error type codes
         self.systemInfo = 0
-        self.mainProgram = 1
-        self.configManager = 2
-        self.configDialog = 3
-        self.videoManager = 4
-        self.soundManager = 5
-        self.epgManager = 6
-        self.helpManager = 7
-        self.cursorOffTimer = 8
-        self.setIndicatorGeometryTimer = 9
-        self.fixVlcCursorIssueTimer = 10
-        self.setupTimer = 11
-        self.statusTimer = 12
-        self.closeWindowTimer = 13
-        self.updateEpgTimer = 14
+        self.vlcProcess = 1
+        self.mainProgram = 2
+        self.configManager = 3
+        self.configDialog = 4
+        self.videoManager = 5
+        self.soundManager = 6
+        self.epgManager = 7
+        self.helpManager = 8
+        self.cursorOffTimer = 9
+        self.setIndicatorGeometryTimer = 10
+        self.fixVlcCursorIssueTimer = 11
+        self.setupTimer = 12
+        self.statusTimer = 13
+        self.closeWindowTimer = 14
+        self.updateEpgTimer = 15
         # Create error dictionary and set basic vars
         self.errorDic = self.createErrorDic()
         self.fatalErrorOccured = False
@@ -2782,6 +2792,14 @@ class BugManager():
     def createErrorDic(self):
         errorDic = {
             self.systemInfo: self.createSysInfo(),
+            self.vlcProcess: {
+                'name': 'VLC Process',
+                'exceptCnt': 0,
+                'notifyCnt': 0,
+                'maxExcept': 100,
+                'maxNotify': 100,
+                'infoStack' : []
+            },
             self.mainProgram: {
                 'name': 'Main Program',
                 'exceptCnt': 0,
@@ -3036,6 +3054,7 @@ def setProgPaths():
     except:
         pathsOk = False
         progPath = ''
+        progName = 'CyberTelly'
         resourcePath = ''
         configPath = os.path.join(os.path.expanduser('~'), 'CyberTelly')
     return pathsOk, progPath, progName, resourcePath, configPath
@@ -3164,7 +3183,8 @@ if __name__ == "__main__":
     mp.freeze_support()
     vlcProcess = mp.Process(target=vlcProcessFunction, args=(cmdQueue, statusQueue, bugQueue))
     vlcProcess.start()
-    # Setup an start Main process
+    
+    # Setup and start Main process
     result = 1
     pathsOk, progPath, progName, resourcePath, configPath = setProgPaths()
     sysLanguage = getSystemLanguage()
