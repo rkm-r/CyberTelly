@@ -148,7 +148,7 @@ Solution:<br/>
 <h2>System Requirements:</h2>
 <h3>Operating System:</h3>
 <h4>Windows 10 / 11: tested, ok</h4>
-<h4>Linux x64 und arm64 with Session-Type X11: ok</h4>
+<h4>Linux x64 and arm64 with Session-Type X11: ok</h4>
 Successfully tested with:<br/>
 <ul>
 <li>Linux Mint 22.2</li>
