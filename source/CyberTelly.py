@@ -44,7 +44,7 @@ sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
 version = '1.1.0'
-build = '250928'
+build = '251004'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
@@ -65,9 +65,10 @@ except ImportError:
 # VLC process
 cmdQueue = mp.Queue()
 statusQueue = mp.Queue()
+processQueue = mp.Queue()
 bugQueue = mp.Queue()
 vlcProcess = None
-def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
+def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
     vlcInstance = None
     mediaPlayer = None
     vlcSetupOk = False
@@ -120,11 +121,9 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                 bugQueue.put([errorType,'setupVlc: Error setting VLC videoframe', True])
         return vlcInstance, mediaPlayer, vlcSetupOk, errorType
 
-    def getInfo(infoTyp='process'):
+    def getInfo(infoTyp=''):
         result = None
-        if infoTyp == 'process':
-            result = 'ready'
-        elif infoTyp == 'vlcSetupOk':
+        if infoTyp == 'vlcSetupOk':
             result = vlcSetupOk
         elif infoTyp == 'playerState':
             result = mediaPlayer.get_state()
@@ -143,7 +142,9 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
             queueData = ['']
             queueData = cmdQueue.get()
             cmd = queueData[0]
-            if cmd == 'getInfo':
+            if cmd == 'checkAlive':
+                processQueue.put(['isAlive'])
+            elif cmd == 'getInfo':
                 statusQueue.put(getInfo(queueData[1]))
             elif cmd == 'setMedia':
                 url = queueData[1]
@@ -151,6 +152,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, bugQueue):
                 mediaPlayer.set_media(media)
             elif cmd == 'play':
                 mediaPlayer.play()
+                processQueue.put(['play',queueData[1]])
             elif cmd == 'stop':
                 mediaPlayer.stop()
             elif cmd == 'setVolume':
@@ -490,7 +492,14 @@ class Window(QtWidgets.QMainWindow):
             self.fixVlcCursorIssueInterval = 100
             self.fixVlcCursorIssueTimer.setInterval(self.fixVlcCursorIssueInterval)
             self.fixVlcCursorIssueTimer.timeout.connect(self.timerfixVlcCursorIssue)
-            # -- setupTimer: Processes configuration step tha have to be done after window becomes visible
+            # -- vlcCheckAliveTimer: Check if VLC Process is alive
+            self.checkVlcAliveInterval = 20000
+            self.maxVlcIsAliveCnt = 6
+            self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
+            self.vlcCheckAliveTimer = QtCore.QTimer()
+            self.vlcCheckAliveTimer.setInterval(self.checkVlcAliveInterval)
+            self.vlcCheckAliveTimer.timeout.connect(self.timerVlcCheckAlive)
+            # -- setupTimer: Processes configuration step that have to be done after window becomes visible
             self.setupTimer = QtCore.QTimer()
             self.setupTimer.setInterval(100)
             self.setupTimer.timeout.connect(self.timerSetupVars)
@@ -586,14 +595,15 @@ class Window(QtWidgets.QMainWindow):
                 if self.toolBar.isVisible():
                     self.toolBarHeight = self.toolBar.size().height()
                 self.setIndicatorGeometry(errorType=bugManager.setupTimer)
-                if not self.videoManager.vlcSetupOk:
-                    if bugManager != None:
-                        bugManager.errorOccurred = True
+                if self.videoManager.vlcSetupOk:
+                    cmdQueue.put(['checkAlive'])
+                    self.vlcCheckAliveTimer.start()
+                else:
                     windowTitle = 'Programmfehler'
                     if sysLanguage == 'en':
                         windowTitle = 'Program Error'
                     bugManager.push(bugManager.setupTimer,'infoDialog')
-                    infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcError', language=sysLanguage, singleString=False))
+                    infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcInitError', language=sysLanguage, singleString=False))
                     infoDialog.show()
                     bugManager.pop(bugManager.setupTimer)
                     self.activeDialogs.append(infoDialog)
@@ -1077,6 +1087,32 @@ class Window(QtWidgets.QMainWindow):
         except:
             bugManager.setError(bugManager.fixVlcCursorIssueTimer)
 
+    def timerVlcCheckAlive(self):
+        try:
+            bugManager.push(bugManager.vlcCheckAliveTimer,'timerVlcCheckAlive')
+            self.vlcIsAliveCnt -= 1
+            while not processQueue.empty():
+                r = processQueue.get_nowait()
+                if r[0] == 'play':
+                    self.videoManager.confirmPlayHistoryEntry(r[1])
+                elif r[0] == 'isAlive':
+                    self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
+                    cmdQueue.put(['checkAlive'])
+            if self.vlcIsAliveCnt == 0:
+                windowTitle = 'Programmfehler'
+                if sysLanguage == 'en':
+                    windowTitle = 'Program Error'
+                bugManager.push(bugManager.vlcCheckAliveTimer,'infoDialog')
+                infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcProcessError', language=sysLanguage, singleString=False))
+                infoDialog.show()
+                bugManager.pop(bugManager.vlcCheckAliveTimer)
+                cmdQueue.put(['checkAlive'])
+            elif self.vlcIsAliveCnt < 0:
+                self.vlcIsAliveCnt = -1
+            bugManager.pop(bugManager.vlcCheckAliveTimer)
+        except:
+            bugManager.setError(bugManager.vlcCheckAliveTimer)
+
     # Stop streaming selected channel
     def stop(self):
         if self.mainWindowOk:
@@ -1119,14 +1155,28 @@ class Window(QtWidgets.QMainWindow):
             self.configManager.saveConfig(errorType=bugManager.configManager)
             bugManager.pop(bugManager.configManager)
             
-            bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Close VLC process')
-            cmdQueue.put(['exit'])
-            vlcProcess.join(5)
+            # Close VLC process
+            if self.vlcIsAliveCnt == self.maxVlcIsAliveCnt:
+                cmdQueue.put(['exit'])
+                vlcProcess.join(5) 
+            # If it is still alive: Force closing VLC process and save playHistory
             if vlcProcess.is_alive():
+                # Terminate process
                 vlcProcess.terminate()
                 time.sleep(0.1)
                 bugManager.push(bugManager.vlcProcess,'cmdLoop: Error closing process, termination forced.',setError=True)
-            bugManager.pop(bugManager.configManager)
+                # Update playHistory
+                while not processQueue.empty():
+                    r = processQueue.get_nowait()
+                    if r[0] == 'play':
+                        self.videoManager.confirmPlayHistoryEntry(r[1])
+                # Save playHistory to error log
+                for playDat in self.videoManager.playHistory.values():
+                    state = 'playing'
+                    if not playDat['ok']:
+                        state = 'noReply'
+                    msg = 'playDat: ' + playDat['timestamp'].strftime('%Y-%m-%d %H:%M:%S') + ' ' + state + ' src=' + playDat['source'] + ' ch=' + playDat['channel'] 
+                    bugManager.push(bugManager.vlcProcess,msg,setError=True)
         # Show error message if bugManager has errors
         if bugManager.errorOccurred:
             dlg = QtWidgets.QMessageBox()
@@ -1738,6 +1788,8 @@ class VideoManager(QtWidgets.QDialog):
         self.vlcBusyImages = []
         self.lbPlayError = None
         self.lbMuted = None
+        self.playHistoryKey = 0
+        self.playHistory = {}
         if self.indicatorDic != None:
             self.lbPageLogo = indicatorDic['lbPageLogo']
             self.lbPlayError = indicatorDic['lbPlayError']
@@ -2062,8 +2114,9 @@ class VideoManager(QtWidgets.QDialog):
                         # Start streaming
                         while not statusQueue.empty():
                             r = statusQueue.get_nowait()
+                        self.addPlayHistoryEntry(source=self.source, channel=self.aktChannelName)
                         cmdQueue.put(['setMedia',url])
-                        cmdQueue.put(['play'])
+                        cmdQueue.put(['play', self.playHistoryKey-1])
                         cmdQueue.put(['getInfo','getStateAndVolume'])
                         # Set timer vars and objects and start statusTimer
                         self.volumeTimeoutCnt = 0
@@ -2074,6 +2127,22 @@ class VideoManager(QtWidgets.QDialog):
                 bugManager.pop(errorType)
             except:
                 bugManager.setError(errorType)
+    
+    def addPlayHistoryEntry(self, source='m3u', channel=''):
+        entry = { 'timestamp': datetime.now(),
+                  'source' : source,
+                  'channel' : channel,
+                  'ok' : False
+                }
+        self.playHistory[self.playHistoryKey] = entry
+        if len(self.playHistory) > 4:
+            for key in sorted(self.playHistory,key=int)[:len(self.playHistory)-4]:
+                del self.playHistory[key]
+        self.playHistoryKey += 1
+    
+    def confirmPlayHistoryEntry(self,key=None):
+        if key != None and key in self.playHistory.keys():
+            self.playHistory[key]['ok'] = True
 
     # Get streaming url from TVHServer
     def getUrlTvh(self, item, errorType=1):
@@ -2769,6 +2838,7 @@ class BugManager():
         self.statusTimer = 13
         self.closeWindowTimer = 14
         self.updateEpgTimer = 15
+        self.vlcCheckAliveTimer = 16
         # Create error dictionary and set basic vars
         self.errorDic = self.createErrorDic()
         self.fatalErrorOccured = False
@@ -2906,6 +2976,14 @@ class BugManager():
             },
             self.updateEpgTimer: {
                 'name': 'Timer: updateEpgTimer',
+                'exceptCnt': 0,
+                'notifyCnt': 0,
+                'maxExcept': 5,
+                'maxNotify': 5,
+                'infoStack' : []
+            },
+            self.vlcCheckAliveTimer: {
+                'name': 'Timer: vlcCheckAliveTimer',
                 'exceptCnt': 0,
                 'notifyCnt': 0,
                 'maxExcept': 5,
@@ -3181,7 +3259,7 @@ def getVlcVersion():
 if __name__ == "__main__":
     # Create and start VLC process - initialisation in VideoManager
     mp.freeze_support()
-    vlcProcess = mp.Process(target=vlcProcessFunction, args=(cmdQueue, statusQueue, bugQueue))
+    vlcProcess = mp.Process(target=vlcProcessFunction, args=(cmdQueue, statusQueue, processQueue, bugQueue))
     vlcProcess.start()
     
     # Setup and start Main process
@@ -3222,6 +3300,6 @@ if __name__ == "__main__":
     except:
         pass
     # Save CybterTelly.log if errors or notifications have occurred.
-    if bugManager.notification:
+    if bugManager.errorOccurred or bugManager.notification:
         bugManager.saveErrorLog()
     sys.exit(result)
