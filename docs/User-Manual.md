@@ -170,7 +170,7 @@ Hint for Linux Snap/Flathub installations:<br/>
 VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
 <h2>Information for Developers</h2>
-CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who would like to get an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
+CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who is interested in getting an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
 The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
