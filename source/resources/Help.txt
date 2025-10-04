@@ -156,11 +156,11 @@ de~    MacOS: möglich, aber nicht implementiert
 de~  VLC-Mediaplayer Version 3
 de~    Windows: Version >= 3.0.21
 de~    Linux:   Version >= 3.0.20
-de~    Hinweis für Ubuntu und Flavours:
-de~      VLC muss aus Repository installiert sein.
-de~      Installation als Snap-App funktioniert
-de~      nicht, da bei VLC als Snap kein Zugriff
-de~      auf VLC Bibliothek libvlc möglich ist.
+de~    Hinweis für VLC als Linux Snap-/Flathub-App:
+de~      VLC muss aus dem Repository installiert
+de~      sein. Snap- oder Flathub-Apps laufen in 
+de~      einer Sandbox, die keinen Zugriff auf die
+de~      VLC-Bibliothek libvlc zulässt.
 de~
 de~Copyright und Lizensierung:
 de~  Copyright (C) 2025 Rudolf Ringel
@@ -333,11 +333,11 @@ en~       Should be possible, but isn't implemented
 en~  VLC Media Player Version 3
 en~    Windows: Version >= 3.0.21
 en~    Linux:   Version >= 3.0.20
-en~    Important for Ubuntu and flavours:
+en~    Hint for Linux Snap/Flathub installations:
 en~      VLC must be set up from the distibution
-en~      repository. Snap installations don't
-en~      work, because VLC as snap app has no
-en~      access to VLC library (libvlc).
+en~      repository. Snap or Flathub apps are
+en~      running in a sandbox where the access to
+en~      VLC library (libvlc) is blocked.
 en~
 en~Copyright and Licensing:
 en~  Copyright (C) 2025 Rudolf Ringel

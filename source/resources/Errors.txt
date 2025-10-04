@@ -9,22 +9,34 @@ de~waylandError~  zu Umstellung auf X11 haben: gdm3
 de~waylandError~  z.B. zeigt in der Ecke rechts unten
 de~waylandError~  ein Zahnrad-Symbol.
 
-de~vlcError~Fehler beim Öffnen des VLC-Players
-de~vlcError~----------------------------------
-de~vlcError~Mögliche Fehlerquellen:
-de~vlcError~  Alle Betriebssysteme:
-de~vlcError~    VLC-Player ist nicht installiert
-de~vlcError~  Ubuntu und evtl. auch andere Distros:
-de~vlcError~    VLC ist ggf. als Snap-App installiert.
-de~vlcError~    Bei Snap-Apps ist der Zugriff auf die
-de~vlcError~    VLC-Bibliothek libvlc blockiert.
-de~vlcError~    Lösung:
-de~vlcError~      1. VLC im Snap-Appzentrum deinstallieren
-de~vlcError~      2. Terminalfenster öffnen
-de~vlcError~      3. Befehl: sudo apt install vlc
-de~vlcError~         (VLC wird aus Repository installiert)
-de~vlcError~      4. CyberTelly neu starten
-de~vlcError~      5. Testen
+de~vlcInitError~Fehler beim Öffnen des VLC-Players
+de~vlcInitError~----------------------------------
+de~vlcInitError~Mögliche Fehlerquellen:
+de~vlcInitError~  Alle Betriebssysteme:
+de~vlcInitError~    VLC-Player ist nicht installiert
+de~vlcInitError~  Linux:
+de~vlcInitError~    VLC wurde vom Snap-Store oder Flathub
+de~vlcInitError~    installiert und läuft in einer Sandbox:
+de~vlcInitError~    Der Zugriff auf die VLC-Bibliothek ist 
+de~vlcInitError~    deshalb blockiert.
+de~vlcInitError~    Lösung:
+de~vlcInitError~      1. VLC deinstallieren
+de~vlcInitError~      2. Terminalfenster öffnen
+de~vlcInitError~      3. Befehl: sudo apt install vlc
+de~vlcInitError~         (VLC wird aus Repository installiert)
+de~vlcInitError~      4. CyberTelly neu starten
+de~vlcInitError~      5. Testen
+
+de~vlcProcessError~Fehler: VLC-Player-Prozess  antwortet nicht
+de~vlcProcessError~
+de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft in  einem
+de~vlcProcessError~eigenen Prozess.  Dieser ist aktuell  nicht
+de~vlcProcessError~ansprechbar: Möglicherweise wurde VLC durch
+de~vlcProcessError~einen  fehlerhaften Videostream zum Absturz
+de~vlcProcessError~gebracht.
+de~vlcProcessError~
+de~vlcProcessError~  > Bitte beenden Sie das Programm und <
+de~vlcProcessError~  > starten sie es neu!                <
 
 de~programError~CyberTelly: Programmfehler aufgetreten
 de~programError~
@@ -47,22 +59,32 @@ en~waylandError~  to X11 on the logon screen:
 en~waylandError~  gdm3 e.g. shows a wheel icon
 en~waylandError~  at the right bottom corner.
 
-en~vlcError~Error opening VLC Mediaplayer
-en~vlcError~-----------------------------
-en~vlcError~Possible reasons can be:
-en~vlcError~  All Operating Systems:
-en~vlcError~    VLC Player ist not installed
-en~vlcError~  Ubuntu and possibly other Linux Distros:
-en~vlcError~    VLC is installed as Snap-App.
-en~vlcError~    Snap-Apps do not have access to the
-en~vlcError~    VLC library (libvlc).
-en~vlcError~    Solution:
-en~vlcError~      1. Remove VLC from the snap app center.
-en~vlcError~      2. Open a terminal window.
-en~vlcError~      3. Type: sudo apt install vlc
-en~vlcError~         (VLC is installed from the repository)
-en~vlcError~      4. Restart CyberTelly
-en~vlcError~      5. Give it another try ...
+en~vlcInitError~Error opening VLC Media Player
+en~vlcInitError~
+en~vlcInitError~Possible reasons can be:
+en~vlcInitError~  All Operating Systems:
+en~vlcInitError~    VLC Player ist not installed
+en~vlcInitError~  Linux:
+en~vlcInitError~    VLC was installed from Snap Store or
+en~vlcInitError~    Flathub and runs in a sandbox, where
+en~vlcInitError~    the access to the VLC library is blocked.
+en~vlcInitError~    Solution:
+en~vlcInitError~      1. Uninstall VLC.
+en~vlcInitError~      2. Open a terminal window.
+en~vlcInitError~      3. Type: sudo apt install vlc
+en~vlcInitError~         (Install VLC from the repository)
+en~vlcInitError~      4. Restart CyberTelly
+en~vlcInitError~      5. Give it another try ...
+
+en~vlcProcessError~Error: VLC Player Process  does not respond
+en~vlcProcessError~
+en~vlcProcessError~The VLC library  libvlc  runs in a separate
+en~vlcProcessError~process.  Actually  it cannot  be accessed:
+en~vlcProcessError~Possibly VLC has crashed due to a malformed
+en~vlcProcessError~video stream.
+en~vlcProcessError~
+en~vlcProcessError~  >    Please quit program and    <
+en~vlcProcessError~  >    restart it again!          <
 
 en~programError~CyberTelly: Error occurred
 en~programError~
