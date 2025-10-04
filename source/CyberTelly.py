@@ -1087,6 +1087,7 @@ class Window(QtWidgets.QMainWindow):
         except:
             bugManager.setError(bugManager.fixVlcCursorIssueTimer)
 
+    # Timer to perodically check if VLC process is alive along with updating playHistory
     def timerVlcCheckAlive(self):
         try:
             bugManager.push(bugManager.vlcCheckAliveTimer,'timerVlcCheckAlive')
