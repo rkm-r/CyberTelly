@@ -1179,6 +1179,7 @@ class Window(QtWidgets.QMainWindow):
                     bugManager.push(bugManager.vlcProcess,msg,setError=True)
         # Show error message if bugManager has errors
         if bugManager.errorOccurred:
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             dlg = QtWidgets.QMessageBox()
             dlg.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
             dlg.setWindowTitle(" ")
