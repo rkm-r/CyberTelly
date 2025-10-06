@@ -148,7 +148,7 @@ Solution:<br/>
 <h2>System Requirements:</h2>
 <h3>Operating System:</h3>
 <h4>Windows 10 / 11: tested, ok</h4>
-<h4>Linux x64 and arm64 with Session-Type X11: ok</h4>
+<h4>Linux x64 (wayland and x11): ok</h4>
 Successfully tested with:<br/>
 <ul>
 <li>Linux Mint 22.2</li>
@@ -156,11 +156,12 @@ Successfully tested with:<br/>
 <li>Ubuntu 24.04</li>
 <li>Ubuntu 25.04</li>
 <li>Lubuntu 24.04</li>
-<li>Raspberry Pi OS Bookworm (RPi 5 only)</li>
 </ul>
-<h4>Linux with Session-Type wayland:</h4>
-Program startup fails, because wayland is not supported by the currently linked VLC library libvlc.<br/>
-Hint: Almost all Debian based distros come with an option on the login screen to switch to X11.
+<h4>Raspberry Pi OS 64Bit</h4>
+<ul>
+<li>Minimum OS version 13 (Trixie)</li>
+<li>Raspberry Pi 5 recommended</li>
+</ul>
 <h4>MacOS: Should be possible, but isn't implemented</h4>
 Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
 <h3>VLC Media Player Version 3</h3>
@@ -170,7 +171,7 @@ Hint for Linux Snap/Flathub installations:<br/>
 VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
 <h2>Information for Developers</h2>
-CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who is interested in getting an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements-x64.txt or requirements-arm64.txt and start coding!<br/><br/>
+CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who is interested in getting an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
 The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
