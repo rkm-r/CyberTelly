@@ -43,15 +43,15 @@ configPath = ''
 sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
-version = '1.1.0'
-build = '251004'
+version = '1.2.0'
+build = '251007'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
 # Setting for MS Windows to show taskbar icon
 try:
     from ctypes import windll
-    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-10'
+    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-20'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(cyberTellyAppId)
 except ImportError:
     pass
@@ -597,6 +597,7 @@ class Window(QtWidgets.QMainWindow):
                 self.setIndicatorGeometry(errorType=bugManager.setupTimer)
                 if self.videoManager.vlcSetupOk:
                     cmdQueue.put(['checkAlive'])
+                    cmdQueue.put(['checkAlive'])
                     self.vlcCheckAliveTimer.start()
                 else:
                     windowTitle = 'Programmfehler'
@@ -1094,11 +1095,10 @@ class Window(QtWidgets.QMainWindow):
             self.vlcIsAliveCnt -= 1
             while not processQueue.empty():
                 r = processQueue.get_nowait()
-                if r[0] == 'play':
-                    self.videoManager.confirmPlayHistoryEntry(r[1])
-                elif r[0] == 'isAlive':
+                if r[0] == 'isAlive':
                     self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
-                    cmdQueue.put(['checkAlive'])
+                elif r[0] == 'play':
+                    self.videoManager.confirmPlayHistoryEntry(r[1], truncateHistory=True)
             if self.vlcIsAliveCnt == 0:
                 windowTitle = 'Programmfehler'
                 if sysLanguage == 'en':
@@ -1107,9 +1107,8 @@ class Window(QtWidgets.QMainWindow):
                 infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcProcessError', language=sysLanguage, singleString=False))
                 infoDialog.show()
                 bugManager.pop(bugManager.vlcCheckAliveTimer)
+            if vlcProcess.is_alive() and self.vlcIsAliveCnt > -4314: # 4314 = 3*60*24-6 = 24h checkAlives; self.maxVlcIsAliveCnt=6; timer interval = 20s
                 cmdQueue.put(['checkAlive'])
-            elif self.vlcIsAliveCnt < 0:
-                self.vlcIsAliveCnt = -1
             bugManager.pop(bugManager.vlcCheckAliveTimer)
         except:
             bugManager.setError(bugManager.vlcCheckAliveTimer)
@@ -1141,36 +1140,31 @@ class Window(QtWidgets.QMainWindow):
             self.activeDialogs.append(aboutDialog)
             self.fixVlcCursorIssueTimer.start()
     
-    # Shut down program
-    def closeWindow(self):
-        # Save settings
-        if self.mainWindowOk:
-            # Push VLC process errors on error stack
-            bugManager.pushBugQueue()
-
-            bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Save configuration')
-            if not self.isFullScreen():
-                self.configManager.setGeometry(self.geometry())
-                self.configManager.setToolbarsetting(self.toolBar.isVisible())
-            self.configManager.setVolume(self.soundManager.getVolume())
-            self.configManager.saveConfig(errorType=bugManager.configManager)
-            bugManager.pop(bugManager.configManager)
-            
-            # Close VLC process
-            if self.vlcIsAliveCnt == self.maxVlcIsAliveCnt:
+    # Shut down VLC Process
+    def closeVlcProcess(self):
+        try:
+            # Close running VLC process
+            vlcProcessError = False
+            if vlcProcess.is_alive() and self.vlcIsAliveCnt == self.maxVlcIsAliveCnt:
                 cmdQueue.put(['exit'])
-                vlcProcess.join(5) 
+                vlcProcess.join(5)
+            else:
+                vlcProcessError = True
             # If it is still alive: Force closing VLC process and save playHistory
             if vlcProcess.is_alive():
                 # Terminate process
                 vlcProcess.terminate()
                 time.sleep(0.1)
                 bugManager.push(bugManager.vlcProcess,'cmdLoop: Error closing process, termination forced.',setError=True)
+                vlcProcessError = True
+            elif vlcProcessError:
+                bugManager.push(bugManager.vlcProcess,'cmdLoop: Unknown error in process.',setError=True)
+            if vlcProcessError:
                 # Update playHistory
                 while not processQueue.empty():
                     r = processQueue.get_nowait()
                     if r[0] == 'play':
-                        self.videoManager.confirmPlayHistoryEntry(r[1])
+                        self.videoManager.confirmPlayHistoryEntry(r[1], truncateHistory=False)
                 # Save playHistory to error log
                 for playDat in self.videoManager.playHistory.values():
                     state = 'playing'
@@ -1178,6 +1172,26 @@ class Window(QtWidgets.QMainWindow):
                         state = 'noReply'
                     msg = 'playDat: ' + playDat['timestamp'].strftime('%Y-%m-%d %H:%M:%S') + ' ' + state + ' src=' + playDat['source'] + ' ch=' + playDat['channel'] 
                     bugManager.push(bugManager.vlcProcess,msg,setError=True)
+        except:
+            bugManager.push(bugManager.vlcProcess,'MainWindow.closeWindow - Error terminating process.',setError=True)
+
+    # Shut down program
+    def closeWindow(self):
+        # Save settings
+        if self.mainWindowOk:
+            # Push VLC process errors on error stack and close VLC Process
+            bugManager.pushBugQueue()
+            self.closeVlcProcess()    
+
+            # Save Configuration
+            bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Save configuration')
+            if not self.isFullScreen():
+                self.configManager.setGeometry(self.geometry())
+                self.configManager.setToolbarsetting(self.toolBar.isVisible())
+            self.configManager.setVolume(self.soundManager.getVolume())
+            self.configManager.saveConfig(errorType=bugManager.configManager)
+            bugManager.pop(bugManager.configManager)
+
         # Show error message if bugManager has errors
         if bugManager.errorOccurred:
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
@@ -1838,6 +1852,7 @@ class VideoManager(QtWidgets.QDialog):
             self.channelList.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
             self.channelList.horizontalHeader().setSectionResizeMode(0,QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
             self.channelList.horizontalHeader().setSectionResizeMode(1,QtWidgets.QHeaderView.ResizeMode.Stretch)
+            self.channelList.setWordWrap(False)
             self.verticalLayout.addWidget(self.channelList)
             self.channelListMaxWidth = 300
             self.channelListWidth = self.channelListMaxWidth
@@ -1943,11 +1958,12 @@ class VideoManager(QtWidgets.QDialog):
                 chNumber.setText(' ' + str(row+1) + ' ')
                 chNumber.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.channelList.setItem(row, 0, chNumber)
-                nameItem = QtWidgets.QTableWidgetItem(channel['name'])
-                nameItem.setText(' ' + channel['name'])
+                channelName = str(channel['name']).strip()
+                nameItem = QtWidgets.QTableWidgetItem(channelName)
+                nameItem.setText(' ' + channelName)
                 nameItem.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.channelList.setItem(row, 1, nameItem)
-                chWidth = max(chWidth, int(fm.boundingRect(''.zfill(len('0000000000' + channel['name']))).width()))
+                chWidth = max(chWidth, int(fm.boundingRect('00000'+channelName.upper().replace(' ','W')).width()))
             if self.channelList.rowCount() > 0:
                 self.channelList.selectRow(0)
                 try:
@@ -2137,14 +2153,14 @@ class VideoManager(QtWidgets.QDialog):
                   'ok' : False
                 }
         self.playHistory[self.playHistoryKey] = entry
-        if len(self.playHistory) > 4:
-            for key in sorted(self.playHistory,key=int)[:len(self.playHistory)-4]:
-                del self.playHistory[key]
         self.playHistoryKey += 1
     
-    def confirmPlayHistoryEntry(self,key=None):
+    def confirmPlayHistoryEntry(self, key=None, truncateHistory=True):
         if key != None and key in self.playHistory.keys():
             self.playHistory[key]['ok'] = True
+            if truncateHistory and len(self.playHistory) > 4:
+                for key in sorted(self.playHistory)[:len(self.playHistory)-4]:
+                    del self.playHistory[key]
 
     # Get streaming url from TVHServer
     def getUrlTvh(self, item, errorType=1):
@@ -3271,32 +3287,25 @@ if __name__ == "__main__":
     errorDic = readErrorDic()
     bugManager = BugManager()
     try:
-        if getSessionType() == 'x11': # x11 = Default value for Linux with x11, Windows und MacOS
-            # QT_ENABLE_HIGHDPI_SCALING = 0: 
-            #   If high dpi scaling is enabled, systems with two or more screens and different scaling factors
-            #   completely destroy window geometry if window is moved between the screens.
-            #   That's why it has to be disabled - although not recommended.
-            os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '0'
-            # Calculate average dpi (Necessary if high dpi scaling is disabled)
-            os.environ['QT_USE_PHYSICAL_DPI'] = '1'
-            dpi = getDpi()
-            scalingFactor = dpi / 96
-            os.environ['QT_FONT_DPI'] = str(dpi)
-            # Setup main window
-            cyberTellyApp = QtWidgets.QApplication(sys.argv)
-            cyberTellyApp.setAttribute(QtCore.Qt.ApplicationAttribute.AA_NativeWindows)
-            cyberTellyApp.setStyle('fusion')
-            cyberTellyWin = Window()
-            cyberTellyWin.show()
-        else:
-            # Show error message if session type is wayland:
-            # libvlc that comes with VLC 3.0.20+ doesn't support wayland.
-            cyberTellyApp = QtWidgets.QApplication(sys.argv)
-            dlg = QtWidgets.QMessageBox()
-            dlg.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
-            dlg.setWindowTitle(" ")
-            dlg.setText(getErrorDescription(key='waylandError',language=sysLanguage,singleString=True))
-            dlg.show()
+        # Linux: Set QPA Plugin to X11 or XWayland
+        if sys.platform.startswith('linux'):
+            os.environ['QT_QPA_PLATFORM'] = 'xcb'
+        # QT_ENABLE_HIGHDPI_SCALING = 0: 
+        #   If high dpi scaling is enabled, systems with two or more screens and different scaling factors
+        #   completely destroy window geometry if window is moved between the screens.
+        #   That's why it has to be disabled - although not recommended.
+        os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '0'
+        # Calculate average dpi (Necessary if high dpi scaling is disabled)
+        os.environ['QT_USE_PHYSICAL_DPI'] = '1'
+        dpi = getDpi()
+        scalingFactor = dpi / 96
+        os.environ['QT_FONT_DPI'] = str(dpi)
+        # Setup main window
+        cyberTellyApp = QtWidgets.QApplication(sys.argv)
+        cyberTellyApp.setAttribute(QtCore.Qt.ApplicationAttribute.AA_NativeWindows)
+        cyberTellyApp.setStyle('fusion')
+        cyberTellyWin = Window()
+        cyberTellyWin.show()
         # Run application
         result = cyberTellyApp.exec()
     except:

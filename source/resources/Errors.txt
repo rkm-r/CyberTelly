@@ -1,16 +1,5 @@
-de~waylandError~CyberTelly: Fehler mit Programmabbruch
-de~waylandError~
-de~waylandError~Session-Type wayland wurde erkannt.
-de~waylandError~Programm läuft nur mit X11!
-de~waylandError~Lösungstipp:
-de~waylandError~  Displaymanager gdm3 und sddm sollten
-de~waylandError~  auf dem Anmeldebildschirms Optionen
-de~waylandError~  zu Umstellung auf X11 haben: gdm3
-de~waylandError~  z.B. zeigt in der Ecke rechts unten
-de~waylandError~  ein Zahnrad-Symbol.
-
 de~vlcInitError~Fehler beim Öffnen des VLC-Players
-de~vlcInitError~----------------------------------
+de~vlcInitError~
 de~vlcInitError~Mögliche Fehlerquellen:
 de~vlcInitError~  Alle Betriebssysteme:
 de~vlcInitError~    VLC-Player ist nicht installiert
@@ -27,7 +16,7 @@ de~vlcInitError~         (VLC wird aus Repository installiert)
 de~vlcInitError~      4. CyberTelly neu starten
 de~vlcInitError~      5. Testen
 
-de~vlcProcessError~Fehler: VLC-Player-Prozess  antwortet nicht
+de~vlcProcessError~Fehler:  VLC-Player-Prozess antwortet nicht
 de~vlcProcessError~
 de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft in  einem
 de~vlcProcessError~eigenen Prozess.  Dieser ist aktuell  nicht
@@ -48,17 +37,6 @@ de~programError~Speicherort CyberTelly.log:
 de~programError~Windows: C:\Benutzer\<user>\CyberTelly\
 de~programError~Linux:   /home/<user>/CyberTelly/
 
-en~waylandError~CyberTelly: Fatal error occurred
-en~waylandError~
-en~waylandError~System is using session type wayland.
-en~waylandError~Program only works with X11!
-en~waylandError~Possible solution:
-en~waylandError~  Displaymanagers gdm3 and sddm
-en~waylandError~  often have an option to switch
-en~waylandError~  to X11 on the logon screen:
-en~waylandError~  gdm3 e.g. shows a wheel icon
-en~waylandError~  at the right bottom corner.
-
 en~vlcInitError~Error opening VLC Media Player
 en~vlcInitError~
 en~vlcInitError~Possible reasons can be:
@@ -76,7 +54,7 @@ en~vlcInitError~         (Install VLC from the repository)
 en~vlcInitError~      4. Restart CyberTelly
 en~vlcInitError~      5. Give it another try ...
 
-en~vlcProcessError~Error: VLC Player Process  does not respond
+en~vlcProcessError~Error:  VLC Player Process does not respond
 en~vlcProcessError~
 en~vlcProcessError~The VLC library  libvlc  runs in a separate
 en~vlcProcessError~process.  Actually  it cannot  be accessed:

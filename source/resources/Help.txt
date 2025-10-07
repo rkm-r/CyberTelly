@@ -138,20 +138,16 @@ de~
 de~Systemvoraussetzungen:
 de~  Betriebssystem:
 de~    Windows 10 / 11: getestet, ok
-de~    Linux mit Session-Type X11: ok
+de~    Linux x64 (wayland und x11): ok
 de~      Erfolgreiche Tests mit:
-de~        Architektur x64 
-de~          Linux Mint 22.2
-de~          Debian 13 (Trixie)
-de~          Ubuntu 24.04
-de~          Ubuntu 25.04
-de~          Lubuntu 24.04
-de~        Architektur Arm64
-de~          Raspberry Pi OS Bookworm (nur RPi 5)
-de~    Linux mit Session-Type wayland:
-de~      Funktioniert nicht, da wayland von der in
-de~      dieser Programmversion eingebundenen VLC-
-de~      Bibliothek libvlc nicht unterstützt wird.
+de~        Linux Mint 22.2
+de~        Debian 13 (Trixie)
+de~        Ubuntu 24.04
+de~        Ubuntu 25.04
+de~        Lubuntu 24.04
+de~    Raspberry Pi OS 64Bit: ok
+de~      Minimum Version 13 (Trixie)
+de~      Raspberry Pi 5 empfohlen
 de~    MacOS: möglich, aber nicht implementiert
 de~  VLC-Mediaplayer Version 3
 de~    Windows: Version >= 3.0.21
@@ -314,22 +310,18 @@ en~
 en~System Requirements:
 en~  Operating System:
 en~    Windows 10 / 11: tested, ok
-en~    Linux with Session Type X11: ok
+en~    Linux x64 (wayland and x11): ok
 en~      Successfully tested with:
-en~        Architecture x64
-en~          Linux Mint 22.2
-en~          Debian 13 (Trixie)
-en~          Ubuntu 24.04
-en~          Ubuntu 25.04
-en~          Lubuntu 24.04
-en~        Architecture Arm64
-en~          Raspberry Pi OS Bookworm (RPi 5 only)
-en~    Linux with Session-Type wayland:
-en~      Program startup fails, because wayland
-en~      is not supported by the currently 
-en~      linked VLC library libvlc.
+en~        Linux Mint 22.2
+en~        Debian 13 (Trixie)
+en~        Ubuntu 24.04
+en~        Ubuntu 25.04
+en~        Lubuntu 24.04
+en~    Raspberry Pi OS 64Bit: ok
+en~      Minimum OS version 13 (Trixie)
+en~      Raspberry Pi 5 recommended
 en~    MacOS:
-en~       Should be possible, but isn't implemented
+en~      Should be possible, but isn't implemented
 en~  VLC Media Player Version 3
 en~    Windows: Version >= 3.0.21
 en~    Linux:   Version >= 3.0.20

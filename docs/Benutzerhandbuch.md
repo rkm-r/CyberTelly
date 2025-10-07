@@ -149,7 +149,7 @@ Lösung:<br/>
 <h2>Systemvoraussetzungen:</h2>
 <h3>Betriebssystem:</h3>
 <h4>Windows 10 / 11: getestet, ok</h4>
-<h4>Linux x64 und arm64 mit Session-Type X11: ok</h4>
+<h4>Linux x64 (wayland und x11): ok</h4>
 Erfolgreiche Tests mit:<br/>
 <ul>
 <li>Linux Mint 22.2</li>
@@ -157,11 +157,12 @@ Erfolgreiche Tests mit:<br/>
 <li>Ubuntu 24.04</li>
 <li>Ubuntu 25.04</li>
 <li>Lubuntu 24.04</li>
-<li>Raspberry Pi OS Bookworm (nur RPi 5)</li>
 </ul>
-<h4>Linux mit Session-Type wayland:</h4>
-Funktioniert nicht, da wayland von der in dieser Programmversion eingebundenen VLC- Bibliothek libvlc nicht unterstützt wird.<br/>
-Tipp: Bei fast allen Debian basierten Distros ist auf dem Anmeldebildschirm eine Option zum Umstellen des Session-Types auf X11 vorhanden.
+<h4>Raspberry Pi OS 64Bit (wayland und x11): ok</h4>
+<ul>
+<li>Minimum Version 13 (Trixie)</li>
+<li>Raspberry Pi 5 empfohlen</li>
+</ul>
 <h4>MacOS: prinzipiell möglich, aber nicht implementiert</h4>
 Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und bereitgestellt werden.
 <h3>VLC-Mediaplayer Version 3</h3>
@@ -171,7 +172,7 @@ Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
 VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
 
 <h2>Hinweise für Entwickler</h2>
-Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements-x64.txt bzw. requirements-arm64.txt dort zu installieren.<br/><br/>
+Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
 Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
 
 <h2>Copyright und Lizensierung:</h2>
