@@ -157,7 +157,7 @@ Successfully tested with:<br/>
 <li>Ubuntu 25.04</li>
 <li>Lubuntu 24.04</li>
 </ul>
-<h4>Raspberry Pi OS 64Bit</h4>
+<h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
 <ul>
 <li>Minimum OS version 13 (Trixie)</li>
 <li>Raspberry Pi 5 recommended</li>
