@@ -151,11 +151,13 @@ Solution:<br/>
 <h4>Linux x64 (wayland and x11): ok</h4>
 Successfully tested with:<br/>
 <ul>
-<li>Linux Mint 22.2</li>
 <li>Debian 13 (Trixie)</li>
-<li>Ubuntu 24.04</li>
-<li>Ubuntu 25.04</li>
+<li>Fedora 42</li>
 <li>Lubuntu 24.04</li>
+<li>Mint 22.2</li>
+<li>OpenSUSE Leap 16.0</li>
+<li>Rocky Linux 10</li>
+<li>Ubuntu 24.04, 25.04</li>
 </ul>
 <h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
 <ul>
