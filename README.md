@@ -27,7 +27,6 @@ Nach dem Setup ist eine M3u-Playlist mit frei verfügbaren (hauptsächlich deuts
 Bitte beachten:<br/>
 <ul>
 <li>IPTV benötigt eine stabile Internet-Bandbreite! Bitte die Bandbreite im Zweifelsfall prüfen, z.B. mit nperf.de.</li>
-<li>Unter Linux funktioniert das Programm nur mit Session Type X11. Wayland wird nicht unterstützt!</li>
 <li>Geoblocking kann die Anzeige deutscher Sender in Österreich oder der Schweiz verhindern. Eine passende M3u-Playlist ist zu finden unter https://github.com/jnk22/kodinerds-iptv</li>
 </ul>
 
