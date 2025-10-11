@@ -27,7 +27,6 @@ CyberTelly comes with a preinstalled m3u playlist of freely available (mostly Ge
 Please note:<br/>
 <ul>
 <li>IPTV only works with a stable internet bandwidth! Please check bandwidth if you are not sure, e.g. with nperf.com</li>
-<li>Linux users must be aware, that the program needs X11 as session type. Wayland is not supported!</li>
 <li>Users from countries outside Germany may experience geo blocking issues when trying to stream a German channel. May be it will be necessary to download a m3u list from https://github.com/iptv-org/iptv</li>
 </ul>
 
