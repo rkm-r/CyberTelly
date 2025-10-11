@@ -152,13 +152,15 @@ Lösung:<br/>
 <h4>Linux x64 (wayland und x11): ok</h4>
 Erfolgreiche Tests mit:<br/>
 <ul>
+<li>AlmaLinux 10</li>
 <li>Debian 13 (Trixie)</li>
 <li>Fedora 42</li>
 <li>Lubuntu 24.04</li>
+<li>Manjaro Linux 25</li>
 <li>Mint 22.2</li>
 <li>OpenSUSE Leap 16.0</li>
 <li>Rocky Linux 10</li>
-<li>Ubuntu 24.04, 25.04</li>
+<li>Ubuntu 24.04, 25.04, 25.10</li>
 </ul>
 <h4>Raspberry Pi OS 64Bit (wayland und x11): ok</h4>
 <ul>
