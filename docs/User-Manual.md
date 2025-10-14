@@ -149,18 +149,20 @@ Solution:<br/>
 <h3>Operating System:</h3>
 <h4>Windows 10 / 11: tested, ok</h4>
 <h4>Linux x64 (wayland and x11): ok</h4>
-Successfully tested with:<br/>
+Different distribution types need special minimum versions of the GNU C Library (glibc):<br/>
 <ul>
-<li>AlmaLinux 10</li>
-<li>Debian 13 (Trixie)</li>
-<li>Fedora 42</li>
-<li>Lubuntu 24.04</li>
-<li>Manjaro Linux 25</li>
-<li>Mint 22.2</li>
-<li>OpenSUSE Leap 16.0</li>
-<li>Rocky Linux 10</li>
-<li>Ubuntu 24.04, 25.04, 25.10</li>
+<li>glibc >= 2.39 for Debian based distros (Debian, Ubuntu, Mint, ...)</li>
+<li>glibc >= 2.39 for RPM based distros (Fedora, Rocky Linux, AlmaLinux, OpenSuSE, ...)</li>
+<li>glibc >= 2.42 for Arch based distros (Arch, cachyOS, Manjaro, ...)</li>
 </ul>
+How to determine the glibc version:<br/>
+<ol>
+<li>Open Linux shell</li>
+<li>Type in: <code>ldd --version</code></li>
+</ol>
+In case of a glibc version mismatch, CyberTelly can be installed, but not started.<br/>
+
+For more information see: [InstallationGuide.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
 <h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
 <ul>
 <li>Minimum OS version 13 (Trixie)</li>
