@@ -162,6 +162,7 @@ So kann bestimmt werden, welche glibc-Version installiert ist:<br/>
 <li>Kommando: <code>ldd --version</code></li>
 </ol>
 Falls eine zu niedrige glibc-Version ist, kann das Programm installiert, aber nicht gestartet werden.<br/>
+Nähere Informationen siehe [releases](https://github.com/rkm-r/CyberTelly/releases)<br/>
 <h4>Raspberry Pi OS 64Bit (wayland und x11): ok</h4>
 <ul>
 <li>Minimum Version 13 (Trixie)</li>
