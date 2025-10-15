@@ -139,12 +139,11 @@ de~Systemvoraussetzungen:
 de~  Betriebssystem:
 de~    Windows 10 / 11: getestet, ok
 de~    Linux x64 (wayland und x11): ok
-de~      Erfolgreiche Tests mit:
-de~        Linux Mint 22.2
-de~        Debian 13 (Trixie)
-de~        Ubuntu 24.04
-de~        Ubuntu 25.04
-de~        Lubuntu 24.04
+de~      Je nach Distributionstyp ist eine bestimmte
+de~      Mindestversion der GNU C Library (glibc)
+de~      erforderlich. Nähere Informationen siehe:
+de~      https://github.com/rkm-r/CyberTelly/releases
+de~      Download-Link: Installationsanleitung.txt
 de~    Raspberry Pi OS 64Bit: ok
 de~      Minimum Version 13 (Trixie)
 de~      Raspberry Pi 5 empfohlen
@@ -311,12 +310,11 @@ en~System Requirements:
 en~  Operating System:
 en~    Windows 10 / 11: tested, ok
 en~    Linux x64 (wayland and x11): ok
-en~      Successfully tested with:
-en~        Linux Mint 22.2
-en~        Debian 13 (Trixie)
-en~        Ubuntu 24.04
-en~        Ubuntu 25.04
-en~        Lubuntu 24.04
+en~      Depending on the distribution type a certain
+en~      minimum version of the GNU C Library (glibc)
+en~      is necessary. For more information see:
+en~      https://github.com/rkm-r/CyberTelly/releases
+en~      Download link: InstallationGuide.txt
 en~    Raspberry Pi OS 64Bit: ok
 en~      Minimum OS version 13 (Trixie)
 en~      Raspberry Pi 5 recommended

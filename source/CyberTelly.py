@@ -43,8 +43,8 @@ configPath = ''
 sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
-version = '1.2.0'
-build = '251007'
+version = '1.2.1'
+build = '251013'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
@@ -2865,7 +2865,19 @@ class BugManager():
     
     # Create information about the system on which the error occurred
     def createSysInfo(self):
-        distro = '----' if platform.system() != 'Linux' else platform.freedesktop_os_release()['NAME'] + ' ' + platform.freedesktop_os_release()['VERSION']
+        distro = '----'
+        if platform.system() == 'Linux':
+            releaseName = ''
+            releaseVersion = ''
+            separator = ''
+            if 'NAME' in platform.freedesktop_os_release():
+                releaseName =  platform.freedesktop_os_release()['NAME']
+                separator = ' '
+            if 'VERSION' in platform.freedesktop_os_release():
+                releaseVersion = platform.freedesktop_os_release()['VERSION']
+            d = str(releaseName + separator + releaseVersion).strip()
+            if len(d) > 0:
+                distro = d
         sessionType = '----' if platform.system() != 'Linux' else getSessionType()
         sysInfo = [
             'Program version: ' + version + ' ' + build,
