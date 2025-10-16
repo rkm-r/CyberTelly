@@ -2,7 +2,7 @@ User-agent: *
 Disallow:
 <head>
   <title>CyberTelly Qt</title>
-  <meta name="description" content="Mediaplayer für TVHeadend und M3u-Playlists" />
+  <meta name="description" content="Mediaplayer für TVHeadend und M3u Playlists" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.cybertelly.tv/" />
 </head>
