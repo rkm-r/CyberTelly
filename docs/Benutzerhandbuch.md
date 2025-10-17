@@ -150,7 +150,7 @@ Lösung:<br/>
 <h3>Betriebssystem:</h3>
 <h4>Windows 10 / 11: getestet, ok</h4>
 <h4>Linux x64 (wayland und x11): ok</h4>
-Um das Programm ausführen zu können benötigen verschiedene Distributionstypen bestimmte minimale Versionen der GNU C Library (glibc):<br/>
+Um das Programm ausführen zu können benötigen verschiedene Distributionstypen bestimmte Minimalversionen der GNU C Library (glibc):<br/>
 <ul>
 <li>glibc >= 2.39 für Debian-basierte Distros (Debian, Ubuntu, Mint, ...)</li>
 <li>glibc >= 2.39 für RPM-basierte Distros (Fedora, Rocky Linux, AlmaLinux, OpenSuSE, ...)</li>
