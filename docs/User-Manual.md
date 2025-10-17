@@ -149,7 +149,7 @@ Solution:<br/>
 <h3>Operating System:</h3>
 <h4>Windows 10 / 11: tested, ok</h4>
 <h4>Linux x64 (wayland and x11): ok</h4>
-Different distribution types need special minimum versions of the GNU C Library (glibc):<br/>
+Different distribution types need special minimum versions of the GNU C Library (glibc) to be able to run the program:<br/>
 <ul>
 <li>glibc >= 2.39 for Debian based distros (Debian, Ubuntu, Mint, ...)</li>
 <li>glibc >= 2.39 for RPM based distros (Fedora, Rocky Linux, AlmaLinux, OpenSuSE, ...)</li>
