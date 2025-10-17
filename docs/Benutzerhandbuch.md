@@ -53,7 +53,7 @@
 Links zu IPTV-M3u-Listen:<br/>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]
+Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername] 
 
 <h3>Zusammenstellen einer eigenen M3u-Playlist:</h3>
 Voraussetzung: Internet-Download Playlists<br/>
@@ -150,7 +150,7 @@ Lösung:<br/>
 <h3>Betriebssystem:</h3>
 <h4>Windows 10 / 11: getestet, ok</h4>
 <h4>Linux x64 (wayland und x11): ok</h4>
-Unterschiedliche Distributionstypen benötigen bestimmte minimale Versionen der GNU C Library (glibc):<br/>
+Unterschiedliche Distributionstypen müssen bestimmte minimale Versionen der GNU C Library (glibc) haben, um das Programm auszuführen:<br/>
 <ul>
 <li>glibc >= 2.39 für Debian-basierte Distros (Debian, Ubuntu, Mint, ...)</li>
 <li>glibc >= 2.39 für RPM-basierte Distros (Fedora, Rocky Linux, AlmaLinux, OpenSuSE, ...)</li>
