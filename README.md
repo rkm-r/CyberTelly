@@ -1,6 +1,6 @@
 <H1>CyberTelly Qt</H1>
 
-Mediaplayer für TVHeadend und M3u-Playlists<br/>
+<H2>Mediaplayer für TVHeadend, Sat>IP und IPTV</H2>
 
 <hr>
 
