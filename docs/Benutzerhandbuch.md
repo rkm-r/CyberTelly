@@ -145,6 +145,15 @@ Lösung:<br/>
 <li>Doppelklick auf fehlerhaften Sender</li>
 <li>Wenn ein 'Unsichere Seite'-Dialog erscheint:<br/>Button 'Zertifikat anzeigen' anklicken<br/>Button 'Permanent akzeptieren' anklicken<br/>Sender ist ab sofort dauerhaft verfügbar.</li>
 </ul>
+<h3>VLC-Prozess stürzt ab beim Streaming-Start</h3>
+Betriebssystem: Windows 11<br/>
+Audiotreiber: NVIDIA High Definition Audio<br/>
+Ursache: VLC-Konflikt mit NVIDIA-Treiber<br/>
+Lösung:
+<ul>
+<li>Datei args.csv im Ordner C:\Benutzer\[Benutzername]\CyberTelly öffnen</li>
+<li>Option --aout=waveout aktivieren (siehe Anweisungen in args.csv)</li>
+</ul>
 
 <h2>Systemvoraussetzungen:</h2>
 <h3>Betriebssystem:</h3>
@@ -167,7 +176,7 @@ Nähere Informationen siehe [Installationsanleitung.txt](https://github.com/rkm-
 <h4>Raspberry Pi OS 64Bit (wayland und x11): ok</h4>
 <ul>
 <li>Minimum Version 13 (Trixie)</li>
-<li>Raspberry Pi 5 empfohlen</li>
+<li>Beste Performance mit Raspberry Pi 5 und X11</li>
 </ul>
 <h4>MacOS: prinzipiell möglich, aber nicht implementiert</h4>
 Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und bereitgestellt werden.
