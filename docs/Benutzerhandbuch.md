@@ -151,7 +151,7 @@ Audiotreiber: NVIDIA High Definition Audio<br/>
 Ursache: VLC-Konflikt mit NVIDIA-Treiber<br/>
 Lösung:
 <ul>
-<li>Datei args.csv im Ordner C:\Benutzer\[Benutzername]\CyberTelly öffnen</li>
+<li>Datei args.csv im Ordner C:\Benutzer\[Benutzername]\CyberTelly bearbeiten</li>
 <li>Option --aout=waveout aktivieren (siehe Anweisungen in args.csv)</li>
 </ul>
 
