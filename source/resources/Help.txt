@@ -134,19 +134,28 @@ de~      Wenn ein 'Unsichere Seite'-Dialog erscheint:
 de~        Button 'Zertifikat anzeigen' anklicken
 de~        Button 'Permanent akzeptieren' anklicken
 de~        Sender ist ab sofort dauerhaft verfügbar.
+de~  > Problem:
+de~      VLC-Prozess stürzt ab beim Streaming-Start
+de~      Betriebssystem: Windows 11
+de~      Audiotreiber: NVIDIA High Definition Audio
+de~    Ursache:
+de~      VLC-Konflikt mit NVIDIA Audiotreiber
+de~    Lösung:
+de~      CyberTelly/args.csv im Userverzeichnis öffnen
+de~      Option --aout=waveout aktivieren
 de~
 de~Systemvoraussetzungen:
 de~  Betriebssystem:
 de~    Windows 10 / 11: getestet, ok
-de~    Linux x64 (wayland und x11): ok
+de~    Linux x64 : ok
 de~      Je nach Distributionstyp ist eine bestimmte
 de~      Mindestversion der GNU C Library (glibc)
 de~      erforderlich. Nähere Informationen siehe:
 de~      https://github.com/rkm-r/CyberTelly/releases
 de~      Download-Link: Installationsanleitung.txt
-de~    Raspberry Pi OS 64Bit: ok
+de~    Raspberry Pi OS 64Bit (Wayland und X11): ok
 de~      Minimum Version 13 (Trixie)
-de~      Raspberry Pi 5 empfohlen
+de~      Raspberry Pi 5 mit X11 empfohlen
 de~    MacOS: möglich, aber nicht implementiert
 de~  VLC-Mediaplayer Version 3
 de~    Windows: Version >= 3.0.21
@@ -305,19 +314,28 @@ en~      If 'Insecure site' dialog shows up:
 en~        Click on button 'View certificate'
 en~        Click on button 'Accept permanently'
 en~        Channel should be permanently available now.
+en~  > Problem:
+en~      VLC process crashes when starting stream
+en~      Operating system: Windows 11
+en~      Audio driver: NVIDIA High Definition Audio
+en~    Reason:
+en~      VLC conflict with NVIDIA Audio driver
+en~    Workaround:
+en~      Open CyberTelly/args.csv in user directory
+en~      Activate option --aout=waveout
 en~
 en~System Requirements:
 en~  Operating System:
 en~    Windows 10 / 11: tested, ok
-en~    Linux x64 (wayland and x11): ok
+en~    Linux x64 (Wayland and X11): ok
 en~      Depending on the distribution type a certain
 en~      minimum version of the GNU C Library (glibc)
 en~      is necessary. For more information see:
 en~      https://github.com/rkm-r/CyberTelly/releases
 en~      Download link: InstallationGuide.txt
-en~    Raspberry Pi OS 64Bit: ok
+en~    Raspberry Pi OS 64Bit (Wayland and X11): ok
 en~      Minimum OS version 13 (Trixie)
-en~      Raspberry Pi 5 recommended
+en~      Raspberry Pi 5 with X11 recommended
 en~    MacOS:
 en~      Should be possible, but isn't implemented
 en~  VLC Media Player Version 3

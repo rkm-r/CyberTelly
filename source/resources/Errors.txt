@@ -9,23 +9,24 @@ de~vlcInitError~    installiert und läuft in einer Sandbox:
 de~vlcInitError~    Der Zugriff auf die VLC-Bibliothek ist 
 de~vlcInitError~    deshalb blockiert.
 de~vlcInitError~    Lösung:
-de~vlcInitError~      1. VLC deinstallieren
-de~vlcInitError~      2. Terminalfenster öffnen
-de~vlcInitError~      3. Befehl: sudo apt install vlc
-de~vlcInitError~         (VLC wird aus Repository installiert)
-de~vlcInitError~      4. CyberTelly neu starten
-de~vlcInitError~      5. Testen
+de~vlcInitError~      Siehe Installationsanleitung.txt,
+de~vlcInitError~      zu finden im Downloadbereich von
+de~vlcInitError~      https://www.cybertelly.tv
 
 de~vlcProcessError~Fehler:  VLC-Player-Prozess antwortet nicht
 de~vlcProcessError~
-de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft in  einem
-de~vlcProcessError~eigenen Prozess.  Dieser ist aktuell  nicht
+de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft  in einem
+de~vlcProcessError~eigenen Prozess.  Dieser ist  aktuell nicht
 de~vlcProcessError~ansprechbar: Möglicherweise wurde VLC durch
-de~vlcProcessError~einen  fehlerhaften Videostream zum Absturz
-de~vlcProcessError~gebracht.
+de~vlcProcessError~einen  fehlerhaften Videostream oder  einen
+de~vlcProcessError~Treiberkonflikt zum Absturz gebracht.
+de~vlcProcessError~
+de~vlcProcessError~Möglichkeiten zur Fehlersuche und -behebung
+de~vlcProcessError~siehe Datei args.csv im Ordner  CyberTelly,
+de~vlcProcessError~zu finden im Benutzerverzeichnis.
 de~vlcProcessError~
 de~vlcProcessError~  > Bitte beenden Sie das Programm und <
-de~vlcProcessError~  > starten sie es neu!                <
+de~vlcProcessError~  > starten sie es ggf. neu!           <
 
 de~programError~CyberTelly: Programmfehler aufgetreten
 de~programError~
@@ -47,19 +48,20 @@ en~vlcInitError~    VLC was installed from Snap Store or
 en~vlcInitError~    Flathub and runs in a sandbox, where
 en~vlcInitError~    the access to the VLC library is blocked.
 en~vlcInitError~    Solution:
-en~vlcInitError~      1. Uninstall VLC.
-en~vlcInitError~      2. Open a terminal window.
-en~vlcInitError~      3. Type: sudo apt install vlc
-en~vlcInitError~         (Install VLC from the repository)
-en~vlcInitError~      4. Restart CyberTelly
-en~vlcInitError~      5. Give it another try ...
+en~vlcInitError~      See file InstallationGuide.txt, which
+en~vlcInitError~      can be found in the download area on
+en~vlcInitError~      https://www.cybertelly.tv
 
 en~vlcProcessError~Error:  VLC Player Process does not respond
 en~vlcProcessError~
 en~vlcProcessError~The VLC library  libvlc  runs in a separate
 en~vlcProcessError~process.  Actually  it cannot  be accessed:
 en~vlcProcessError~Possibly VLC has crashed due to a malformed
-en~vlcProcessError~video stream.
+en~vlcProcessError~video stream or a driver conflict.
+en~vlcProcessError~
+en~vlcProcessError~For troubleshooting  please  edit args.csv.
+en~vlcProcessError~It can be found  in the folder  CyberTelly,
+en~vlcProcessError~which is located in the user directory.
 en~vlcProcessError~
 en~vlcProcessError~  >    Please quit program and    <
 en~vlcProcessError~  >    restart it again!          <

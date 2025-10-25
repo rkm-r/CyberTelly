@@ -43,15 +43,15 @@ configPath = ''
 sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
-version = '1.2.1'
-build = '251013'
+version = '1.2.2'
+build = '251025'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
 # Setting for MS Windows to show taskbar icon
 try:
     from ctypes import windll
-    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-20'
+    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-24'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(cyberTellyAppId)
 except ImportError:
     pass
@@ -74,7 +74,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
     vlcSetupOk = False
     vlcErrorType = 1
 
-    def setupVlc(winID, errorType):
+    def setupVlc(winID, vlcArgs, errorType):
         vlcInstance = None
         mediaPlayer = None
         vlcSetupOk = False
@@ -92,7 +92,12 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
         except:
             bugQueue.put([errorType,'setupVlc: Error setting VLC_PLUGIN_PATH', True])
         try:
-            vlcInstance = vlc.Instance()
+            if len(vlcArgs) > 0:
+                argString = 'setupVlc: args ='
+                for arg in vlcArgs:
+                    argString = argString + ' ' + arg
+                bugQueue.put([errorType,argString, False, True])
+            vlcInstance = vlc.Instance(*vlcArgs)
             mediaPlayer = vlcInstance.media_player_new()
             vlcSetupOk = True
         except:
@@ -160,7 +165,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
                 if mediaPlayer.get_state() == vlc.State.Playing:
                     mediaPlayer.audio_set_volume(volume*2)
             elif cmd == 'setupVlc':
-                vlcInstance, mediaPlayer, vlcSetupOk, vlcErrorType = setupVlc(queueData[1], queueData[2])
+                vlcInstance, mediaPlayer, vlcSetupOk, vlcErrorType = setupVlc(queueData[1], queueData[2], queueData[3])
         except:
             bugQueue.put([vlcErrorType,'cmdLoop: Error handling cmd ' + cmd, True])
 
@@ -1099,7 +1104,7 @@ class Window(QtWidgets.QMainWindow):
                     self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
                 elif r[0] == 'play':
                     self.videoManager.confirmPlayHistoryEntry(r[1], truncateHistory=True)
-            if self.vlcIsAliveCnt == 0:
+            if not vlcProcess.is_alive() or self.vlcIsAliveCnt == 0:
                 windowTitle = 'Programmfehler'
                 if sysLanguage == 'en':
                     windowTitle = 'Program Error'
@@ -1107,7 +1112,9 @@ class Window(QtWidgets.QMainWindow):
                 infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcProcessError', language=sysLanguage, singleString=False))
                 infoDialog.show()
                 bugManager.pop(bugManager.vlcCheckAliveTimer)
-            if vlcProcess.is_alive() and self.vlcIsAliveCnt > -4314: # 4314 = 3*60*24-6 = 24h checkAlives; self.maxVlcIsAliveCnt=6; timer interval = 20s
+                if not vlcProcess.is_alive():
+                    self.vlcCheckAliveTimer.stop()
+            if self.vlcIsAliveCnt > -4314: # 4314 = 3*60*24-6 = 24h checkAlives; self.maxVlcIsAliveCnt=6; timer interval = 20s
                 cmdQueue.put(['checkAlive'])
             bugManager.pop(bugManager.vlcCheckAliveTimer)
         except:
@@ -1155,10 +1162,10 @@ class Window(QtWidgets.QMainWindow):
                 # Terminate process
                 vlcProcess.terminate()
                 time.sleep(0.1)
-                bugManager.push(bugManager.vlcProcess,'cmdLoop: Error closing process, termination forced.',setError=True)
+                bugManager.push(bugManager.vlcProcess,'vlcError: Closing process failed, termination forced.',setError=True)
                 vlcProcessError = True
             elif vlcProcessError:
-                bugManager.push(bugManager.vlcProcess,'cmdLoop: Unknown error in process.',setError=True)
+                bugManager.push(bugManager.vlcProcess,'vlcError: Process has crashed.',setError=True)
             if vlcProcessError:
                 # Update playHistory
                 while not processQueue.empty():
@@ -1170,7 +1177,7 @@ class Window(QtWidgets.QMainWindow):
                     state = 'playing'
                     if not playDat['ok']:
                         state = 'noReply'
-                    msg = 'playDat: ' + playDat['timestamp'].strftime('%Y-%m-%d %H:%M:%S') + ' ' + state + ' src=' + playDat['source'] + ' ch=' + playDat['channel'] 
+                    msg = 'playData: ' + playDat['timestamp'].strftime('%Y-%m-%d %H:%M:%S') + ' ' + state + ' src=' + playDat['source'] + ' ch=' + playDat['channel'] 
                     bugManager.push(bugManager.vlcProcess,msg,setError=True)
         except:
             bugManager.push(bugManager.vlcProcess,'MainWindow.closeWindow - Error terminating process.',setError=True)
@@ -1216,18 +1223,16 @@ class ConfigManager():
             self.progPath = progPath
             self.configPath = configPath
             self.m3uPath = os.path.join(self.configPath, 'm3u')
+            self.resourcePath = resourcePath
             bugManager.pop(bugManager.configManager)
 
-            # Read config data from config.json
+            # Read config data from config.json with fallback InitConfig
             self.config = self.readConfig()
-            # Init configuration paths and data at first startup or if config is not found
+
+            # Init configuration path at first startup
             if not os.path.exists(self.configPath):
-                bugManager.push(bugManager.configManager,'__init__: Create new config data')
+                bugManager.push(bugManager.configManager,'__init__: Create new config dir')
                 os.makedirs(self.configPath)
-                if not os.path.isfile(os.path.join(self.configPath,'config.json')):
-                    shutil.copy2(os.path.join(progPath,'config.json'), self.configPath)
-                    if sysLanguage != self.getLanguage():
-                        self.setLanguage(sysLanguage)
                 bugManager.pop(bugManager.configManager)
             
             # Init m3u path with m3u sample files at first startup or if path is corrupted
@@ -1240,6 +1245,13 @@ class ConfigManager():
                     for fname in files:
                         shutil.copy2(os.path.join(m3uSrcPath,fname), self.m3uPath)
                 bugManager.pop(bugManager.configManager)
+
+            # Init args.csv if file is missing and read options from args.csv
+            bugManager.push(bugManager.configManager,'__init__: Get Program args')
+            if not os.path.isfile(os.path.join(self.configPath,'args.csv')):
+                shutil.copy2(os.path.join(self.resourcePath,'args.csv'), self.configPath)
+            self.vlcArgs = self.readArgs()
+            bugManager.pop(bugManager.configManager)
 
             self.configManagerOk = True
             bugManager.pop(bugManager.configManager)
@@ -1286,6 +1298,49 @@ class ConfigManager():
             config = self.initConfig()
             bugManager.setError(errorType)
         return config
+    
+    # Read VLC args from args.csv
+    def readArgs(self, errorType=None):
+        args = []
+        if errorType == None:
+            errorType= bugManager.configManager
+        try:
+            bugManager.push(errorType,'readArgs')
+            argsFile = os.path.join(self.configPath,'args.csv')
+            lines = []
+            if os.path.isfile(argsFile):
+                for enc in ['utf-8', 'cp1252']: # cp1252 = ANSI
+                    try: 
+                        f = open(argsFile, 'r', encoding=enc)
+                        lines = f.readlines()
+                        f.close()
+                        break
+                    except:
+                        lines = []
+            else:
+                lines = []
+            for line in lines:
+                cPos = line.find('#')
+                if cPos >= 0:
+                    line = line[0:cPos].strip()
+                else:
+                    line = line.strip()
+                parts = line.split(';')
+                if len(parts) == 3 and parts[0].strip().lower() == 'vlcoption':
+                    opSys = parts[1].strip().lower()
+                    if opSys == 'windows' and sys.platform.startswith('win') or \
+                       opSys == 'linux' and sys.platform.startswith('linux') or \
+                       opSys == 'macos' and sys.platform == 'darwin' or \
+                       opSys == 'allos':
+                        args.append(parts[2].strip())
+            bugManager.pop(errorType)
+        except:
+            args = []
+            bugManager.setError(errorType)
+        return args
+    
+    def getVlcArgs(self):
+        return self.vlcArgs
     
     # Save configuration to config.json
     def saveConfig(self, errorType=None):
@@ -1820,7 +1875,7 @@ class VideoManager(QtWidgets.QDialog):
             bugManager.push(bugManager.videoManager,'__init__: Setup VLC Process')
             while not statusQueue.empty():
                 r = statusQueue.get_nowait()
-            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), bugManager.vlcProcess])
+            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), configManager.getVlcArgs(), bugManager.vlcProcess])
             cmdQueue.put(['getInfo','vlcSetupOk'])
             try:
                 self.vlcSetupOk = statusQueue.get(timeout=30)
@@ -3282,9 +3337,9 @@ def getVlcVersion():
     except:
         return 'VLC-Version unbekannt'
 
-###########################
-# CyberTelly Main Program #
-###########################
+###############################
+# CyberTelly Qt: Main Program #
+###############################
 
 if __name__ == "__main__":
     # Create and start VLC process - initialisation in VideoManager

@@ -144,6 +144,15 @@ Solution:<br/>
 <li>Double click faulty channel</li>
 <li>If 'Insecure site' dialog shows up:<br/> Click on button 'View certificate'<br/>Click on button 'Accept permanently'<br/>Channel should be permanently available now.</li>
 </ul>
+<h3>VLC process crashes when starting stream</h3>
+Operating system: Windows 11<br/>
+Audio driver: NVIDIA High Definition Audio<br/>
+Reason: Conflict between VLC and NVIDIA driver<br/>
+Solution:
+<ul>
+<li>Edit file args.csv in C:\Users\[UserName]\CyberTelly</li>
+<li>Activate option --aout=waveout (see instructions in args.csv)</li>
+</ul>
 
 <h2>System Requirements:</h2>
 <h3>Operating System:</h3>
@@ -166,7 +175,7 @@ For more information see: [InstallationGuide.txt](https://github.com/rkm-r/Cyber
 <h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
 <ul>
 <li>Minimum OS version 13 (Trixie)</li>
-<li>Raspberry Pi 5 recommended</li>
+<li>Best performance with Raspberry Pi 5 and X11</li>
 </ul>
 <h4>MacOS: Should be possible, but isn't implemented</h4>
 Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
