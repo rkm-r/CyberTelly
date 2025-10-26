@@ -130,30 +130,15 @@ EPG funktioniert nicht mit M3u-Playlists.
 
 <h2>Tipps zur Fehlerbehebung:</h2>
 
-<h3>Problem bei Bild und Ton</h3>
-Kein Bild / kein Ton bei Streaming-Gerät (z.B. FritzBox) im lokalen Netzwerk.<br/><br/>
-Lösung:<br/>
-IP-Adresse des Geräts in der Firewall freischalten (eingehend). 
-<h3>Problem mit Sender in M3u-Playlist</h3>
-Streaming startet nicht und zeigt sofort einen Streamingfehler an.<br/> Mögliche Ursache: Zertifikatsfehler<br/>
-Lösung:<br/>
+Bekannte Probleme sind:<br/>
 <ul>
-<li>Playlist mit Sender im Dateimanager öffnen</li>
-<li>VLC-Player öffnen</li>
-<li>Menü: Ansicht-Wiedergabeliste</li>
-<li>M3u-Playlist nach playlist[00:00] ziehen</li>
-<li>Doppelklick auf fehlerhaften Sender</li>
-<li>Wenn ein 'Unsichere Seite'-Dialog erscheint:<br/>Button 'Zertifikat anzeigen' anklicken<br/>Button 'Permanent akzeptieren' anklicken<br/>Sender ist ab sofort dauerhaft verfügbar.</li>
+  <li>Firewall blockiert VideoStream</li>
+  <li>VLC blockert Videostream wegen ungültigem Zertifikat</li>
+  <li>Windows 11: VLC stürzt ab wegen Konflikt mit NVIDIA Audiotreiber</li>
+  <li>Fedora 42:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
 </ul>
-<h3>VLC-Prozess stürzt ab beim Streaming-Start</h3>
-Betriebssystem: Windows 11<br/>
-Audiotreiber: NVIDIA High Definition Audio<br/>
-Ursache: VLC-Konflikt mit NVIDIA-Treiber<br/>
-Lösung:
-<ul>
-<li>Datei args.csv im Ordner C:\Benutzer\[Benutzername]\CyberTelly bearbeiten</li>
-<li>Option --aout=waveout aktivieren (siehe Anweisungen in args.csv)</li>
-</ul>
+
+Detaillierte Anweisungen zur Fehlerbehebung siehe [Troubleshooting.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
 
 <h2>Systemvoraussetzungen:</h2>
 <h3>Betriebssystem:</h3>
