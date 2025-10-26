@@ -128,6 +128,16 @@ EPG doesn't work with m3u playlists.
 
 <h2>Troubleshooting:</h2>
 
+Known Issues:<br/>
+<ul>
+  <li>Firewall blocks video stream</li>
+  <li>VLC blocks video stream because of a certificate error</li>
+  <li>Windows 11: VLC crashes because of a conflict with NVIDIA audio driver</li>
+  <li>Fedora 42:  VLC crashes because of a conflict with the audio driver</li>
+</ul>
+
+For detailed troubleshooting instructions see [Troubleshooting.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
+
 <h3>No picture and sound:</h3>
 Streaming device (eg. FritzBox) in your local network has no picture and sound.<br/><br/>
 Solution:<br/>
