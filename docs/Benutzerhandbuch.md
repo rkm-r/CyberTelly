@@ -132,7 +132,7 @@ EPG funktioniert nicht mit M3u-Playlists.
 
 Bekannte Probleme sind:<br/>
 <ul>
-  <li>Firewall blockiert VideoStream</li>
+  <li>Firewall blockiert Videostream</li>
   <li>VLC blockert Videostream wegen ungültigem Zertifikat</li>
   <li>Windows 11: VLC stürzt ab wegen Konflikt mit NVIDIA Audiotreiber</li>
   <li>Fedora 42:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
