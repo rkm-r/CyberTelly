@@ -138,32 +138,6 @@ Known Issues:<br/>
 
 For detailed troubleshooting instructions see [Troubleshooting.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
 
-<h3>No picture and sound:</h3>
-Streaming device (eg. FritzBox) in your local network has no picture and sound.<br/><br/>
-Solution:<br/>
-Enable inbound IP Address of the device in your firewall configuration
-<h3>Problem with channel in m3u playlist:</h3>
-Channel doesn't stream video and immediately shows a streaming error indicator.<br/>
-Possible reason: Certificate error<br/>
-Solution:<br/>
-<ul>
-<li>Open playlist in file manager </li>
-<li>Open VLC Player</li>
-<li>Menu item: View Playlist</li>
-<li>Drag m3u list into playlist window</li>
-<li>Double click faulty channel</li>
-<li>If 'Insecure site' dialog shows up:<br/> Click on button 'View certificate'<br/>Click on button 'Accept permanently'<br/>Channel should be permanently available now.</li>
-</ul>
-<h3>VLC process crashes when starting stream</h3>
-Operating system: Windows 11<br/>
-Audio driver: NVIDIA High Definition Audio<br/>
-Reason: Conflict between VLC and NVIDIA driver<br/>
-Solution:
-<ul>
-<li>Edit file args.csv in C:\Users\[UserName]\CyberTelly</li>
-<li>Activate option --aout=waveout (see instructions in args.csv)</li>
-</ul>
-
 <h2>System Requirements:</h2>
 <h3>Operating System:</h3>
 <h4>Windows 10 / 11: tested, ok</h4>
