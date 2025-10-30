@@ -135,7 +135,7 @@ Bekannte Probleme sind:<br/>
   <li>Firewall blockiert Videostream</li>
   <li>VLC blockert Videostream wegen ungültigem Zertifikat</li>
   <li>Windows 11: VLC stürzt ab wegen Konflikt mit NVIDIA Audiotreiber</li>
-  <li>Fedora 42:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
+  <li>Fedora 42 / 43:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
 </ul>
 
 Detaillierte Anweisungen zur Fehlerbehebung siehe [Troubleshooting.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
