@@ -1,0 +1,80 @@
+de~vlcInitError~Fehler beim Öffnen des VLC-Players
+de~vlcInitError~
+de~vlcInitError~Mögliche Fehlerquellen:
+de~vlcInitError~  Alle Betriebssysteme:
+de~vlcInitError~    VLC-Player ist nicht installiert
+de~vlcInitError~  Linux:
+de~vlcInitError~    VLC wurde vom Snap-Store oder Flathub
+de~vlcInitError~    installiert und läuft in einer Sandbox:
+de~vlcInitError~    Der Zugriff auf die VLC-Bibliothek ist 
+de~vlcInitError~    deshalb blockiert.
+de~vlcInitError~    Lösung:
+de~vlcInitError~      Siehe Installationsanleitung.txt,
+de~vlcInitError~      zu finden im Downloadbereich von
+de~vlcInitError~      https://www.cybertelly.tv
+
+de~vlcProcessError~Fehler:  VLC-Player-Prozess antwortet nicht
+de~vlcProcessError~
+de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft  in einem
+de~vlcProcessError~eigenen Prozess.  Dieser ist  aktuell nicht
+de~vlcProcessError~ansprechbar: Möglicherweise wurde VLC durch
+de~vlcProcessError~einen  fehlerhaften Videostream oder  einen
+de~vlcProcessError~Treiberkonflikt zum Absturz gebracht.
+de~vlcProcessError~
+de~vlcProcessError~Hinweise zur Fehlersuche / -behebung siehe:
+de~vlcProcessError~1. Troubleshooting.txt  im  Downloadbereich
+de~vlcProcessError~   von https://www.cybertelly.tv
+de~vlcProcessError~2. Datei args.csv  im Ordner CyberTelly, zu
+de~vlcProcessError~   finden im Benutzerverzeichnis.
+de~vlcProcessError~
+de~vlcProcessError~  > Bitte beenden Sie das Programm und <
+de~vlcProcessError~  > starten sie es ggf. neu!           <
+
+de~programError~CyberTelly: Programmfehler aufgetreten
+de~programError~
+de~programError~Bitte senden Sie die Datei CyberTelly.log
+de~programError~zur Analyse und Fehlerbehebung per EMail
+de~programError~an info@cybertelly.tv
+de~programError~
+de~programError~Speicherort CyberTelly.log:
+de~programError~Windows: C:\Benutzer\<user>\CyberTelly\
+de~programError~Linux:   /home/<user>/CyberTelly/
+
+en~vlcInitError~Error opening VLC Media Player
+en~vlcInitError~
+en~vlcInitError~Possible reasons can be:
+en~vlcInitError~  All Operating Systems:
+en~vlcInitError~    VLC Player ist not installed
+en~vlcInitError~  Linux:
+en~vlcInitError~    VLC was installed from Snap Store or
+en~vlcInitError~    Flathub and runs in a sandbox, where
+en~vlcInitError~    the access to the VLC library is blocked.
+en~vlcInitError~    Solution:
+en~vlcInitError~      See file InstallationGuide.txt, which
+en~vlcInitError~      can be found in the download area on
+en~vlcInitError~      https://www.cybertelly.tv
+
+en~vlcProcessError~Error:  VLC Player Process does not respond
+en~vlcProcessError~
+en~vlcProcessError~The VLC library  libvlc  runs in a separate
+en~vlcProcessError~process.  Actually  it cannot  be accessed:
+en~vlcProcessError~Possibly VLC has crashed due to a malformed
+en~vlcProcessError~video stream or a driver conflict.
+en~vlcProcessError~
+en~vlcProcessError~Hints for  troubleshooting  can be found in
+en~vlcProcessError~1. Troubleshooting.txt in the download area
+en~vlcProcessError~   of https://www.cybertelly.tv
+en~vlcProcessError~2. args.csv in the folder CyberTelly of the
+en~vlcProcessError~   user directory.
+en~vlcProcessError~
+en~vlcProcessError~  >    Please quit program and    <
+en~vlcProcessError~  >    restart it again!          <
+
+en~programError~CyberTelly: Error occurred
+en~programError~
+en~programError~Please send file CyberTelly.log for debugging and
+en~programError~bugfixing via email to info@cybertelly.tv
+en~programError~
+en~programError~Where to find CyberTelly.log:
+en~programError~Windows: C:\users\<user>\CyberTelly\
+en~programError~Linux:   /home/<user>/CyberTelly/
