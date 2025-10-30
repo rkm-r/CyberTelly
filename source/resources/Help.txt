@@ -114,35 +114,17 @@ de~  Info zum EPG:
 de~    EPG funktioniert nicht mit M3u-Playlists.
 de~
 de~Tipps zur Fehlerbehebung:
-de~  > Problem:
-de~      Kein Bild / kein Ton bei Streaming-Gerät
-de~      (z.B. FritzBox) im lokalen Netzwerk.
-de~    Lösung:
-de~      IP-Adresse des Geräts in der Firewall frei-
-de~      schalten (eingehend).
-de~  > Problem mit Sender in M3u-Playlist:
-de~      Streaming startet nicht und zeigt sofort
-de~      einen Streamingfehler an.
-de~    Mögliche Ursache: Zertifikatsfehler
-de~    Lösung:
-de~      Playlist mit Sender im Dateimanager öffnen 
-de~      VLC-Player öffnen
-de~      Menü: Ansicht-Wiedergabeliste
-de~      M3u-Playlist nach playlist[00:00] ziehen
-de~      Doppelklick auf fehlerhaften Sender
-de~      Wenn ein 'Unsichere Seite'-Dialog erscheint:
-de~        Button 'Zertifikat anzeigen' anklicken
-de~        Button 'Permanent akzeptieren' anklicken
-de~        Sender ist ab sofort dauerhaft verfügbar.
-de~  > Problem:
-de~      VLC-Prozess stürzt ab beim Streaming-Start
-de~      Betriebssystem: Windows 11
-de~      Audiotreiber: NVIDIA High Definition Audio
-de~    Ursache:
-de~      VLC-Konflikt mit NVIDIA Audiotreiber
-de~    Lösung:
-de~      CyberTelly/args.csv im Userverzeichnis öffnen
-de~      Option --aout=waveout aktivieren
+de~  Bekannte Probleme:
+de~  * Firewall blockiert Videostream
+de~  * VLC blockiert Videostream wegen ungültigem
+de~    Zertifikat
+de~  * Windows 11: VLC stürzt ab wegen Konflikt
+de~    mit NVIDIA Audiotreiber
+de~  * Fedora 42/43: VLC stürzt ab wegen Konflikt
+de~    mit Audiotreiber
+de~  Anweisungen zur Fehlerbehebung siehe:
+de~  https://github.com/rkm-r/CyberTelly/releases
+de~  Download-Link: Troubleshooting.txt
 de~
 de~Systemvoraussetzungen:
 de~  Betriebssystem:
@@ -294,35 +276,17 @@ en~  EPG:
 en~    EPG doesn't work with m3u playlists.
 en~
 en~Troubleshooting:
-en~  > Problem:
-en~      Streaming device (eg. FritzBox) in your
-en~      local network has no picture and sound.
-en~    Solution:
-en~      Enable inbound IP Address of the device in
-en~      your firewall configuration
-en~  > Problem with channel in m3u playlist:
-en~      Channel doesn't stream video and immediately
-en~      shows a streaming error indicator.
-en~    Possible reason: Certificate error
-en~    Solution:
-en~      Open playlist in file manager 
-en~      Open VLC Player
-en~      Menu item: View Playlist
-en~      Drag m3u list into playlist window
-en~      Double click faulty channel
-en~      If 'Insecure site' dialog shows up:
-en~        Click on button 'View certificate'
-en~        Click on button 'Accept permanently'
-en~        Channel should be permanently available now.
-en~  > Problem:
-en~      VLC process crashes when starting stream
-en~      Operating system: Windows 11
-en~      Audio driver: NVIDIA High Definition Audio
-en~    Reason:
-en~      VLC conflict with NVIDIA Audio driver
-en~    Workaround:
-en~      Open CyberTelly/args.csv in user directory
-en~      Activate option --aout=waveout
+en~  Known issues:
+en~    * Firewall blocks vdeo stream
+en~    * VLC blocks video stream because of an 
+en~      invalid certificate
+en~    * Windows 11: VLC crashes because of a 
+en~      conflict with NVIDIA audio driver
+en~    * Fedora 42/43: VLC crashes because of a
+en~      conflict with the audio driver
+en~  For troubleshooting instructions see
+en~  https://github.com/rkm-r/CyberTelly/releases
+en~  Download link: Troubleshooting.txt
 en~
 en~System Requirements:
 en~  Operating System:

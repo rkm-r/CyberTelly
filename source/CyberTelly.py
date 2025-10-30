@@ -44,7 +44,7 @@ sysLanguage = 'de'
 scalingFactor = 1.0
 errorDic = {'de': {}, 'en': {}}
 version = '1.2.2'
-build = '251025'
+build = '251030'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 bugManager = None
 
