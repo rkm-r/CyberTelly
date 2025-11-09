@@ -134,6 +134,7 @@ Known Issues:<br/>
   <li>VLC blocks video stream because of a certificate error</li>
   <li>Windows 11: VLC crashes because of a conflict with NVIDIA audio driver</li>
   <li>Fedora 42 / 43:  VLC crashes because of a conflict with the audio driver</li>
+  <li>Linux: Occasional picture errors with proprietary NVIDIA display drivers</li>
 </ul>
 
 For detailed troubleshooting instructions see [Troubleshooting.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
