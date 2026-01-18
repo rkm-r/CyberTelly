@@ -12,7 +12,7 @@ Downloads für Windows, MacOS, Linux x64 und Raspberry Pi OS siehe [releases](ht
 <hr>
 
 <H2>Alles Wesentliche auf einen Blick:</H2><br/>
-CyberTelly ist ein frei verfügbares Programm zum Fernsehen am Windows- oder Linux-PC. Es beinhaltet zwei Arten des Fernsehempfangs:<br/>
+CyberTelly ist ein frei verfügbares Programm zum Fernsehen am Windows-, MacOS- oder Linux-PC. Es beinhaltet zwei Arten des Fernsehempfangs:<br/>
 <ol>
 <li>TVHeadend: Wenn im lokalen Netzwerk ein TVHServer vorhanden ist, kann er als Quelle für Live-TV und EPG verwendet werden.</li>
 <li>M3u-Playlists: Damit kann man frei im Internet verfügbare IPTV-Sender streamen oder einen Sat>IP-Server bzw. eine FritzBox Cable im lokalen Netzwerk als TV-Quelle benutzen.</li>
