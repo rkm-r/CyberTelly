@@ -18,6 +18,7 @@
 </ol>
 
 <h2>Keyboard Shortcuts:</h2>
+Ctrl Key is Cmd Key on MacOS
 
   | Key | Action |
   |:------|:-------|
@@ -54,27 +55,30 @@ https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
 Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]
 
-<h3>How to create your own m3u playlist:</h3>
+<h3>How to create your own IPTV playlist:</h3>
 Make sure you have downloaded m3u lists<br/>
 How to build your own list:<br/>
 <ol>
-<li>Open downloaded lists in file manager</li>
+<li>Open downloaded lists in file manager / finder</li>
 <li>Open VLC Player</li>
-<li>Menu: View Playlist</li>
-<li>Drag m3u lists into playlist window</li>
+<li>Windows/Linux: View Playlist</li>
+<li>Drag playlist into media library</li>
+<li>Drag m3u files into playlist window</li>
+<li>Open playlist window</li>
 <li>Delete channels you don't like (Del)</li>
 <li>Rearrange channel order (Drag & Drop)</li>
-<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Windows/Linux: Right click Save playlist<br/> MacOS: File - Save Playlist...<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux/MacOS Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Fritzbox-Cable - How to create m3u list:</h3>
 <ol>
 <li>Open VLC media player</li>
-<li>Menu View-Playlist-Universal Plug'n'Play<br/> Media servers show up<br/> Double click opens channel list</li>
+<li>Windows/Linux: View-Playlist</li>
+<li>Click on Universal Plug'n'Play<br/> Media servers show up<br/> Double click opens channel list</li>
 <li>Drag & Drop: Channels > Playlist</li>
-<li>Open Playlist window</li>
+<li>Open playlist window</li>
 <li>Drag & Drop: Rearrange channels</li>
-<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Windows/Linux: Right click Save playlist<br/> MacOS: File - Save PlayList...<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux/MacOS Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Sat>IP Server - How to create m3u list</h3>
@@ -162,11 +166,15 @@ For more information see: [InstallationGuide.txt](https://github.com/rkm-r/Cyber
 <li>Minimum OS version 13 (Trixie)</li>
 <li>Best performance with Raspberry Pi 5 and X11</li>
 </ul>
-<h4>MacOS: Should be possible, but isn't implemented</h4>
-Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
+<h4>MacOS: ok</h4>
+<ul>
+<li>Minimum OS version 26.2 (Tahoe)</li>
+<li>Hardware requirement: Apple Silicon (Intel hardware is not supported)</li>
+</ul>
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
+<h4>MacOS:   Version >= 3.0.22</h4>
 Hint for Linux Snap/Flathub installations:<br/>
 VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
@@ -175,7 +183,7 @@ CyberTelly was developed using Python along with python-vlc and PySide6, the Pyt
 The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
 
 <h2>Copyright and Licensing:</h2>
-Copyright (C) 2025 Rudolf Ringel<br/>
+Copyright (C) 2025, 2026 Rudolf Ringel<br/>
 This program is free software.  It is licensed
 under  the  terms  of the  GNU  General Public
 License 3 (GPLv3).  It is  distributed in  the
