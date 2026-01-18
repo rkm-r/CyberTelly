@@ -18,6 +18,7 @@
 </ol>
 
 <h2>Tastenkürzel:</h2>
+Strg-Taste entspricht Cmd-Taste bei MacOS
 
   | Taste | Aktion |
   |:------|:-------|
@@ -55,28 +56,31 @@ https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
 Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername] 
 
-<h3>Zusammenstellen einer eigenen M3u-Playlist:</h3>
+<h3>Zusammenstellen einer eigenen IPTV-Playlist:</h3>
 Voraussetzung: Internet-Download Playlists<br/>
 Vorgehensweise:<br/>
 
 <ol>
-<li>M3u-Playlists im Dateimanager öffnen</li>
+<li>M3u-Playlist im Dateimanager / Finder suchen</li>
 <li>VLC-Player öffnen</li>
-<li>Menü: Ansicht-Wiedergabeliste</li>
-<li>M3u-Dateien nach playlist[00:00] ziehen</li>
+<li>Windows/Linux: Menü Ansicht-Wiedergabeliste</li>
+<li>Playlist in die Medienbibliothek ziehen</li>
+<li>M3u-Dateien in die Wiedergabeliste ziehen</li>
+<li>Wiedergabeliste öffnen</li>
 <li>Nicht benötigte Sender löschen (Entf)</li>
 <li>Gewünschte Sender umsortieren (Drag & Drop)</li>
-<li>Rechtsklick: Playlist abspeichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
+<li>Windows/Linux: Rechtsklick Playlist abspeichern<br/>MacOS: Menü Ablage - Wiedergabeliste speichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux/MacOS Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
 </ol>
 
 <h3>Fritzbox-Cable - M3u-Liste erzeugen:</h3>
 <ol>
 <li>VLC-Player öffnen</li>
-<li>Menü Ansicht-Wiedergabeliste-Universal Plug & Play<br/> Medienserver werden angezeigt<br/> Doppelklick öffnet Programmliste</li>
-<li>Drag & Drop: Sender > Playlist[00:00]</li>
-<li>Playlist[00:00]-Fenster öffnen</li>
+<li>Windows/Linux: Ansicht-Wiedergabeliste</li>
+<li>Klick auf Universal Plug & Play<br/> Medienserver werden angezeigt<br/> Doppelklick öffnet Programmliste</li>
+<li>Drag & Drop: Sender > Wiedergabeliste</li>
+<li>Wiedergabeliste öffnen</li>
 <li>Drag & Drop: Sender umsortieren</li>
-<li>Rechtsklick: Playlist abspeichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
+<li>Windows/Linux: Rechtsklick Playlist abspeichern<br/>MacOS: Ablage - Wiedergabeliste speichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux/MacOS Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
 </ol>
 
 <h3>Sat>IP Server - M3u-Liste erzeugen:</h3>
@@ -164,11 +168,15 @@ Nähere Informationen siehe [Installationsanleitung.txt](https://github.com/rkm-
 <li>Minimum Version 13 (Trixie)</li>
 <li>Beste Performance mit Raspberry Pi 5 und X11</li>
 </ul>
-<h4>MacOS: prinzipiell möglich, aber nicht implementiert</h4>
-Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und bereitgestellt werden.
+<h4>MacOS: ok</h4>
+<ul>
+<li>Minimum Version 26.2 (Tahoe)</li>
+<li>Erforderliche Hardware: Apple Silicon (Intel-Macs werden nicht unterstützt)</li>
+</ul>
 <h3>VLC-Mediaplayer Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
+<h4>MacOS:   Version >= 3.0.22</h4>
 Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
 VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
 
@@ -177,7 +185,7 @@ Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindi
 Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
 
 <h2>Copyright und Lizensierung:</h2>
-Copyright (C) 2025 Rudolf Ringel<br/>
+Copyright (C) 2025, 2026 Rudolf Ringel<br/>
 Dieses Programm ist  freie Software und ist
 lizensiert  unter den  Bedingungen der  GNU
 General Public License 3 (GPLv3).  Die 
