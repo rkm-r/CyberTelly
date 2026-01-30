@@ -53,7 +53,8 @@ Ctrl Key is Cmd Key on MacOS
 <h3>Download urls for IPTV m3u playlists:</h3>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]
+Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]<br/>
+Please note, that downloads from the above links may contain unlicensed sources: Using downloaded playlists is in the users full responsibility!
 
 <h3>How to create your own IPTV playlist:</h3>
 Make sure you have downloaded m3u lists<br/>
@@ -137,7 +138,7 @@ Known Issues:<br/>
   <li>Firewall blocks video stream</li>
   <li>VLC blocks video stream because of a certificate error</li>
   <li>Windows 11: VLC crashes because of a conflict with NVIDIA audio driver</li>
-  <li>Fedora 42 / 43:  VLC crashes because of a conflict with the audio driver</li>
+  <li>Fedora 43:  VLC crashes because of a conflict with the audio driver</li>
   <li>Linux: Occasional picture errors with proprietary NVIDIA display drivers</li>
 </ul>
 
