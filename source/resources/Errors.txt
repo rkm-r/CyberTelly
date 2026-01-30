@@ -1,0 +1,123 @@
+de~vlcInitError~Fehler beim Öffnen des VLC-Players
+de~vlcInitError~
+de~vlcInitError~Mögliche Fehlerquellen:
+de~vlcInitError~  Alle Betriebssysteme:
+de~vlcInitError~    1. VLC-Player ist nicht installiert.
+de~vlcInitError~    2. In args.csv wurde eine ungültige
+de~vlcInitError~       Option aktiviert oder ergänzt.
+de~vlcInitError~       Mögliche Speicherorte args.csv:
+de~vlcInitError~         C:\Benutzer\<user>\CyberTelly\
+de~vlcInitError~         /home/<user>/CyberTelly/
+de~vlcInitError~  MacOS:
+de~vlcInitError~    Die VLC.App hat das falsche App-Format.
+de~vlcInitError~    Zulässig ist nur Apple Silicon.
+de~vlcInitError~  Linux:
+de~vlcInitError~    VLC wurde vom Snap-Store oder Flathub
+de~vlcInitError~    installiert und läuft in einer Sandbox:
+de~vlcInitError~    Der Zugriff auf die VLC-Bibliothek ist 
+de~vlcInitError~    deshalb blockiert.
+de~vlcInitError~    Lösung:
+de~vlcInitError~      Siehe Installationsanleitung.txt,
+de~vlcInitError~      zu finden im Downloadbereich von
+de~vlcInitError~      https://www.cybertelly.tv
+
+de~vlcStartupError~Fehler beim Öffnen der VLC-Bibliothek
+de~vlcStartupError~
+de~vlcStartupError~Die VLC-Bibliothek ist in das Programm
+de~vlcStartupError~eingebettet. Das Programm läuft deshalb
+de~vlcStartupError~ohne eigens installierten VLC-Player.
+de~vlcStartupError~
+de~vlcStartupError~Bitte überprüfen:
+de~vlcStartupError~Wurde eine ungültige Option aktiviert oder
+de~vlcStartupError~ergänzt in der Datei args.csv?
+de~vlcStartupError~
+de~vlcStartupError~Mögliche Speicherorte args.csv:
+de~vlcStartupError~Windows....: C:\Benutzer\<user>\CyberTelly\
+de~vlcStartupError~Linux/MacOS: /home/<user>/CyberTelly/
+
+de~vlcProcessError~Fehler:  VLC-Player-Prozess antwortet nicht
+de~vlcProcessError~
+de~vlcProcessError~Die  VLC-Bibliothek libvlc  läuft  in einem
+de~vlcProcessError~eigenen Thread.   Dieser ist  aktuell nicht
+de~vlcProcessError~ansprechbar: Möglicherweise wurde VLC durch
+de~vlcProcessError~einen  fehlerhaften Videostream oder  einen
+de~vlcProcessError~Treiberkonflikt zum Absturz gebracht.
+de~vlcProcessError~
+de~vlcProcessError~Hinweise zur Fehlersuche / -behebung siehe:
+de~vlcProcessError~1. Troubleshooting.txt  im  Downloadbereich
+de~vlcProcessError~   von https://www.cybertelly.tv
+de~vlcProcessError~2. Datei args.csv  im Ordner CyberTelly, zu
+de~vlcProcessError~   finden im Benutzerverzeichnis.
+de~vlcProcessError~
+de~vlcProcessError~  > Bitte beenden Sie das Programm und <
+de~vlcProcessError~  > starten sie es ggf. neu!           <
+
+de~programError~CyberTelly: Programmfehler aufgetreten
+de~programError~
+de~programError~Bitte senden Sie die Datei CyberTelly.log
+de~programError~zur Analyse und Fehlerbehebung per EMail
+de~programError~an info@cybertelly.tv
+de~programError~
+de~programError~Speicherort CyberTelly.log:
+de~programError~Windows....: C:\Benutzer\<user>\CyberTelly\
+de~programError~Linux/MacOS: /home/<user>/CyberTelly/
+
+en~vlcInitError~Error opening VLC Media Player
+en~vlcInitError~
+en~vlcInitError~Possible reasons can be:
+en~vlcInitError~  All Operating Systems:
+en~vlcInitError~    1. VLC Player ist not installed
+en~vlcInitError~    2. Invalid program option in args.csv
+en~vlcInitError~       Where to find args.csv:
+en~vlcInitError~         C:\users\<user>\CyberTelly\
+en~vlcInitError~         /home/<user>/CyberTelly/
+en~vlcInitError~  MacOS:    
+en~vlcInitError~    VLC.App has wrong app architecture.
+en~vlcInitError~    Correct architecture is Apple Silicon.
+en~vlcInitError~  Linux:
+en~vlcInitError~    VLC was installed from Snap Store or
+en~vlcInitError~    Flathub and runs in a sandbox, where
+en~vlcInitError~    the access to the VLC library is blocked.
+en~vlcInitError~    Solution:
+en~vlcInitError~      See file InstallationGuide.txt, which
+en~vlcInitError~      can be found in the download area on
+en~vlcInitError~      https://www.cybertelly.tv
+
+en~vlcStartupError~Error opening VLC library libvlc
+en~vlcStartupError~
+en~vlcStartupError~libvlc is embedded in the program. It runs
+en~vlcStartupError~standalone without a separate installation
+en~vlcStartupError~of VLC player.
+en~vlcStartupError~
+en~vlcStartupError~Please check:
+en~vlcStartupError~Was an invalid option activated or added in
+en~vlcStartupError~file args.csv?
+en~vlcStartupError~
+en~vlcStartupError~Where to find CyberTelly.log:
+en~vlcStartupError~Windows....: C:\users\<user>\CyberTelly\
+en~vlcStartupError~Linux/MacOS: /home/<user>/CyberTelly/
+
+en~vlcProcessError~Error:  VLC Player Process does not respond
+en~vlcProcessError~
+en~vlcProcessError~The VLC library  libvlc  runs in a separate
+en~vlcProcessError~thread.   Actually  it cannot  be accessed:
+en~vlcProcessError~Possibly VLC has crashed due to a malformed
+en~vlcProcessError~video stream or a driver conflict.
+en~vlcProcessError~
+en~vlcProcessError~Hints for  troubleshooting  can be found in
+en~vlcProcessError~1. Troubleshooting.txt in the download area
+en~vlcProcessError~   of https://www.cybertelly.tv
+en~vlcProcessError~2. args.csv in the folder CyberTelly of the
+en~vlcProcessError~   user directory.
+en~vlcProcessError~
+en~vlcProcessError~  >    Please quit program and    <
+en~vlcProcessError~  >    restart it again!          <
+
+en~programError~CyberTelly: Error occurred
+en~programError~
+en~programError~Please send file CyberTelly.log for debugging and
+en~programError~bugfixing via email to info@cybertelly.tv
+en~programError~
+en~programError~Where to find CyberTelly.log:
+en~programError~Windows....: C:\users\<user>\CyberTelly\
+en~programError~Linux/MacOS: /home/<user>/CyberTelly/
