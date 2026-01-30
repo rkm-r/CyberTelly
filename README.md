@@ -28,7 +28,7 @@ Bitte beachten:<br/>
 <ul>
 <li>IPTV benötigt eine stabile Internet-Bandbreite! Bitte die Bandbreite im Zweifelsfall prüfen, z.B. mit nperf.de.</li>
 <li>Geoblocking kann die Anzeige deutscher Sender in Österreich oder der Schweiz verhindern. Eine passende M3u-Playlist ist zu finden unter https://github.com/jnk22/kodinerds-iptv</li>
-<li>Hinweis: Downloads von Playlists aus dem Internet können nicht lizensierte Streaming-Quellen enthalten. Deren Nutzung liegt in der alleinigen Verantwortung des Programm-Nutzers.</li>
+<li>Rechtlicher Hinweis: Downloads von Playlists aus dem Internet können nicht lizensierte Streaming-Quellen enthalten. Deren Nutzung liegt in der alleinigen Verantwortung des Programm-Nutzers.</li>
 </ul>
 
 Tipps zur Bedienung des Programms siehe [bebilderte Beschreibung.](./docs/Galerie.md)<br/>
