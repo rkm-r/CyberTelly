@@ -54,7 +54,8 @@ Strg-Taste entspricht Cmd-Taste bei MacOS
 Links zu IPTV-M3u-Listen:<br/>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername] 
+Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]<br/>
+Bitte beachten: Downloads von den oben genannten Websites könnten nicht lizensierte Streaming-Quellen enthalten: Für deren Nutzung ist ausschließlich der Anwender dieses Programms verantwortlich.
 
 <h3>Zusammenstellen einer eigenen IPTV-Playlist:</h3>
 Voraussetzung: Internet-Download Playlists<br/>
@@ -139,7 +140,7 @@ Bekannte Probleme sind:<br/>
   <li>Firewall blockiert Videostream</li>
   <li>VLC blockert Videostream wegen ungültigem Zertifikat</li>
   <li>Windows 11: VLC stürzt ab wegen Konflikt mit NVIDIA Audiotreiber</li>
-  <li>Fedora 42 / 43:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
+  <li>Fedora 43:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
   <li>Linux: Gelegentliche Bildfehler bei proprietärem NVIDIA Bildschirmtreiber</li>
 </ul>
 
@@ -181,11 +182,14 @@ Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
 VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
 
 <h2>Hinweise für Entwickler</h2>
-Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
-Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
-
+Der Quellcode des Programms ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
+Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quellen verwiesen:
+<ul>
+<li>Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.</li>
+<li>https://docs.flatpak.org/de/latest/</li>
+</ul>
 <h2>Copyright und Lizensierung:</h2>
-Copyright (C) 2025, 2026 Rudolf Ringel<br/>
+<h4>Copyright (C) 2025, 2026 Rudolf Ringel</h4>
 Dieses Programm ist  freie Software und ist
 lizensiert  unter den  Bedingungen der  GNU
 General Public License 3 (GPLv3).  Die 
@@ -193,5 +197,17 @@ Veröffentlichung erfolgt in der Hoffnung, dass
 es dem Anwender von Nutzen sein wird,  aber
 OHNE  IRGENDEINE  GARANTIE,  sogar ohne die
 implizite Garantie der MARKTREIFE oder  der
-VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.<br>
+VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.<br/>
 Weitere Informationen dazu siehe: https://www.gnu.org/licenses/
+<h4>Hinweis auf vom Programm genutzte Open Source Libraries:</h4>
+
+| Open Source Library | Lizenz |
+|:------|:-------|
+| PySide6 (Qt for Python)| LGPLv3.0 |
+| libVLC (via python-vlc)| LGPLv2.1+ |
+| requests| Apache 2.0 |
+| screeninfo| MIT |
+| pyobjc-framework-Quartz| MIT |
+
+Alle Bibliotheken wurden ohne Änderungen verwendet wie auf  pypi.org veröffentlicht.<br/>
+Weitere Informationen siehe https://pypi.org
