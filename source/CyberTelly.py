@@ -1,5 +1,5 @@
-# CyberTelly: Mediaplayer for TVHeadend and M3u Playlists
-# Copyright (C) 2025  Rudolf Ringel
+# CyberTelly: Mediaplayer for TVHeadend, Sat-IP and IPTV
+# Copyright (C) 2025,2026 Rudolf Ringel
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/.
 
+# The Program uses the following Open Source Libraries:
+# 1. PySide6 (Qt for Python)  License: LGPLv3.0
+# 2. libVLC (via python-vlc)  License: LGPLv2.1+
+# 3. requests ............... License: Apache 2.0
+# 4. screeninfo ............. License: MIT
+# 5. pyobjc-framework-Quartz  License: MIT
+# The libraries were used without modification as published on pypi.org.
+# For more information see pypi.org
+
 # Contact: info@cybertelly.tv
 
 # Note on the usage of camel case notation:
@@ -21,17 +30,105 @@
 # this program uses camel case: PySide6 uses camel case and consistency in
 # the notation type was preferred over pythonic habits.
 
-import sys, os, platform, shutil
+import sys, os, platform, shutil, glob
+import ctypes
 import subprocess
-import multiprocessing as mp
+from threading import Thread
+import queue
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import locale
 import screeninfo as scInfo
 import requests
 from functools import partial
 from PySide6 import QtCore, QtGui, QtWidgets
+
+# Set VLC-Path for Pyinstaller-Package
+# Important: Must be done before import vlc
+if getattr(sys, 'frozen', False):
+    os.environ['LD_LIBRARY_PATH'] = sys._MEIPASS + os.pathsep + os.environ.get('LD_LIBRARY_PATH', '')
+    if platform.system() == 'Linux':
+        vlcEmbedded = True
+        vlcFlagPath = os.path.join(sys._MEIPASS,'vlcExternal')
+        if os.path.isfile(vlcFlagPath):
+            vlcEmbedded = False
+        vlcPluginDir = ''
+        if vlcEmbedded:
+            corePath = ''
+            vlcPath = ''
+            coreMatches = glob.glob(os.path.join(sys._MEIPASS, 'libvlccore.so*'))
+            vlcMatches = glob.glob(os.path.join(sys._MEIPASS, 'libvlc.so*'))
+            if coreMatches and vlcMatches:
+                coreMatches.sort(key=len)
+                vlcMatches.sort(key=len)
+                corePath = coreMatches[0]
+                vlcPath = vlcMatches[0]
+                vlcPluginDir = os.path.join(sys._MEIPASS, 'vlc', 'plugins')
+            try:
+                _libvlccore = ctypes.CDLL(corePath, mode=ctypes.RTLD_GLOBAL)
+                _libvlc = ctypes.CDLL(vlcPath, mode=ctypes.RTLD_GLOBAL)
+            except:
+                pass
+        else:
+            vlcPaths = [
+                '/usr/lib/x86_64-linux-gnu/vlc/plugins',   # Debian, Ubuntu, Mint
+                '/usr/lib64/vlc/plugins',                  # AlmaLinux, Rocky, Fedora, CentOS, openSUSE
+                '/usr/lib/vlc/plugins',                    # Arch Linux, Solus
+                '/usr/lib/aarch64-linux-gnu/vlc/plugins',  # Raspberry Pi 64-Bit
+                '/usr/lib/arm-linux-gnueabihf/vlc/plugins' # Raspberry Pi 32-Bit
+            ]
+            for dir in vlcPaths:
+                if os.path.isdir(dir):
+                    vlcPluginDir = dir
+                    break
+            if vlcPluginDir == '':
+                try:
+                    ldconfig = shutil.which("ldconfig")
+                    if ldconfig == None:
+                        for cmd in ["/sbin/ldconfig", "/usr/sbin/ldconfig", "/bin/ldconfig", "/usr/bin/ldconfig"]:
+                            if os.path.isfile(cmd):
+                                ldconfig = cmd
+                                break
+                    if ldconfig is not None:
+                        out = subprocess.check_output([ldconfig, "-p"], text=True)
+                        is64Bit = sys.maxsize > 2**32
+                        for line in out.splitlines():
+                            if "libvlc.so" in line:
+                                if not is64Bit or "64" in line:
+                                    lib_path = line.split("=>")[-1].strip()
+                                    result = os.path.join(os.path.dirname(lib_path), "vlc", "plugins")
+                                    if os.path.isdir(result):
+                                        vlcPluginDir = result
+                                        break
+                except:
+                    pass
+        if os.path.isdir(vlcPluginDir):
+            os.environ['VLC_PLUGIN_PATH'] = vlcPluginDir
+    elif platform.system() == 'Darwin':
+        lib_dir = os.path.join(sys._MEIPASS, 'lib')
+        core_matches = glob.glob(os.path.join(lib_dir, 'libvlccore*'))
+        vlc_matches = glob.glob(os.path.join(lib_dir, 'libvlc.*'))
+        if core_matches and vlc_matches:
+            core_matches.sort(key=len)
+            vlc_matches.sort(key=len)
+            os.environ['PYTHON_VLC_LIB_PATH'] = vlc_matches[0]
+            try:
+                ctypes.CDLL(core_matches[0], mode=ctypes.RTLD_GLOBAL)
+                ctypes.CDLL(vlc_matches[0], mode=ctypes.RTLD_GLOBAL)
+            except Exception as e:
+                pass
+        vlc_plugin_dir = os.path.join(sys._MEIPASS, 'vlc', 'plugins')
+        if os.path.isdir(vlc_plugin_dir):
+            os.environ['VLC_PLUGIN_PATH'] = vlc_plugin_dir
+    elif platform.system() == 'Windows':
+        try:
+            os.add_dll_directory(sys._MEIPASS)
+        except:
+            os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ.get('PATH', '')
+        os.environ['VLC_PLUGIN_PATH'] = os.path.join(sys._MEIPASS, 'plugins')
+        os.environ['PYTHON_VLC_LIB_PATH'] = os.path.join(sys._MEIPASS, 'libvlc.dll')
+
 import vlc
 
 # Globally accessible vars and objects
@@ -42,33 +139,39 @@ resourcePath = ''
 configPath = ''
 sysLanguage = 'de'
 scalingFactor = 1.0
+sansSerifFont = None
+monoSpaceFont = None
 errorDic = {'de': {}, 'en': {}}
-version = '1.2.2'
-build = '251030'
+version = '2.0.0'
+build = '260130'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
+installType = 'Python-Sourcecode'
 bugManager = None
+
+# Import for MacOS to determine screen size
+# pip install pyobjc-framework-Quartz
+try:
+    import Quartz
+    from Foundation import NSUserDefaults
+except:
+    pass
 
 # Setting for MS Windows to show taskbar icon
 try:
     from ctypes import windll
-    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V01-24'
+    cyberTellyAppId = 'Ringel.CyberTelly.TVOnly.V02-00'
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(cyberTellyAppId)
 except ImportError:
     pass
 
-# MS Windows: VLC version is determined by examining registry
-try:
-    import winreg
-except ImportError:
-    pass
+# VLC Worker
+cmdQueue = queue.Queue()
+statusQueue = queue.Queue()
+workerQueue = queue.Queue()
+bugQueue = queue.Queue()
+vlcWorker = None
 
-# VLC process
-cmdQueue = mp.Queue()
-statusQueue = mp.Queue()
-processQueue = mp.Queue()
-bugQueue = mp.Queue()
-vlcProcess = None
-def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
+def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
     vlcInstance = None
     mediaPlayer = None
     vlcSetupOk = False
@@ -78,19 +181,6 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
         vlcInstance = None
         mediaPlayer = None
         vlcSetupOk = False
-        try:
-            if getattr(sys, 'frozen', False) and sys.platform.startswith('linux'):
-                # Bug fix for VLC / PyInstaller: Plugin-Folder is not found (Linux only)
-                # Sets environment var VLC_PLUGIN_PATH
-                result = subprocess.run(['whereis', 'vlc'],text= True,capture_output=True)
-                paths = str(result).split(' ')
-                for path in paths:
-                    pluginPath = os.path.join(path.strip(),'plugins')
-                    if os.path.isdir(pluginPath):
-                        os.environ['VLC_PLUGIN_PATH'] = pluginPath
-                        break
-        except:
-            bugQueue.put([errorType,'setupVlc: Error setting VLC_PLUGIN_PATH', True])
         try:
             if len(vlcArgs) > 0:
                 argString = 'setupVlc: args ='
@@ -106,21 +196,21 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
             vlcSetupOk = False
             bugQueue.put([errorType,'setupVlc: Error setting up vlcInstance/mediaPlayer', True])
         if vlcSetupOk:
-            # Disable VLC video and mouse input: X11 / Win32 only! Not implemented in Mac OS.
+            # Disable VLC video and mouse input: X11 / Win32 only! Not necessary in Mac OS.
             try:
-                if sys.platform != "darwin":
+                if platform.system() != 'Darwin':
                     mediaPlayer.video_set_mouse_input(False)
                     mediaPlayer.video_set_key_input(False)
             except:
                 bugQueue.put([errorType,'setupVlc: Error disabling mouse/keyboard input', True])
             # Set up videoFrame to display VLC streams
             try:
-                if sys.platform.startswith('linux'):
+                if platform.system() == 'Linux':
                     if winID is not None:
                         mediaPlayer.set_xwindow(winID)
-                elif sys.platform == "win32":
+                elif platform.system() == 'Windows':
                     mediaPlayer.set_hwnd(winID)
-                elif sys.platform == "darwin":
+                elif platform.system() == 'Darwin':
                     mediaPlayer.set_nsobject(winID)
             except:
                 bugQueue.put([errorType,'setupVlc: Error setting VLC videoframe', True])
@@ -140,7 +230,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
             result = (state,volume)
         return result
 
-    # VLC Process main
+    # VLC Worker main
     cmd = ''
     while cmd != 'exit':
         try:
@@ -148,7 +238,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
             queueData = cmdQueue.get()
             cmd = queueData[0]
             if cmd == 'checkAlive':
-                processQueue.put(['isAlive'])
+                workerQueue.put(['isAlive'])
             elif cmd == 'getInfo':
                 statusQueue.put(getInfo(queueData[1]))
             elif cmd == 'setMedia':
@@ -157,7 +247,7 @@ def vlcProcessFunction(cmdQueue, statusQueue, processQueue, bugQueue):
                 mediaPlayer.set_media(media)
             elif cmd == 'play':
                 mediaPlayer.play()
-                processQueue.put(['play',queueData[1]])
+                workerQueue.put(['play',queueData[1]])
             elif cmd == 'stop':
                 mediaPlayer.stop()
             elif cmd == 'setVolume':
@@ -201,6 +291,8 @@ class Window(QtWidgets.QMainWindow):
             self.videoFrame.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
             self.videoFrame.setAutoFillBackground(False)
             self.videoFrame.setStyleSheet(u"background-color: rgb(119, 118, 123);")
+            self.videoFrame.setMouseTracking(True)
+            self.videoFrame.setAttribute(QtCore.Qt.WidgetAttribute.WA_NativeWindow, True) # Explicit assigment of a window handle to videoFrame widget
             self.verticalLayout.addWidget(self.videoFrame)
             self.setCentralWidget(self.centralwidget)
             bugManager.pop(bugManager.mainProgram)
@@ -209,13 +301,15 @@ class Window(QtWidgets.QMainWindow):
             bugManager.push(bugManager.mainProgram, '__init__: Setup Actions')
             windowIcon = QtGui.QIcon()
             windowIcon.addFile(os.path.join(resourcePath,"CyberTelly.png"), QtCore.QSize(), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-            self.setWindowIcon(windowIcon)
+            if platform.system() != "Darwin":
+                self.setWindowIcon(windowIcon)
             self.setStyleSheet(u"background-color: rgb(235, 235, 235); color: rgb(0,0,0)")
 
             self.actionExit.triggered.disconnect(self.close)
             self.actionExit.triggered.connect(self.closeWindow)
             exitIcon = QtGui.QIcon()
             exitIcon.addFile(os.path.join(resourcePath,"Close.png"), QtCore.QSize(), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+
             self.actionExit.setIcon(exitIcon)
 
             self.actionAbout = QtGui.QAction(self)
@@ -375,14 +469,17 @@ class Window(QtWidgets.QMainWindow):
             bugManager.push(bugManager.mainProgram, '__init__: Setup Context Menu')
             self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
             self.context = QtWidgets.QMenu(self)
+            self.context.setFont(cyberTellyApp.font())
             self.context.setStyleSheet('background-color: lightgrey; color: black; selection-background-color: darkgrey; selection-color: white;')
             self.viewMenu = self.context.addMenu('Ansicht')
+            self.viewMenu.setFont(font)
             self.viewMenu.addAction(self.actionFullscreen)
             self.viewMenu.addAction(self.actionMinimize)
             self.viewMenu.addAction(self.actionResetGeometry)
             self.viewMenu.addAction(self.actionToolbarOnOff)
             self.viewMenu.addAction(self.actionSetAspectRatio16x9)
             self.userLanguageMenu = self.context.addMenu('Anwendersprache')
+            self.userLanguageMenu.setFont(font)
             self.userLanguageMenu.addAction(self.actionLanguageGerman)
             self.userLanguageMenu.addAction(self.actionLanguageEnglish)
             self.context.addAction(self.actionSelectChannel)
@@ -409,7 +506,7 @@ class Window(QtWidgets.QMainWindow):
             self.busyImage2 = QtGui.QPixmap(os.path.join(resourcePath,"Busy2.png"))
             self.busyImage3 = QtGui.QPixmap(os.path.join(resourcePath,"Busy3.png"))
             self.busyImage4 = QtGui.QPixmap(os.path.join(resourcePath,"Busy4.png"))
-            # -- Configuration indicator label lbMuted
+            # -- Configuration indicator label l bMuted
             self.lbMuted.setText("")
             self.lbMuted.setPixmap(QtGui.QPixmap(os.path.join(resourcePath,"Mute.png")))
             self.lbMuted.setScaledContents(True)
@@ -497,7 +594,7 @@ class Window(QtWidgets.QMainWindow):
             self.fixVlcCursorIssueInterval = 100
             self.fixVlcCursorIssueTimer.setInterval(self.fixVlcCursorIssueInterval)
             self.fixVlcCursorIssueTimer.timeout.connect(self.timerfixVlcCursorIssue)
-            # -- vlcCheckAliveTimer: Check if VLC Process is alive
+            # -- vlcCheckAliveTimer: Check if VLC Worker is alive
             self.checkVlcAliveInterval = 20000
             self.maxVlcIsAliveCnt = 6
             self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
@@ -609,8 +706,13 @@ class Window(QtWidgets.QMainWindow):
                     if sysLanguage == 'en':
                         windowTitle = 'Program Error'
                     bugManager.push(bugManager.setupTimer,'infoDialog')
-                    infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcInitError', language=sysLanguage, singleString=False))
-                    infoDialog.show()
+                    infoDialog = None
+                    if installType in [ 'Unknown', 'Python-Sourcecode', 'Linux-ARCH' ]:
+                        infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcInitError', language=sysLanguage, singleString=False))
+                    else: # progrSource in [ 'Linux-DEB', 'Linux-RPM', 'Linux-FLATPAK-PyInstaller', 'Windows-EXE', 'MacOS-APP' ]
+                        infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcStartupError', language=sysLanguage, singleString=False))
+                    if infoDialog != None:
+                        infoDialog.show()
                     bugManager.pop(bugManager.setupTimer)
                     self.activeDialogs.append(infoDialog)
                     self.fixVlcCursorIssueTimer.start()
@@ -706,6 +808,9 @@ class Window(QtWidgets.QMainWindow):
                     self.normalWindowSettings['toolbarVisible'] = self.toolBar.isVisible()                
                     self.toolBar.setVisible(False)
                     self.centralwidget.layout().setContentsMargins(0,0,0,0)
+                    if platform.system() == 'Darwin': # Hack for MacOS to fix mouse issue
+                        self.hide()
+                        QtCore.QCoreApplication.processEvents()
                     self.showFullScreen()
                     self.cursorOffTimer.start(self.cursorOffInterval)
                 else:
@@ -720,7 +825,7 @@ class Window(QtWidgets.QMainWindow):
                 self.setIndicatorGeometryTimer.start()
             except:
                 bugManager.setError(bugManager.mainProgram)
-    
+
     # Minimize Window
     def showMinimized(self):
         return super().showMinimized()
@@ -865,7 +970,6 @@ class Window(QtWidgets.QMainWindow):
                 if self.moveWindow:
                     aktPos = self.mapToGlobal(e.position()).toPoint()
                     self.move(aktPos - self.offset)
-                    self.setIndicatorGeometry()
                 else:
                     if self.resizeWindow:
                         diff = e.position().toPoint() - self.mousePos
@@ -874,7 +978,6 @@ class Window(QtWidgets.QMainWindow):
                         newWidth = max(self.width()+diff.x(), 288+12)
                         newHeight = max(self.height()+diff.y(),162+12 + self.toolBarHeight)
                         self.setGeometry(pX, pY, newWidth, newHeight)
-                        self.setIndicatorGeometry()
                         self.mousePos = e.position().toPoint()
                     else:
                         if self.resizeRect.contains(e.position().toPoint()):
@@ -885,6 +988,12 @@ class Window(QtWidgets.QMainWindow):
                 self.cursorOffTimer.start(self.cursorOffInterval)
             e.accept()
             # return super().mouseMoveEvent(e)
+
+    # Make sure, that window is repainted correctly if it is resized
+    def resizeEvent(self, event):
+        self.setIndicatorGeometry()
+        self.update()
+        super().resizeEvent(event)
 
     # With left mouse button released moving or resizing window is finished
     def mouseReleaseEvent(self, e):
@@ -898,7 +1007,6 @@ class Window(QtWidgets.QMainWindow):
                     self.moveWindow = False
                     self.offset = QtCore.QPoint(0,0)
                 self.videoFrame.updateGeometry()
-                self.setIndicatorGeometry()
             e.accept()
             # return super().mouseReleaseEvent(e)
     
@@ -920,6 +1028,7 @@ class Window(QtWidgets.QMainWindow):
         if self.mainWindowOk:
             bugManager.push(bugManager.mainProgram,'onContextMenu')
             try:
+                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
                 self.actionToolbarOnOff.setChecked(self.toolBar.isVisible())
                 self.actionToggleVolumeMuted.setChecked(self.soundManager.isMuted())
                 self.actionFullscreen.setChecked(self.isFullScreen())
@@ -940,10 +1049,10 @@ class Window(QtWidgets.QMainWindow):
         if self.mainWindowOk:
             bugManager.push(bugManager.mainProgram,'showChannelList')
             try:
-                self.epgManager.waitForTimerAndUpdate(errorType=bugManager.mainProgram)
+                self.epgManager.updateEpg(errorType=bugManager.mainProgram)
                 chPos = self.mapToGlobal(self.centralwidget.pos())
+                # Calculate VideoManager height
                 ph = self.centralwidget.geometry().height()
-                vw = self.videoManager.channelListWidth
                 if self.isFullScreen():
                     mL = int(self.centralwidget.size().width()*0.01)
                     mT = int(self.centralwidget.size().height()*0.1)
@@ -954,9 +1063,32 @@ class Window(QtWidgets.QMainWindow):
                     mB = self.verticalLayout.contentsMargins().bottom()
                 chPos = QtCore.QPoint(chPos.x()+2*mL, chPos.y()+2*mT)
                 ph = ph - 2*mT - 2*mB
-                self.videoManager.setGeometry(chPos.x(), chPos.y(), vw, ph)
+                # Calculate VideoManager width
+                rows = self.videoManager.channelList.rowCount()
+                maxWidth = 0
+                txtRow = 0
+                for row in range(rows):
+                    textWidth = QtGui.QFontMetricsF(cyberTellyApp.font()).horizontalAdvance(self.videoManager.channelList.item(row,1).text())
+                    if textWidth > maxWidth:
+                        txtRow = row
+                        maxWidth = textWidth
+                if rows > 0:
+                    font = fitSansSerifFont2PxWidth(self.videoManager.channelList.item(txtRow,1).text(), self.videoManager.maxChannelListWidth)
+                    self.videoManager.setFont(font)
+                    c0Width = self.videoManager.channelList.sizeHintForColumn(0)
+                    c1Width = self.videoManager.channelList.sizeHintForColumn(1)
+                    frWidth = self.videoManager.channelList.frameWidth()
+                    sbWidth = self.videoManager.channelList.verticalScrollBar().sizeHint().width()
+                    newWidth = c0Width+c1Width+sbWidth+frWidth*2+10
+                    # Set VideoManager geometry
+                    if newWidth < self.videoManager.maxChannelListWidth:
+                        self.videoManager.setGeometry(chPos.x(), chPos.y(), newWidth, ph)
+                    else:
+                        self.videoManager.setGeometry(chPos.x(), chPos.y(), self.videoManager.maxChannelListWidth, ph)
+                else:
+                    self.videoManager.setGeometry(chPos.x(), chPos.y(), self.videoManager.maxChannelListWidth, ph)
                 bugManager.pop(bugManager.mainProgram)
-            except:
+            except Exception as ex:
                 bugManager.setError(bugManager.mainProgram)
             if self.videoManager.videoManagerOk:
                 self.videoManager.channelList.setFocus()
@@ -1093,26 +1225,26 @@ class Window(QtWidgets.QMainWindow):
         except:
             bugManager.setError(bugManager.fixVlcCursorIssueTimer)
 
-    # Timer to perodically check if VLC process is alive along with updating playHistory
+    # Timer to perodically check if VLC worker is alive along with updating playHistory
     def timerVlcCheckAlive(self):
         try:
             bugManager.push(bugManager.vlcCheckAliveTimer,'timerVlcCheckAlive')
             self.vlcIsAliveCnt -= 1
-            while not processQueue.empty():
-                r = processQueue.get_nowait()
+            while not workerQueue.empty():
+                r = workerQueue.get_nowait()
                 if r[0] == 'isAlive':
                     self.vlcIsAliveCnt = self.maxVlcIsAliveCnt
                 elif r[0] == 'play':
                     self.videoManager.confirmPlayHistoryEntry(r[1], truncateHistory=True)
-            if not vlcProcess.is_alive() or self.vlcIsAliveCnt == 0:
+            if not vlcWorker.is_alive() or self.vlcIsAliveCnt == 0:
                 windowTitle = 'Programmfehler'
                 if sysLanguage == 'en':
                     windowTitle = 'Program Error'
                 bugManager.push(bugManager.vlcCheckAliveTimer,'infoDialog')
-                infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcProcessError', language=sysLanguage, singleString=False))
+                infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcWorkerError', language=sysLanguage, singleString=False))
                 infoDialog.show()
                 bugManager.pop(bugManager.vlcCheckAliveTimer)
-                if not vlcProcess.is_alive():
+                if not vlcWorker.is_alive():
                     self.vlcCheckAliveTimer.stop()
             if self.vlcIsAliveCnt > -4314: # 4314 = 3*60*24-6 = 24h checkAlives; self.maxVlcIsAliveCnt=6; timer interval = 20s
                 cmdQueue.put(['checkAlive'])
@@ -1147,29 +1279,29 @@ class Window(QtWidgets.QMainWindow):
             self.activeDialogs.append(aboutDialog)
             self.fixVlcCursorIssueTimer.start()
     
-    # Shut down VLC Process
-    def closeVlcProcess(self):
+    # Shut down VLC Worker
+    def closeVlcWorker(self):
         try:
-            # Close running VLC process
-            vlcProcessError = False
-            if vlcProcess.is_alive() and self.vlcIsAliveCnt == self.maxVlcIsAliveCnt:
+            # Close running VLC worker
+            vlcWorkerError = False
+            if vlcWorker.is_alive() and self.vlcIsAliveCnt == self.maxVlcIsAliveCnt:
                 cmdQueue.put(['exit'])
-                vlcProcess.join(5)
+                vlcWorker.join(2)
             else:
-                vlcProcessError = True
-            # If it is still alive: Force closing VLC process and save playHistory
-            if vlcProcess.is_alive():
-                # Terminate process
-                vlcProcess.terminate()
+                vlcWorkerError = True
+            # If it is still alive: Force closing VLC worker and save playHistory
+            if vlcWorker.is_alive():
+                # Terminate worker
+                vlcWorker.terminate()
                 time.sleep(0.1)
-                bugManager.push(bugManager.vlcProcess,'vlcError: Closing process failed, termination forced.',setError=True)
-                vlcProcessError = True
-            elif vlcProcessError:
-                bugManager.push(bugManager.vlcProcess,'vlcError: Process has crashed.',setError=True)
-            if vlcProcessError:
+                bugManager.push(bugManager.vlcWorker,'vlcError: Closing vlcWorker failed, termination forced.',setError=True)
+                vlcWorkerError = True
+            elif vlcWorkerError:
+                bugManager.push(bugManager.vlcWorker,'vlcError: vlcWorker has crashed.',setError=True)
+            if vlcWorkerError:
                 # Update playHistory
-                while not processQueue.empty():
-                    r = processQueue.get_nowait()
+                while not workerQueue.empty():
+                    r = workerQueue.get_nowait()
                     if r[0] == 'play':
                         self.videoManager.confirmPlayHistoryEntry(r[1], truncateHistory=False)
                 # Save playHistory to error log
@@ -1178,17 +1310,17 @@ class Window(QtWidgets.QMainWindow):
                     if not playDat['ok']:
                         state = 'noReply'
                     msg = 'playData: ' + playDat['timestamp'].strftime('%Y-%m-%d %H:%M:%S') + ' ' + state + ' src=' + playDat['source'] + ' ch=' + playDat['channel'] 
-                    bugManager.push(bugManager.vlcProcess,msg,setError=True)
+                    bugManager.push(bugManager.vlcWorker,msg,setError=True)
         except:
-            bugManager.push(bugManager.vlcProcess,'MainWindow.closeWindow - Error terminating process.',setError=True)
+            bugManager.push(bugManager.vlcWorker,'MainWindow.closeWindow - Error terminating vlcWorker.',setError=True)
 
     # Shut down program
     def closeWindow(self):
         # Save settings
         if self.mainWindowOk:
-            # Push VLC process errors on error stack and close VLC Process
+            # Push VLC worker errors on error stack and close VLC Worker
             bugManager.pushBugQueue()
-            self.closeVlcProcess()    
+            self.closeVlcWorker()    
 
             # Save Configuration
             bugManager.push(bugManager.configManager,'MainWindow.closeWindow - Save configuration')
@@ -1609,10 +1741,16 @@ class ConfigDialog(QtWidgets.QDialog):
     def setupGui(self):
         bugManager.push(bugManager.configDialog,'setupGui')
 
+        # Set fonts
+        self.setFont(cyberTellyApp.font())
+        monoFont = QtGui.QFont(monoSpaceFont)
+        monoFont.setPixelSize(10*scalingFactor*1.33)
+        monoFont.setBold(True)
+
         # Basic window settings
         bugManager.push(bugManager.configDialog,'setupGui: Window settings')
         self.setWindowFlags(QtCore.Qt.WindowType.Dialog | QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.CustomizeWindowHint)
-        self.resize(360, 387)
+        self.resize(360*scalingFactor, 387*scalingFactor)
         self.setModal(True)
         self.verticalLayout0 = QtWidgets.QVBoxLayout(self)
         bugManager.pop(bugManager.configDialog)
@@ -1620,10 +1758,13 @@ class ConfigDialog(QtWidgets.QDialog):
         # QGroupBox: gbStreamingSource
         bugManager.push(bugManager.configDialog,'setupGui: GroupBox gbStreamingSource + vSpacer')
         self.gbStreamingSource = QtWidgets.QGroupBox(self)
+        # self.gbStreamingSource.setFont(font)
         self.verticalLayout1 = QtWidgets.QVBoxLayout(self.gbStreamingSource)
         self.rbSourceTvh = QtWidgets.QRadioButton(self.gbStreamingSource)
+        # self.rbSourceTvh.setFont(font)
         self.verticalLayout1.addWidget(self.rbSourceTvh)
         self.rbSourceM3u = QtWidgets.QRadioButton(self.gbStreamingSource)
+        # self.rbSourceM3u.setFont(font)
         self.verticalLayout1.addWidget(self.rbSourceM3u)
         self.verticalLayout0.addWidget(self.gbStreamingSource)
         self.vSpacer1 = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -1641,7 +1782,11 @@ class ConfigDialog(QtWidgets.QDialog):
         self.lbServerUrl.setAlignment(QtGui.Qt.AlignmentFlag.AlignLeading|QtGui.Qt.AlignmentFlag.AlignLeft|QtGui.Qt.AlignmentFlag.AlignVCenter)
         self.verticalLayout2.addWidget(self.lbServerUrl)
         self.leServerUrl = QtWidgets.QLineEdit(self.gbTvhServer)
-        self.leServerUrl.setStyleSheet(u"background-color: rgb(255, 255, 255); color: black; font: 700 11pt \"Courier New\";")
+        self.leServerUrl.setStyleSheet(f"QWidget {{ \
+                                       background-color: rgb(255, 255, 255); \
+                                       selection-background-color: rgb(255, 255, 127); \
+                                       selection-color: rgb(0, 85, 255);}}")
+        self.leServerUrl.setFont(monoFont)
         self.verticalLayout2.addWidget(self.leServerUrl)
         bugManager.pop(bugManager.configDialog)
         
@@ -1654,7 +1799,11 @@ class ConfigDialog(QtWidgets.QDialog):
         self.lbUserName.setAlignment(QtGui.Qt.AlignmentFlag.AlignLeading|QtGui.Qt.AlignmentFlag.AlignLeft|QtGui.Qt.AlignmentFlag.AlignVCenter)
         self.verticalLayout3.addWidget(self.lbUserName)
         self.leUserName = QtWidgets.QLineEdit(self.gbTvhServer)
-        self.leUserName.setStyleSheet(u"background-color: rgb(255, 255, 255); color: black; font: 700 11pt \"Courier New\";")
+        self.leUserName.setStyleSheet(f"QWidget {{ \
+                                       background-color: rgb(255, 255, 255); \
+                                       selection-background-color: rgb(255, 255, 127); \
+                                       selection-color: rgb(0, 85, 255);}}")
+        self.leUserName.setFont(monoFont)
         self.verticalLayout3.addWidget(self.leUserName)
         self.horizontalLayout1.addLayout(self.verticalLayout3)
         # -- -- QLabel / QLineEdit: lbPassword / lePassword
@@ -1663,7 +1812,11 @@ class ConfigDialog(QtWidgets.QDialog):
         self.lbPassword.setAlignment(QtGui.Qt.AlignmentFlag.AlignLeading|QtGui.Qt.AlignmentFlag.AlignLeft|QtGui.Qt.AlignmentFlag.AlignVCenter)
         self.verticalLayout4.addWidget(self.lbPassword)
         self.lePassword = QtWidgets.QLineEdit(self.gbTvhServer)
-        self.lePassword.setStyleSheet(u"background-color: rgb(255, 255, 255); color: black; font: 700 11pt \"Courier New\";")
+        self.lePassword.setStyleSheet(f"QWidget {{ \
+                                       background-color: rgb(255, 255, 255); \
+                                       selection-background-color: rgb(255, 255, 127); \
+                                       selection-color: rgb(0, 85, 255);}}")
+        self.lePassword.setFont(monoFont)
         self.verticalLayout4.addWidget(self.lePassword)
         self.horizontalLayout1.addLayout(self.verticalLayout4)
         self.verticalLayout2.addLayout(self.horizontalLayout1)
@@ -1678,11 +1831,15 @@ class ConfigDialog(QtWidgets.QDialog):
         bugManager.push(bugManager.configDialog,'setupGui: GroupBox gbVlcPlayList')
         self.gbVlcPlayList = QtWidgets.QGroupBox(self)
         self.verticalLayout5 = QtWidgets.QVBoxLayout(self.gbVlcPlayList)
-        self.cbVlcPLaylist = QtWidgets.QComboBox(self.gbVlcPlayList)
-        self.cbVlcPLaylist.setStyleSheet(u"background-color: rgb(255, 255, 255); selection-background-color: rgb(255, 255, 127); selection-color: rgb(0, 85, 255); font: 700 11pt \"Courier New\";")
-        self.cbVlcPLaylist.setMaxVisibleItems(5)
-        self.cbVlcPLaylist.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.NoInsert)
-        self.verticalLayout5.addWidget(self.cbVlcPLaylist)
+        self.cbVlcPlaylist = QtWidgets.QComboBox(self.gbVlcPlayList)
+        self.cbVlcPlaylist.setStyleSheet(f"QWidget {{ \
+                                       background-color: rgb(255, 255, 255); \
+                                       selection-background-color: rgb(255, 255, 127); \
+                                       selection-color: rgb(0, 85, 255);}}")
+        self.cbVlcPlaylist.setFont(monoFont)
+        self.cbVlcPlaylist.setMaxVisibleItems(5)
+        self.cbVlcPlaylist.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.NoInsert)
+        self.verticalLayout5.addWidget(self.cbVlcPlaylist)
         self.verticalLayout0.addWidget(self.gbVlcPlayList)
 
         self.vSpacer3 = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -1726,10 +1883,10 @@ class ConfigDialog(QtWidgets.QDialog):
         m3uFiles = sorted(m3uFiles, key=str.lower)
         selectedPos = 0
         for index, m3uFile in enumerate(m3uFiles):
-            self.cbVlcPLaylist.addItem(m3uFile)
+            self.cbVlcPlaylist.addItem(m3uFile)
             if self.configManager.getM3uFilePath().endswith(m3uFile):
                 selectedPos = index
-        self.cbVlcPLaylist.setCurrentIndex(selectedPos)
+        self.cbVlcPlaylist.setCurrentIndex(selectedPos)
         bugManager.pop(bugManager.configDialog)
 
     # Initialize language settings in dialog form
@@ -1745,8 +1902,8 @@ class ConfigDialog(QtWidgets.QDialog):
                 self.lbUserName.setText(u"Benutzername:")
                 self.lbPassword.setText(u"Passwort:")
                 self.gbVlcPlayList.setTitle(u"VLC-Wiedergabeliste")
-                self.pbCancel.setText(u"Abbruch")
-                self.pbOK.setText(u"OK")
+                self.pbCancel.setText(u" Abbruch ")
+                self.pbOK.setText(u" OK ")
             elif language == 'en':
                 self.setWindowTitle(u"Settings")
                 self.gbStreamingSource.setTitle(u"Streaming Source")
@@ -1758,8 +1915,8 @@ class ConfigDialog(QtWidgets.QDialog):
                 self.lbUserName.setText(u"User Name:")
                 self.lbPassword.setText(u"Password:")
                 self.gbVlcPlayList.setTitle(u"VLC PlayList")
-                self.pbCancel.setText(u"Cancel")
-                self.pbOK.setText(u"OK")
+                self.pbCancel.setText(u" Cancel ")
+                self.pbOK.setText(u" OK ")
 
     # Set up user feedback if errors in TVHServer settings are detected
     def showTvhStatus(self, language='de', serverOk=False, usrPwOk=False):
@@ -1796,7 +1953,7 @@ class ConfigDialog(QtWidgets.QDialog):
                 'username': self.leUserName.text(), 
                 'password': self.lePassword.text()
             }
-            config['m3uFile'] = self.cbVlcPLaylist.itemText(self.cbVlcPLaylist.currentIndex())
+            config['m3uFile'] = self.cbVlcPlaylist.itemText(self.cbVlcPlaylist.currentIndex())
             bugManager.pop(bugManager.configDialog)
         except:
             config = {}
@@ -1871,11 +2028,11 @@ class VideoManager(QtWidgets.QDialog):
         try:
             stackPos = bugManager.push(bugManager.videoManager,'__init__: Started')
 
-            # Init VLC Player Process
-            bugManager.push(bugManager.videoManager,'__init__: Setup VLC Process')
+            # Init VLC Player Worker        
+            bugManager.push(bugManager.videoManager,'__init__: Setup VLC Worker')
             while not statusQueue.empty():
                 r = statusQueue.get_nowait()
-            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), configManager.getVlcArgs(), bugManager.vlcProcess])
+            cmdQueue.put(['setupVlc',self.videoFrame.winId().__int__(), configManager.getVlcArgs(), bugManager.vlcWorker])
             cmdQueue.put(['getInfo','vlcSetupOk'])
             try:
                 self.vlcSetupOk = statusQueue.get(timeout=30)
@@ -1888,10 +2045,7 @@ class VideoManager(QtWidgets.QDialog):
             bugManager.push(bugManager.videoManager,'__init__: Setup Gui')
             self.setWindowFlags(QtCore.Qt.WindowType.Popup)
             self.resize(285, 300)
-            font = QtGui.QFont()
-            font.setFamilies([u"Arial"])
-            font.setPointSize(9)
-            self.setFont(font)
+            self.setFont(cyberTellyApp.font())
             self.verticalLayout = QtWidgets.QVBoxLayout(self)
             self.verticalLayout.setSpacing(3)
             self.verticalLayout.setContentsMargins(3, 3, 3, 3)
@@ -1905,12 +2059,12 @@ class VideoManager(QtWidgets.QDialog):
             self.channelList.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
             self.channelList.setSortingEnabled(False)
             self.channelList.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+            self.channelList.horizontalHeader().setMinimumSectionSize(0)
             self.channelList.horizontalHeader().setSectionResizeMode(0,QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
             self.channelList.horizontalHeader().setSectionResizeMode(1,QtWidgets.QHeaderView.ResizeMode.Stretch)
             self.channelList.setWordWrap(False)
             self.verticalLayout.addWidget(self.channelList)
-            self.channelListMaxWidth = 300
-            self.channelListWidth = self.channelListMaxWidth
+            self.maxChannelListWidth = 300 * scalingFactor
             bugManager.pop(bugManager.videoManager)
             bugManager.push(bugManager.videoManager,'__init__: Setup Objects')
             # Init TV-Channels
@@ -1934,8 +2088,10 @@ class VideoManager(QtWidgets.QDialog):
             bugManager.pop(bugManager.videoManager)
 
             bugManager.push(bugManager.videoManager,'__init__: Connect Signal-SLot')
-            # self.channelList.itemDoubleClicked.connect(self.play) # Triggers itemActivated as well > work around: mouseDoubleClickEvent
-            self.channelList.itemActivated.connect(self.play)
+            self.channelList.itemActivated.connect(self.play) 
+            if platform.system() == "Darwin":
+                self.channelList.installEventFilter(self)            # Set Enter-Key to trigger play()
+                self.channelList.viewport().installEventFilter(self)
             bugManager.pop(bugManager.videoManager)
 
             # Setup Video config
@@ -1945,10 +2101,25 @@ class VideoManager(QtWidgets.QDialog):
         except:
             bugManager.setError(bugManager.videoManager)
 
+    # Event filter: For MacOS only; Darwin blocks KeyPress events
+    # Preconditions in __init__:
+    #   self.channelList.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+    #   self.channelList.installEventFilter(self)
+    #   self.channelList.viewport().installEventFilter(self)
+    def eventFilter(self, source, event):
+        # Catch Enter key
+        if event.type() == QtCore.QEvent.Type.KeyPress:
+            if event.key() in (QtCore.Qt.Key.Key_Return, QtCore.Qt.Key.Key_Enter):
+                item = self.channelList.currentItem()
+                if item:
+                    self.play(item)
+                    return True
+        return super().eventFilter(source, event)
+
     # Play video on mouseDoubleClickEvent
-    def mouseDoubleClickEvent(self, event):
-        self.play()
-        event.accept()
+    # def mouseDoubleClickEvent(self, event):
+    #     self.play()
+    #     event.accept()
     
     # Set soundManager
     def setSoundManager(self, soundManager=None):
@@ -1964,10 +2135,8 @@ class VideoManager(QtWidgets.QDialog):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lbMessage.sizePolicy().hasHeightForWidth())
         self.lbMessage.setSizePolicy(sizePolicy)
-        self.lbMessage.setMinimumSize(QtCore.QSize(160, 60))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.lbMessage.setFont(font)
+        self.lbMessage.setMinimumSize(QtCore.QSize(160*scalingFactor, 60*scalingFactor))
+        self.lbMessage.setFont(cyberTellyApp.font())
         self.lbMessage.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.lbMessage.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.lbMessage.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -2003,7 +2172,6 @@ class VideoManager(QtWidgets.QDialog):
             # Initialize QTableWidget channelList
             bugManager.push(errorType, 'setupVideoConfig: Setup QTableWidget')
             fm = QtGui.QFontMetrics(self.font())
-            chWidth = 200
             while self.channelList.rowCount() > 0:
                 self.channelList.removeRow(0)
             for channel in self.tvChannels:
@@ -2018,7 +2186,6 @@ class VideoManager(QtWidgets.QDialog):
                 nameItem.setText(' ' + channelName)
                 nameItem.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.channelList.setItem(row, 1, nameItem)
-                chWidth = max(chWidth, int(fm.boundingRect('00000'+channelName.upper().replace(' ','W')).width()))
             if self.channelList.rowCount() > 0:
                 self.channelList.selectRow(0)
                 try:
@@ -2026,7 +2193,6 @@ class VideoManager(QtWidgets.QDialog):
                     self.channelList.horizontalScrollBar().setValue(0)
                 except:
                     pass
-            self.channelListWidth = min(self.channelListMaxWidth,chWidth)
             bugManager.pop(errorType)
             
             bugManager.pop(errorType, stackPos=stackPos1)
@@ -2608,7 +2774,7 @@ class EpgManager():
             # Set up EPG timer
             bugManager.push(bugManager.epgManager,'__init__: updateTime')
             self.updateEpgTimer = QtCore.QTimer()
-            self.updateEpgTimerBusy = False
+            self.epgUpdateBlocked = False
             self.updateEpgInterval = 300000 # Interval for EPG updates = 300s
             self.updateEpgTimer.setInterval(self.updateEpgInterval)
             self.updateEpgTimer.timeout.connect(self.timerUpdateEpg)
@@ -2651,24 +2817,10 @@ class EpgManager():
             tvhServer = self.configManager.getTvhServer()
             usrPw = (tvhServer.get('username', ''), tvhServer.get('password', ''))
             for row, tvChannel in enumerate(self.videoManager.tvChannels):
-                epgEntry = []
-                epgEntry.append(channelList.item(row,1))
-                epgEntry.append(datetime.now())
-                url = tvhServer['url'] + '/api/epg/events/grid'
-                response = requests.get(url, params={'limit': 4, 'channel': tvChannel['uuid']}, auth=usrPw, timeout=10)
-                if response.status_code == 200:
-                    toolTip = epgEntry[0].text().strip()
-                    epgResult = response.json()['entries']
-                    for index, entry in enumerate(epgResult):
-                        if index == 0:
-                            epgEntry[1] = datetime.fromtimestamp(entry['stop'])
-                        epgLine = datetime.fromtimestamp(entry['start']).strftime('%H:%M') + ' ' + entry['title']
-                        if len(epgLine) > 0:
-                            toolTip += '\n' + epgLine
-                    epgEntry[0].setToolTip(toolTip)
+                _, epgEntry = self.getEpgEntryTvh(tvhServer, usrPw, tvChannel, channelList.item(row,1), errorType=errorType)
                 data.append(epgEntry)
             bugManager.pop(errorType)
-        except:
+        except Exception as ex:
             data = []
             bugManager.setError(errorType)
         return data
@@ -2694,11 +2846,15 @@ class EpgManager():
     
     # Update EPG data (No update for m3u lists)
     def updateEpgData(self, errorType=1):
+        if self.epgUpdateBlocked:
+            return
+        self.epgUpdateBlocked = True
         if self.epgManagerOk and self.videoManager != None and self.videoManager.videoManagerOk:
             bugManager.push(errorType,'updateEpgData')
             if self.configManager.getSource() == 'tvh':
                 self.updateEpgDataTvh(errorType=errorType)
             bugManager.pop(errorType)
+        self.epgUpdateBlocked = False
     
     # Update EPG data from THVServer
     def updateEpgDataTvh(self, errorType=1):
@@ -2707,55 +2863,61 @@ class EpgManager():
         usrPw = (tvhServer.get('username', ''), tvhServer.get('password', ''))
         for row, tvChannel in enumerate(self.videoManager.tvChannels):
             if self.epgData[row][1] < datetime.now():
-                url = tvhServer['url'] + '/api/epg/events/grid'
-                response = requests.get(url, params={'limit': 4, 'channel': tvChannel['uuid']}, auth=usrPw, timeout=2)
-                if response.status_code == 200:
-                    epgResult = response.json()['entries']
-                    epgEntry = []
-                    epgEntry.append(self.epgData[row][0])
-                    epgEntry.append(datetime.now())
-                    toolTip = epgEntry[0].text().strip()
-                    for index, entry in enumerate(epgResult):
-                        if index == 0:
-                            epgEntry[1] = datetime.fromtimestamp(entry['stop'])
-                        epgLine = datetime.fromtimestamp(entry['start']).strftime('%H:%M') + ' ' + entry['title']
-                        if len(epgLine) > 0:
-                            toolTip += '\n' + epgLine
-                    epgEntry[0].setToolTip(toolTip)
+                entryOk, epgEntry = self.getEpgEntryTvh(tvhServer, usrPw, tvChannel, self.epgData[row][0], errorType=errorType)
+                if entryOk:
                     self.epgData[row] = epgEntry
         bugManager.pop(errorType)
     
-    # Update EPG when videoManager channellist popup is about to be opened
-    def waitForTimerAndUpdate(self, errorType=1):
-        if self.epgManagerOk:
-            # Wait for updateEpgTimer to avoid race condition
-            maxWait = 0
-            while self.updateEpgTimerBusy:
-                time.sleep(100)
-                maxWait += 100
-                if maxWait > 10000:
-                    self.updateEpgTimer.stop()
-                    self.updateEpgTimerBusy = False
-            # Update EPG - only if not already done by timer
-            if maxWait == 0:
+    def getEpgEntryTvh(self,tvhServer, usrPw, tvChannel, chListItem, errorType=1):
+        bugManager.push(errorType,'getEpgEntryTvh')
+        entryOk = False
+        epgEntry = []
+        epgEntry.append(chListItem)
+        epgEntry.append(datetime.now())
+        url = tvhServer['url'] + '/api/epg/events/grid'
+        response = requests.get(url, params={'limit': 4, 'channel': tvChannel['uuid']}, auth=usrPw, timeout=2)
+        if response.status_code == 200:
+            entryOk = True
+            toolTip = epgEntry[0].text().strip()
+            epgResult = response.json()['entries']
+            for index, entry in enumerate(epgResult):
+                epgLine = ''
+                if index == 0:
+                    try:
+                        epgEntry[1] = datetime.fromtimestamp(entry['stop'])
+                    except:
+                        epgEntry[1] = datetime.now()
                 try:
-                    bugManager.push(errorType,'waitForTimerAndUpdate') 
-                    self.updateEpgData(errorType=errorType)
-                    bugManager.pop(errorType)
+                    epgLine = datetime.fromtimestamp(entry['start']).strftime('%H:%M') + ' ' + entry['title']
                 except:
-                    bugManager.setError(errorType)
+                    epgLine = ''
+                if len(epgLine) > 0:
+                    toolTip += '\n' + epgLine
+            epgEntry[0].setToolTip(toolTip)
+        bugManager.pop(errorType)
+        return entryOk, epgEntry
+    
+    # Update EPG when videoManager channellist popup is about to be opened
+    def updateEpg(self, errorType=1):
+        if self.epgManagerOk:
+            # Update EPG - see lock in updateEpgData
+            try:
+                bugManager.push(errorType,'updateEpg') 
+                self.updateEpgData(errorType=errorType)
+                bugManager.pop(errorType)
+            except:
+                self.epgUpdateBlocked = False
+                bugManager.setError(errorType)
     
     # Timer to periodicylly update EPG data in the background
     def timerUpdateEpg(self):
         try:
             bugManager.push(bugManager.updateEpgTimer,'timerUpdateEpg')
             if not self.videoManager.isVisible():
-                self.updateEpgTimerBusy = True
                 self.updateEpgData(errorType=bugManager.updateEpgTimer)
-                self.updateEpgTimerBusy = False
             bugManager.pop(bugManager.updateEpgTimer)
         except:
-            self.updateEpgTimer.stop()
+            self.epgUpdateBlocked = False
             bugManager.setError(bugManager.updateEpgTimer)
     
 # class HelpManager
@@ -2801,16 +2963,12 @@ class InfoDialog(QtWidgets.QDialog):
         self.parent = parent
         self.setWindowFlags(QtCore.Qt.WindowType.Dialog)
         self.resize(int(450*scalingFactor), int(300*scalingFactor))
+        self.setFont(cyberTellyApp.font())
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.verticalLayout.setObjectName(u"verticalLayout")
         # QListWidget lwInfoText
         self.lwInfoText = QtWidgets.QListWidget(self)
         self.lwInfoText.setObjectName(u"lwHelpText")
-        font = QtGui.QFont()
-        font.setFamilies([u"Courier New"])
-        font.setBold(True)
-        self.lwInfoText.setFont(font)
-        self.lwInfoText.setStyleSheet(u"")
         self.lwInfoText.setAutoScroll(True)
         self.verticalLayout.addWidget(self.lwInfoText)
         # QPushButton pbOk
@@ -2827,13 +2985,28 @@ class InfoDialog(QtWidgets.QDialog):
         self.horizontalLayout.addItem(self.hSpacer2)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.pbOK.clicked.connect(self.closeDialog)
+        # Set font
+        minLineLength = 40
+        maxLineLength = 60
+        self.lineLength = minLineLength
         # Set up Infotext
         for line in infoText:
+            self.lineLength = min(max(self.lineLength,len(line)), maxLineLength)
             self.lwInfoText.addItem(line)
-
+        # Force calculation of widget sizes
+        self.layout().activate()
+        # Set font size in lwInfoText
+        sbWidth = self.lwInfoText.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_ScrollBarExtent)
+        frWidth = self.lwInfoText.frameWidth() * 2
+        width = self.lwInfoText.width()
+        padding = 5 * scalingFactor
+        usableWidth = width - sbWidth - frWidth - padding
+        font = calcFixedFontPxWidth(usableWidth/self.lineLength)
+        self.lwInfoText.setFont(font)
+    
     # Close dialog
     def closeDialog(self):
-        self.close()
+            self.close()
 
 # class AboutDialog
 class AboutDialog(QtWidgets.QDialog):
@@ -2847,6 +3020,7 @@ class AboutDialog(QtWidgets.QDialog):
         self.setWindowFlags(QtCore.Qt.WindowType.Dialog)
         self.setMinimumSize(QtCore.QSize(400, 400))
         self.resize(int(400*scalingFactor), int(400*scalingFactor))
+        self.setFont(cyberTellyApp.font())
         self.setStyleSheet(u"background-color: rgb(235, 235, 235); color: rgb(0, 0, 0);")
         # Set up QLabel lbLogo with Pixmap
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
@@ -2896,7 +3070,7 @@ class BugManager():
         self.maxNotifications = 50
         # Error type codes
         self.systemInfo = 0
-        self.vlcProcess = 1
+        self.vlcWorker = 1
         self.mainProgram = 2
         self.configManager = 3
         self.configDialog = 4
@@ -2935,11 +3109,12 @@ class BugManager():
                 distro = d
         sessionType = '----' if platform.system() != 'Linux' else getSessionType()
         sysInfo = [
-            'Program version: ' + version + ' ' + build,
-            'Platform.......: ' + platform.system() + ' ' + platform.release(),
-            'Distribution...: ' + distro,
-            'Session-Type...: ' + sessionType,
-            'VLC-Player.....: ' + getVlcVersion(),
+            'Program version..: ' + version + ' ' + build,
+            'Platform.........: ' + platform.system() + ' ' + platform.release(),
+            'Distribution.....: ' + distro,
+            'Session-Type.....: ' + sessionType,
+            'Installation Type: ' + installType,
+            'VLC-Player.......: ' + getVlcVersion(),
         ]
         return sysInfo
     
@@ -2947,8 +3122,8 @@ class BugManager():
     def createErrorDic(self):
         errorDic = {
             self.systemInfo: self.createSysInfo(),
-            self.vlcProcess: {
-                'name': 'VLC Process',
+            self.vlcWorker: {
+                'name': 'VLC Worker',
                 'exceptCnt': 0,
                 'notifyCnt': 0,
                 'maxExcept': 100,
@@ -3172,13 +3347,27 @@ class BugManager():
 
 # Calculate average screen dpi: Necessary if system has two or more screens with different scaling factors.
 def getDpi():
-    screens = scInfo.get_monitors()
+    screens = []
+    if sys.platform != 'darwin':
+        scrData = scInfo.get_monitors()
+        for screen in scrData:
+            data = {'widthPx' : screen.width,
+                    'widthMm' : screen.width_mm}
+            screens.append(data)
+    else:
+        error, display_ids, count = Quartz.CGGetActiveDisplayList(10, None, None)
+        if error == 0:
+            for i in range(count):
+                d_id = display_ids[i]
+                data = {'widthPx' : Quartz.CGDisplayPixelsWide(d_id),
+                        'widthMm' : Quartz.CGDisplayScreenSize(d_id).width}
+                screens.append(data)
     dpi = 0.0
     numScreens = 0
     try:
         for screen in screens:
-            scrDpi = screen.width / (screen.width_mm / 25.4)
-            if screen.width <= 1600:
+            scrDpi = screen['widthPx'] / (screen['widthMm'] / 25.4)
+            if screen['widthPx'] <= 1600:
                 scrDpi = 96
             dpi += scrDpi
             numScreens += 1
@@ -3196,6 +3385,89 @@ def getDpi():
     except:
         dpi = 96
     return dpi
+
+# Get best system fonts
+def getBestSansSerifFont():
+    available = QtGui.QFontDatabase.families()
+    system = platform.system()
+    # 1. macOS priority
+    if system == "Darwin" and "Helvetica" in available:
+        return "Helvetica"
+    # 2. Windows priority
+    if system == "Windows":
+        if "Segoe UI" in available:
+            return "Segoe UI"
+        if "Arial" in available:
+            return "Arial"
+    # 3. Linux priority
+    if "Liberation Sans" in available:
+        return "Liberation Sans"
+    # 4. Linux alternative
+    if "DejaVu Sans" in available:
+        return "DejaVu Sans"
+    # 5. Last resort
+    return "sans-serif"
+
+def getBestMonospaceFont():
+    available = QtGui.QFontDatabase.families()
+    system = platform.system()
+    # 1. Windows standard
+    if system == "Windows" and "Courier New" in available:
+        return "Courier New"
+    # 2. macOS standards
+    if system == "Darwin":
+        if "Menlo" in available: return "Menlo"
+        if "Monaco" in available: return "Monaco"
+        if "Courier" in available: return "Courier"
+    # 3. Linux standard
+    if "Liberation Mono" in available:
+        return "Liberation Mono"
+    # 4. Linux alternative
+    if "DejaVu Sans Mono" in available:
+        return "DejaVu Sans Mono"
+    # 5. Moderne Linux standard
+    if "Noto Mono" in available:
+        return "Noto Mono"
+    # 6. Last resort
+    return "monospace"
+
+# Helper functions to set correct font size
+
+def calcFixedFontPxWidth(targetWidth):
+    font = QtGui.QFont(monoSpaceFont)
+    font.setHintingPreference(QtGui.QFont.HintingPreference.PreferNoHinting)
+    width = targetWidth-1
+    ptSizeHi = 100.0 * scalingFactor
+    ptSizeLo = 0.0
+    ptSize = 50.0 * scalingFactor
+    while ptSizeHi - ptSizeLo > 0.1:
+        font.setPointSizeF(ptSize)
+        width = QtGui.QFontMetricsF(font).horizontalAdvance('X')
+        if width < targetWidth:
+            ptSizeLo = ptSize
+        elif width >= targetWidth:
+            ptSizeHi = ptSize
+        ptSize = (ptSizeHi + ptSizeLo) / 2
+    font.setPointSizeF(ptSizeLo)
+    return font
+
+def fitSansSerifFont2PxWidth(text, targetWidth):
+    font = QtGui.QFont(sansSerifFont)
+    font.setHintingPreference(QtGui.QFont.HintingPreference.PreferNoHinting)
+    width = targetWidth + 1
+    ptSizeHi = 100.0 * scalingFactor
+    ptSizeLo = 0.0
+    ptSize = 50.0 * scalingFactor
+    while ptSizeHi - ptSizeLo > 0.1:
+        font.setPointSizeF(ptSize)
+        width = QtGui.QFontMetricsF(font).horizontalAdvance(text)
+        if width < targetWidth:
+            ptSizeLo = ptSize
+        elif width >= targetWidth:
+            ptSizeHi = ptSize
+        ptSize = (ptSizeHi + ptSizeLo) / 2
+    font.setPointSizeF(ptSizeLo)
+    return font
 
 # Set all necessary path vars
 # Returns different results, if program is run from either a virtual environment or a pyinstaller package
@@ -3226,8 +3498,16 @@ def setProgPaths():
 def getSystemLanguage():
     sysLanguage = 'de'
     try:
-        localeInfo = locale.getlocale()
-        if localeInfo[0] != None and not localeInfo[0].startswith('de'):
+        language = 'de'
+        if sys.platform != "darwin":
+            language = locale.getlocale()[0]
+        else:
+            try:
+                languages = NSUserDefaults.standardUserDefaults().objectForKey_('AppleLanguages')
+                language = languages[0] if languages else 'en'
+            except:
+                pass
+        if not language.startswith('de'):
             sysLanguage = 'en'
     except:
         sysLanguage = 'de'
@@ -3312,52 +3592,73 @@ def getSessionType():
 
 # Determine VLC version: Used in BugManager
 def getVlcVersion():
+    version = ''
     try:
-        if platform.system() == 'Windows':
-            try:
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\VideoLAN\VLC")
-                version, _ = winreg.QueryValueEx(key, "Version")
-                return 'VLC-Version ' + version
-            except:
-                # On 64-bit Windows, VLC might be in Wow6432Node
-                try:
-                    key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\VideoLAN\VLC")
-                    version, _ = winreg.QueryValueEx(key, "Version")
-                    return 'VLC-Version ' + version
-                except:
-                    return 'VLC-Version unbekannt'
-        else:
-            vlcPath = 'vlc'
-            result = subprocess.run([vlcPath, "--version"], capture_output=True, text=True)
-            if result.returncode == 0:
-                version = result.stdout.splitlines()[0].strip()
-                return version
-            else:
-                return 'VLC-Version unbekannt'
+        version = vlc.libvlc_get_version().decode('utf-8')
     except:
-        return 'VLC-Version unbekannt'
+        version = 'VLC-Version unbekannt'
+    return version
+
+# Determine Installation Type
+# Possible Values: Unknown, Python-Sourcecode, Linux-DEB, Linux-RPM, Linux-ARCH, Linux-FLATPAK-PyInstaller, Windows-EXE, MacOS-APP
+def getInstallationType():
+    source = 'Unknown'
+    try: 
+        filePath = os.path.join(progPath,'INSTALLTYPE.txt')
+        if os.path.isfile(filePath):
+            lines = []
+            for enc in ['utf-8', 'cp1252']: # cp1252 = ANSI
+                try:
+                    f = open(filePath,'r', encoding=enc)
+                    lines = f.readlines()
+                    f.close()
+                    break
+                except:
+                    lines = []
+            if len(lines) > 0:
+                source = lines[0].strip()
+        else:
+            source = 'Python-Sourcecode'
+    except:
+        source = 'Unknown'
+    return source
 
 ###############################
 # CyberTelly Qt: Main Program #
 ###############################
 
 if __name__ == "__main__":
-    # Create and start VLC process - initialisation in VideoManager
-    mp.freeze_support()
-    vlcProcess = mp.Process(target=vlcProcessFunction, args=(cmdQueue, statusQueue, processQueue, bugQueue))
-    vlcProcess.start()
+    # Create and start VLC Worker - initialisation in VideoManager
+    if platform.system() == "Linux":
+        libName = ctypes.util.find_library('X11')  # Load libX11.so.6
+        if libName:
+            try:
+                # Switches on thread security in X11
+                x11 = ctypes.CDLL(libName)
+                x11.XInitThreads()
+            except Exception as e:
+                pass
+    vlcWorker = Thread(target=vlcWorkerFunction, args=(cmdQueue, statusQueue, workerQueue, bugQueue), daemon=True)
+    vlcWorker.start()
     
-    # Setup and start Main process
+    # Setup and start Main Program
     result = 1
     pathsOk, progPath, progName, resourcePath, configPath = setProgPaths()
     sysLanguage = getSystemLanguage()
+    installType = getInstallationType()
     errorDic = readErrorDic()
     bugManager = BugManager()
     try:
         # Linux: Set QPA Plugin to X11 or XWayland
-        if sys.platform.startswith('linux'):
+        if platform.system() == "Linux":
             os.environ['QT_QPA_PLATFORM'] = 'xcb'
-        # QT_ENABLE_HIGHDPI_SCALING = 0: 
+        # Windows: Resolve window scaling issues
+        if platform.system() == "Windows":
+            try:
+                ctypes.windll.shcore.SetProcessDpiAwareness(1)
+            except Exception:
+                ctypes.windll.user32.SetProcessDPIAware()
+        # QT_ENABLE_HIGHDPI_SCALING = 0 
         #   If high dpi scaling is enabled, systems with two or more screens and different scaling factors
         #   completely destroy window geometry if window is moved between the screens.
         #   That's why it has to be disabled - although not recommended.
@@ -3369,15 +3670,25 @@ if __name__ == "__main__":
         os.environ['QT_FONT_DPI'] = str(dpi)
         # Setup main window
         cyberTellyApp = QtWidgets.QApplication(sys.argv)
-        cyberTellyApp.setAttribute(QtCore.Qt.ApplicationAttribute.AA_NativeWindows)
         cyberTellyApp.setStyle('fusion')
+        sansSerifFont = getBestSansSerifFont()
+        monoSpaceFont = getBestMonospaceFont()
+        font = QtGui.QFont(sansSerifFont)
+        font.setPixelSize(10.0*scalingFactor*1.33)
+        cyberTellyApp.setFont(font)
         cyberTellyWin = Window()
         cyberTellyWin.show()
+        if platform.system() == "Darwin": # Force MacOS to set focus on cyberTellyWin - otherwise first mouseclick is suppessed and used to activate focus
+            cyberTellyWin.hide()
+            cyberTellyWin.show()
+            cyberTellyWin.setWindowState(cyberTellyWin.windowState() & ~QtCore.Qt.WindowState.WindowMinimized | QtCore.Qt.WindowState.WindowActive)
+            cyberTellyWin.raise_()
+            cyberTellyWin.activateWindow()
         # Run application
         result = cyberTellyApp.exec()
     except:
         pass
-    # Save CybterTelly.log if errors or notifications have occurred.
+    # Save CyberTelly.log if errors or notifications have occurred.
     if bugManager.errorOccurred or bugManager.notification:
         bugManager.saveErrorLog()
     sys.exit(result)

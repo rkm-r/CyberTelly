@@ -6,7 +6,8 @@ de~  Tipps zur Fehlerbehebung
 de~  Systemvoraussetzungen
 de~  Copyright und Lizenzierung
 de~
-de~Tastenkürzel:
+de~Tastenkürzel: 
+de~  Strg-Taste entspricht Cmd-Taste auf MacOS
 de~  Strg-P ......... = Programmliste öffnen
 de~                     Programm streamen mit
 de~                     Doppelkick oder Return
@@ -52,28 +53,40 @@ de~    https://github.com/jnk22/kodinerds-iptv
 de~    https://github.com/iptv-org/iptv (PLAYLISTS.md)
 de~    Speicherort: 
 de~      Ordner CyberTelly/m3u im Userverzeichnis
-de~  Zusammenstellen einer eigenen M3u-Playlist:
+de~    Downloads aus den o.g. Websites können nicht
+de~    lizensierte Streaming-Quellen enthalten. Die 
+de~    Nutzung erfolgt auf eigene Verantwortung!
+de~  Zusammenstellen einer eigenen IPTV-Playlist:
 de~    Voraussetzung: Internet-Download Playlists
 de~    Vorgehensweise:
-de~      M3u-Playlists im Dateimanager öffnen 
+de~      M3u-Playlist im Dateimanager / Finder suchen 
 de~      VLC-Player öffnen
-de~      Menü: Ansicht-Wiedergabeliste
-de~      M3u-Dateien nach playlist[00:00] ziehen
+de~      Windows/Linux: Menü Ansicht-Wiedergabeliste
+de~      Playlist in die Medienbibliothek ziehen
+de~      M3u-Dateien in die Wiedergabeliste ziehen
+de~      Wiedergabeliste öffnen
 de~      Nicht benötigte Sender löschen (Entf)
 de~      Gewünschte Sender umsortieren (Drag&Drop)
-de~      Rechtsklick: Playlist abspeichern
+de~      Windows/Linux:
+de~        Rechtsklick Playlist abspeichern
+de~      MacOS: 
+de~        Menü Ablage - Wiedergabeliste speichern
 de~    Speicherort: 
 de~      Ordner CyberTelly/m3u im Userverzeichnis
 de~  Fritzbox-Cable - M3u-Liste erzeugen:
-de~    VLC-Player öffnen
-de~    Menü: 
-de~      Ansicht-Wiedergabeliste-Universal Plug&Play
-de~      Medienserver werden angezeigt
-de~      Doppelklick öffnet Programmliste
-de~    Drag & Drop: Sender > Playlist[00:00]
-de~    Playlist[00:00]-Fenster öffnen
-de~    Drag & Drop: Sender umsortieren
-de~    Rechtsklick: Playlist abspeichern
+de~    Vorgehensweise:
+de~      VLC-Player öffnen
+de~      Windows/Linux: Ansicht-Wiedergabeliste
+de~      Klick auf Universal Plug'n'Play
+de~        Medienserver werden angezeigt
+de~        Doppelklick öffnet Programmliste
+de~      Drag & Drop: Sender > Wiedergabeliste
+de~      Wiedergabeliste öffnen
+de~      Drag & Drop: Sender umsortieren
+de~      Windows/Linux:
+de~        Rechtsklick Playlist abspeichern
+de~      MacOS: 
+de~        Menü Ablage - Wiedergabeliste speichern
 de~    Speicherort: 
 de~      Ordner CyberTelly/m3u im Userverzeichnis
 de~  Sat>IP-Server - M3u-Liste erzeugen:
@@ -120,7 +133,7 @@ de~  * VLC blockiert Videostream wegen ungültigem
 de~    Zertifikat
 de~  * Windows 11: VLC stürzt ab wegen Konflikt
 de~    mit NVIDIA Audiotreiber
-de~  * Fedora 42/43: VLC stürzt ab wegen Konflikt
+de~  * Fedora 43: VLC stürzt ab wegen Konflikt
 de~    mit Audiotreiber
 de~  Anweisungen zur Fehlerbehebung siehe:
 de~  https://github.com/rkm-r/CyberTelly/releases
@@ -138,28 +151,44 @@ de~      Download-Link: Installationsanleitung.txt
 de~    Raspberry Pi OS 64Bit (Wayland und X11): ok
 de~      Minimum Version 13 (Trixie)
 de~      Raspberry Pi 5 mit X11 empfohlen
-de~    MacOS: möglich, aber nicht implementiert
+de~    MacOS >= 26.2 (nur Apple Silicon)
 de~  VLC-Mediaplayer Version 3
 de~    Windows: Version >= 3.0.21
 de~    Linux:   Version >= 3.0.20
-de~    Hinweis für VLC als Linux Snap-/Flathub-App:
+de~    MacOS:   Version >= 3.0.22
+de~    Hinweis zu Installationspaketen:
+de~      Alle außer dem Arch-Linux-Installer kommen
+de~      mit eingebetteter VLC-Bibliothek. Sie  
+de~      brauchen keinen separat installierten VLC-
+de~      Player und erfüllen diese Systemvoraus-
+de~      setzung 'out of the box'.
+de~    Hinweis für Entwickler+Arch-Installationen:
 de~      VLC muss aus dem Repository installiert
 de~      sein. Snap- oder Flathub-Apps laufen in 
 de~      einer Sandbox, die keinen Zugriff auf die
 de~      VLC-Bibliothek libvlc zulässt.
 de~
 de~Copyright und Lizensierung:
-de~  Copyright (C) 2025 Rudolf Ringel
-de~  Dieses Programm ist  freie Software und ist
-de~  lizensiert  unter den  Bedingungen der  GNU
-de~  General Public License 3 (GPL 3).  Die Ver-
-de~  öffentlichung erfolgt in der Hoffnung, dass
-de~  es dem Anwender von Nutzen sein wird,  aber
-de~  OHNE  IRGENDEINE  GARANTIE,  sogar ohne die
-de~  implizite Garantie der MARKTREIFE oder  der
-de~  VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
-de~  Weitere Informationen dazu siehe:
-de~  https://www.gnu.org/licenses/
+de~  Copyright (C) 2025, 2026 Rudolf Ringel
+de~    Dieses Programm ist  freie  Software und ist
+de~    lizensiert  unter den  Bedingungen  der  GNU
+de~    General Public License 3 (GPL 3).   Die Ver-
+de~    öffentlichung  erfolgt in der Hoffnung, dass
+de~    es dem Anwender von Nutzen  sein wird,  aber
+de~    OHNE  IRGENDEINE  GARANTIE,  sogar  ohne die
+de~    implizite  Garantie der MARKTREIFE oder  der
+de~    VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+de~    Weitere Informationen dazu siehe:
+de~    https://www.gnu.org/licenses/
+de~  Vom Programm genutzte Open Source Libraries:
+de~    * PySide6 (Qt for Python) Lizenz: LGPLv3.0
+de~    * libVLC (via python-vlc) Lizenz: LGPLv2.1+
+de~    * requests .............. Lizenz: Apache 2.0
+de~    * screeninfo ............ Lizenz: MIT
+de~    * pyobjc-framework-Quartz Lizenz: MIT
+de~    Die  Bibliotheken  wurden  ohne   Änderungen
+de~    verwendet wie  auf  pypi.org veröffentlicht.
+de~    Weitere Informationen siehe pypi.org
 
 en~Content:
 en~  Keyboard Shortcuts
@@ -170,6 +199,7 @@ en~  System Requirements
 en~  Copyright and Licensing
 en~
 en~Keyboard Shortcuts:
+en~  Ctrl Key is Cmd Key on MacOS
 en~  Ctrl-P ... = Open channel list
 en~               Double Click or Enter starts
 en~               streaming selected channel
@@ -215,27 +245,39 @@ en~    https://github.com/jnk22/kodinerds-iptv
 en~    https://github.com/iptv-org/iptv (PLAYLISTS.md)
 en~    Where to save the playlists: 
 en~      Folder CyberTelly/m3u in user directory
-en~  How to create your own m3u playlist:
+en~    Downloads from the above websites can contain
+en~    unlicensed streaming sources. Installing it is 
+en~    at the users sole responsibility!
+en~  How to create your own IPTV playlist:
 en~    Make sure you have downloaded m3u lists
 en~    How to build your own list:
-en~      Open downloaded lists in file manager 
+en~      Open downloaded list in file manager / finder
 en~      Open VLC Player
-en~      Menu: View Playlist
-en~      Drag m3u lists into playlist window
+en~      Windows/Linux: View Playlist
+en~      Drag playlist into media library
+en~      Drag m3u files into playlist window
+en~      Open Playlist window
 en~      Delete channels you don't like (Del)
 en~      Rearrange channel order (Drag & Drop)
-en~      Right click: Save playlist
+en~      Windows/Linux:
+en~        Right click: Save playlist
+en~      MacOS:
+en~        File - Save Playlist...
 en~    Where to save your playlist: 
 en~      Folder CyberTelly/m3u in user directory
 en~  Fritzbox-Cable - How to create m3u list:
 en~    Open VLC media player
-en~    Menu View-Playlist-Universal Plug'n'Play
+en~    Windows/Linux: View-playlist
+en~    Click on Universal Plug'n'Play
 en~      Media servers show up
 en~      Double click opens channel list
 en~    Drag & Drop: Channels > Playlist
 en~    Open Playlist window
 en~    Drag & Drop: Rearrange channels
-en~    Right click: Save playlist
+en~    Windows/Linux:
+en~      Right click: Save playlist
+en~    MacOS:
+en~      File - Save Playlist...
 en~    Where to save the playlist: 
 en~      Folder CyberTelly/m3u in user directory
 en~  Sat>IP Server - How to create m3u list:
@@ -282,7 +324,7 @@ en~    * VLC blocks video stream because of an
 en~      invalid certificate
 en~    * Windows 11: VLC crashes because of a 
 en~      conflict with NVIDIA audio driver
-en~    * Fedora 42/43: VLC crashes because of a
+en~    * Fedora 43: VLC crashes because of a
 en~      conflict with the audio driver
 en~  For troubleshooting instructions see
 en~  https://github.com/rkm-r/CyberTelly/releases
@@ -300,24 +342,39 @@ en~      Download link: InstallationGuide.txt
 en~    Raspberry Pi OS 64Bit (Wayland and X11): ok
 en~      Minimum OS version 13 (Trixie)
 en~      Raspberry Pi 5 with X11 recommended
-en~    MacOS:
-en~      Should be possible, but isn't implemented
+en~    MacOS >= 26.2 (Apple Silicon only):
 en~  VLC Media Player Version 3
 en~    Windows: Version >= 3.0.21
 en~    Linux:   Version >= 3.0.20
-en~    Hint for Linux Snap/Flathub installations:
+en~    MacOS:   Version >= 3.0.22
+en~    Note on ready to use installation packages:
+en~      All except for the Arch Linux Installer
+en~      come with embedded VLC library files.   
+en~      There is no need for a separately installed
+en~      VLC Media Player. The VLC requirements are
+en~      fulfilled out of the box.
+en~    Hint for developers + Arch Installations:
 en~      VLC must be set up from the distibution
 en~      repository. Snap or Flathub apps are
 en~      running in a sandbox where the access to
 en~      VLC library (libvlc) is blocked.
 en~
 en~Copyright and Licensing:
-en~  Copyright (C) 2025 Rudolf Ringel
-en~  This program is free software.  It is licensed
-en~  under  the  terms  of the  GNU  General Public
-en~  License 3 (GPL 3).  It is  distributed in  the
-en~  hope that it will be  useful, but  WITHOUT ANY
-en~  WARRANTY;  without even  the  implied warranty
-en~  of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-en~  PURPOSE. For more information see
-en~  https://www.gnu.org/licenses/
+en~  Copyright (C) 2025, 2026 Rudolf Ringel
+en~    This program is free software.  It is licensed
+en~    under  the  terms  of the  GNU  General Public
+en~    License 3 (GPL 3).  It is  distributed in  the
+en~    hope that it will be  useful, but  WITHOUT ANY
+en~    WARRANTY;  without even  the  implied warranty
+en~    of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+en~    PURPOSE. For more information see
+en~    https://www.gnu.org/licenses/
+en~  The following Open Source Libraries were used:
+en~    * PySide6 (Qt for Python)  License: LGPLv3.0
+en~    * libVLC (via python-vlc)  License: LGPLv2.1+
+en~    * requests ............... License: Apache 2.0
+en~    * screeninfo ............. License: MIT
+en~    * pyobjc-framework-Quartz  License: MIT
+en~    The libraries  were used  without modification
+en~    as published on pypi.org.
+en~    For more information see pypi.org

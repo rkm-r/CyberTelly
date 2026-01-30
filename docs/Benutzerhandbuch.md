@@ -18,6 +18,7 @@
 </ol>
 
 <h2>Tastenkürzel:</h2>
+Strg-Taste entspricht Cmd-Taste bei MacOS
 
   | Taste | Aktion |
   |:------|:-------|
@@ -53,30 +54,35 @@
 Links zu IPTV-M3u-Listen:<br/>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername] 
+Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]<br/><br/>
+Bitte beachten:<br/>
+Downloads von den oben genannten Websites könnten nicht lizensierte Streaming-Quellen enthalten. Für deren Nutzung ist ausschließlich der Anwender dieses Programms verantwortlich.
 
-<h3>Zusammenstellen einer eigenen M3u-Playlist:</h3>
+<h3>Zusammenstellen einer eigenen IPTV-Playlist:</h3>
 Voraussetzung: Internet-Download Playlists<br/>
 Vorgehensweise:<br/>
 
 <ol>
-<li>M3u-Playlists im Dateimanager öffnen</li>
+<li>M3u-Playlist im Dateimanager / Finder suchen</li>
 <li>VLC-Player öffnen</li>
-<li>Menü: Ansicht-Wiedergabeliste</li>
-<li>M3u-Dateien nach playlist[00:00] ziehen</li>
+<li>Windows/Linux: Menü Ansicht-Wiedergabeliste</li>
+<li>Playlist in die Medienbibliothek ziehen</li>
+<li>M3u-Dateien in die Wiedergabeliste ziehen</li>
+<li>Wiedergabeliste öffnen</li>
 <li>Nicht benötigte Sender löschen (Entf)</li>
 <li>Gewünschte Sender umsortieren (Drag & Drop)</li>
-<li>Rechtsklick: Playlist abspeichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
+<li>Windows/Linux: Rechtsklick Playlist abspeichern<br/>MacOS: Menü Ablage - Wiedergabeliste speichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux/MacOS Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
 </ol>
 
 <h3>Fritzbox-Cable - M3u-Liste erzeugen:</h3>
 <ol>
 <li>VLC-Player öffnen</li>
-<li>Menü Ansicht-Wiedergabeliste-Universal Plug & Play<br/> Medienserver werden angezeigt<br/> Doppelklick öffnet Programmliste</li>
-<li>Drag & Drop: Sender > Playlist[00:00]</li>
-<li>Playlist[00:00]-Fenster öffnen</li>
+<li>Windows/Linux: Ansicht-Wiedergabeliste</li>
+<li>Klick auf Universal Plug & Play<br/> Medienserver werden angezeigt<br/> Doppelklick öffnet Programmliste</li>
+<li>Drag & Drop: Sender > Wiedergabeliste</li>
+<li>Wiedergabeliste öffnen</li>
 <li>Drag & Drop: Sender umsortieren</li>
-<li>Rechtsklick: Playlist abspeichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
+<li>Windows/Linux: Rechtsklick Playlist abspeichern<br/>MacOS: Ablage - Wiedergabeliste speichern<br/> Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux/MacOS Homeverzeichnis bzw. C:\Benutzer\[Benutzername]</li>
 </ol>
 
 <h3>Sat>IP Server - M3u-Liste erzeugen:</h3>
@@ -135,7 +141,7 @@ Bekannte Probleme sind:<br/>
   <li>Firewall blockiert Videostream</li>
   <li>VLC blockert Videostream wegen ungültigem Zertifikat</li>
   <li>Windows 11: VLC stürzt ab wegen Konflikt mit NVIDIA Audiotreiber</li>
-  <li>Fedora 42 / 43:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
+  <li>Fedora 43:  VLC stürzt ab wegen Konflikt mit Audiotreiber</li>
   <li>Linux: Gelegentliche Bildfehler bei proprietärem NVIDIA Bildschirmtreiber</li>
 </ul>
 
@@ -164,20 +170,29 @@ Nähere Informationen siehe [Installationsanleitung.txt](https://github.com/rkm-
 <li>Minimum Version 13 (Trixie)</li>
 <li>Beste Performance mit Raspberry Pi 5 und X11</li>
 </ul>
-<h4>MacOS: prinzipiell möglich, aber nicht implementiert</h4>
-Mangels entsprechender Hardware konnte CyberTelly auf Macs nicht getestet und bereitgestellt werden.
+<h4>MacOS: ok</h4>
+<ul>
+<li>Minimum Version 26.2 (Tahoe)</li>
+<li>Erforderliche Hardware: Apple Silicon (Intel-Macs werden nicht unterstützt)</li>
+</ul>
 <h3>VLC-Mediaplayer Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
-VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
+<h4>MacOS:   Version >= 3.0.22</h4>
+<h4>Hinweis zu verfügbaren Installationspaketen:</h4>
+Alle außer dem Arch-Linux-Installer kommen mit eingebetteter VLC-Bibliothek. Sie benötigen keinen separat installierten VLC-Player und erfüllen diese Systemvoraussetzung 'out of the box'.
+<h4>Hinweis für Entwickler und Linux-Arch-Installationen:</h4>
+VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.<br/>
 
 <h2>Hinweise für Entwickler</h2>
-Das Programm wurde entwickelt mit Python sowie python-vlc und PySide6, den Bindings für VLC und das Qt6-Framework. Der Quellcode ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
-Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quelle verwiesen: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.
-
+Der Quellcode des Programms ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
+Die Bereitstellung des Programms ist nicht Bestandteil dieser Veröffentlichung. In diesem Zusammenhang wird auf folgende Quellen verwiesen:
+<ul>
+<li>Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), S. 651ff.</li>
+<li>https://docs.flatpak.org/de/latest/</li>
+</ul>
 <h2>Copyright und Lizensierung:</h2>
-Copyright (C) 2025 Rudolf Ringel<br/>
+<h4>Copyright (C) 2025, 2026 Rudolf Ringel</h4>
 Dieses Programm ist  freie Software und ist
 lizensiert  unter den  Bedingungen der  GNU
 General Public License 3 (GPLv3).  Die 
@@ -185,5 +200,17 @@ Veröffentlichung erfolgt in der Hoffnung, dass
 es dem Anwender von Nutzen sein wird,  aber
 OHNE  IRGENDEINE  GARANTIE,  sogar ohne die
 implizite Garantie der MARKTREIFE oder  der
-VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.<br>
+VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.<br/>
 Weitere Informationen dazu siehe: https://www.gnu.org/licenses/
+<h4>Hinweis auf vom Programm genutzte Open Source Libraries:</h4>
+
+| Open Source Library | Lizenz |
+|:------|:-------|
+| PySide6 (Qt for Python)| LGPLv3.0 |
+| libVLC (via python-vlc)| LGPLv2.1+ |
+| requests| Apache 2.0 |
+| screeninfo| MIT |
+| pyobjc-framework-Quartz| MIT |
+
+Alle Bibliotheken wurden ohne Änderungen verwendet wie auf  pypi.org veröffentlicht.<br/>
+Weitere Informationen siehe https://pypi.org

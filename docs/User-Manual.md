@@ -18,6 +18,7 @@
 </ol>
 
 <h2>Keyboard Shortcuts:</h2>
+Ctrl Key is Cmd Key on MacOS
 
   | Key | Action |
   |:------|:-------|
@@ -52,29 +53,34 @@
 <h3>Download urls for IPTV m3u playlists:</h3>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]
+Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]<br/><br/>
+Please note:<br/>
+Downloads from the above websites may contain unlicensed sources: Using downloaded playlists is in the users sole responsibility!
 
-<h3>How to create your own m3u playlist:</h3>
+<h3>How to create your own IPTV playlist:</h3>
 Make sure you have downloaded m3u lists<br/>
 How to build your own list:<br/>
 <ol>
-<li>Open downloaded lists in file manager</li>
+<li>Open downloaded lists in file manager / finder</li>
 <li>Open VLC Player</li>
-<li>Menu: View Playlist</li>
-<li>Drag m3u lists into playlist window</li>
+<li>Windows/Linux: View Playlist</li>
+<li>Drag playlist into media library</li>
+<li>Drag m3u files into playlist window</li>
+<li>Open playlist window</li>
 <li>Delete channels you don't like (Del)</li>
 <li>Rearrange channel order (Drag & Drop)</li>
-<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Windows/Linux: Right click Save playlist<br/> MacOS: File - Save Playlist...<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux/MacOS Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Fritzbox-Cable - How to create m3u list:</h3>
 <ol>
 <li>Open VLC media player</li>
-<li>Menu View-Playlist-Universal Plug'n'Play<br/> Media servers show up<br/> Double click opens channel list</li>
+<li>Windows/Linux: View-Playlist</li>
+<li>Click on Universal Plug'n'Play<br/> Media servers show up<br/> Double click opens channel list</li>
 <li>Drag & Drop: Channels > Playlist</li>
-<li>Open Playlist window</li>
+<li>Open playlist window</li>
 <li>Drag & Drop: Rearrange channels</li>
-<li>Right click: Save playlist<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]</li>
+<li>Windows/Linux: Right click Save playlist<br/> MacOS: File - Save PlayList...<br/> Where to save it: Folder <b>CyberTelly/m3u</b> in Linux/MacOS Home Dir or C:\Users\[user name]</li>
 </ol>
 
 <h3>Sat>IP Server - How to create m3u list</h3>
@@ -133,7 +139,7 @@ Known Issues:<br/>
   <li>Firewall blocks video stream</li>
   <li>VLC blocks video stream because of a certificate error</li>
   <li>Windows 11: VLC crashes because of a conflict with NVIDIA audio driver</li>
-  <li>Fedora 42 / 43:  VLC crashes because of a conflict with the audio driver</li>
+  <li>Fedora 43:  VLC crashes because of a conflict with the audio driver</li>
   <li>Linux: Occasional picture errors with proprietary NVIDIA display drivers</li>
 </ul>
 
@@ -157,25 +163,34 @@ How to determine the glibc version:<br/>
 In case of a glibc version mismatch, CyberTelly can be installed, but not started.<br/>
 
 For more information see: [InstallationGuide.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
-<h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
+<h4>Raspberry Pi OS 64Bit (wayland and x11): ok</h4>
 <ul>
 <li>Minimum OS version 13 (Trixie)</li>
 <li>Best performance with Raspberry Pi 5 and X11</li>
 </ul>
-<h4>MacOS: Should be possible, but isn't implemented</h4>
-Due to a lack of Apple hardware, CyberTelly could not be tested and deployed.
+<h4>MacOS: ok</h4>
+<ul>
+<li>Minimum OS version 26.2 (Tahoe)</li>
+<li>Hardware requirement: Apple Silicon (Intel hardware is not supported)</li>
+</ul>
 <h3>VLC Media Player Version 3</h3>
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
-Hint for Linux Snap/Flathub installations:<br/>
+<h4>MacOS:   Version >= 3.0.22</h4>
+<h4>Note on ready to use installation packages:</h4>
+All except for the Arch Linux Installer come with embedded VLC library files. There is no need for a separately installed VLC Media Player. The VLC requirements are fulfilled out of the box.
+<h4>Hint for developers and Linux Arch installations:</h4>
 VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
 <h2>Information for Developers</h2>
-CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who is interested in getting an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
-The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
-
+Everybody who is interested in getting an idea how this program works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
+The program deployment is not part of this publication. Information on that can be looked up in the following sources:
+<ul>
+<li>Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.</li>
+<li>https://docs.flatpak.org/en/latest/</li>
+</ul>
 <h2>Copyright and Licensing:</h2>
-Copyright (C) 2025 Rudolf Ringel<br/>
+<h4>Copyright (C) 2025, 2026 Rudolf Ringel</h4>
 This program is free software.  It is licensed
 under  the  terms  of the  GNU  General Public
 License 3 (GPLv3).  It is  distributed in  the
@@ -184,3 +199,15 @@ WARRANTY;  without even  the  implied warranty
 of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
 PURPOSE.<br/>
 For more information see: https://www.gnu.org/licenses/
+<h4>The following Open Source Libraries were used:</h4>
+
+| Open Source Library | License |
+|:------|:-------|
+| PySide6 (Qt for Python)| LGPLv3.0 |
+| libVLC (via python-vlc)| LGPLv2.1+ |
+| requests| Apache 2.0 |
+| screeninfo| MIT |
+| pyobjc-framework-Quartz| MIT |
+
+The libraries were used without modification as published on pypi.org.<br/>
+For more information see https://pypi.org
