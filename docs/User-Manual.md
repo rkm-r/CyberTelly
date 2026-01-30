@@ -163,7 +163,7 @@ How to determine the glibc version:<br/>
 In case of a glibc version mismatch, CyberTelly can be installed, but not started.<br/>
 
 For more information see: [InstallationGuide.txt](https://github.com/rkm-r/CyberTelly/releases)<br/>
-<h4>Raspberry Pi OS 64Bit (wayland and x11):</h4>
+<h4>Raspberry Pi OS 64Bit (wayland and x11): ok</h4>
 <ul>
 <li>Minimum OS version 13 (Trixie)</li>
 <li>Best performance with Raspberry Pi 5 and X11</li>
