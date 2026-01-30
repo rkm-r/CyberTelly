@@ -53,8 +53,9 @@ Ctrl Key is Cmd Key on MacOS
 <h3>Download urls for IPTV m3u playlists:</h3>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]<br/>
-Please note, that downloads from the above links may contain unlicensed sources: Using downloaded playlists is in the users full responsibility!
+Where to save the playlists: Folder <b>CyberTelly/m3u</b> in Linux Home Dir or C:\Users\[user name]<br/><br/>
+Please note:<br/>
+Downloads from the above websites may contain unlicensed sources: Using downloaded playlists is in the users sole responsibility!
 
 <h3>How to create your own IPTV playlist:</h3>
 Make sure you have downloaded m3u lists<br/>
@@ -176,15 +177,20 @@ For more information see: [InstallationGuide.txt](https://github.com/rkm-r/Cyber
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
 <h4>MacOS:   Version >= 3.0.22</h4>
-Hint for Linux Snap/Flathub installations:<br/>
+<h4>Note on ready to use installation packages:</h4>
+All except for the Arch Linux Installer come with embedded VLC library files. There is no need for a separately installed VLC Media Player. The VLC requirements are fulfilled out of the box.
+<h4>Hint for developers and Linux Arch installations:</h4>
 VLC must be set up from the distibution repository. Snap or Flathub apps are running in a sandbox where the access to the VLC library (libvlc) is blocked.
 
 <h2>Information for Developers</h2>
-CyberTelly was developed using Python along with python-vlc and PySide6, the Python bindings for VLC and the Qt6 framework. Everybody who is interested in getting an idea how it works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
-The program deployment is not part of this publication. Information on that can be looked up in the following book: Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
-
+Everybody who is interested in getting an idea how this program works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
+The program deployment is not part of this publication. Information on that can be looked up in the following sources:
+<ul>
+<li>Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.</li>
+<li>https://docs.flatpak.org/en/latest/</li>
+</ul>
 <h2>Copyright and Licensing:</h2>
-Copyright (C) 2025, 2026 Rudolf Ringel<br/>
+<h4>Copyright (C) 2025, 2026 Rudolf Ringel</h4>
 This program is free software.  It is licensed
 under  the  terms  of the  GNU  General Public
 License 3 (GPLv3).  It is  distributed in  the
@@ -193,3 +199,15 @@ WARRANTY;  without even  the  implied warranty
 of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
 PURPOSE.<br/>
 For more information see: https://www.gnu.org/licenses/
+<h4>The following Open Source Libraries were used:</h4>
+
+| Open Source Library | License |
+|:------|:-------|
+| PySide6 (Qt for Python)| LGPLv3.0 |
+| libVLC (via python-vlc)| LGPLv2.1+ |
+| requests| Apache 2.0 |
+| screeninfo| MIT |
+| pyobjc-framework-Quartz| MIT |
+
+The libraries were used without modification as published on pypi.org.<br/>
+For more information see https://pypi.org
