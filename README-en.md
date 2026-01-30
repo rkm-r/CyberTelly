@@ -28,7 +28,7 @@ Please note:<br/>
 <ul>
 <li>IPTV only works with a stable internet bandwidth! Please check bandwidth if you are not sure, e.g. with nperf.com</li>
 <li>Users from countries outside Germany may experience geo blocking issues when trying to stream a German channel. May be it will be necessary to download a m3u list from https://github.com/iptv-org/iptv</li>
-<li>Pease note, that using using unlicensed streaming sources may cause legal issues. Therefore any and all liability for using downloaded playlists is excluded: The user of this program takes full responsibility.</li>
+<li>Please be aware, that websites offering IPTV playlists may contain unlicensed streaming sources. Downloading and installing playlists from the internet is in the users sole responsibility!</li>
 
 </ul>
 
