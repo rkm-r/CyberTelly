@@ -54,8 +54,9 @@ Strg-Taste entspricht Cmd-Taste bei MacOS
 Links zu IPTV-M3u-Listen:<br/>
 https://github.com/jnk22/kodinerds-iptv<br/>
 https://github.com/iptv-org/iptv (PLAYLISTS.md)<br/>
-Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]<br/>
-Bitte beachten: Downloads von den oben genannten Websites könnten nicht lizensierte Streaming-Quellen enthalten: Für deren Nutzung ist ausschließlich der Anwender dieses Programms verantwortlich.
+Speicherort: Ordner <b>CyberTelly/m3u</b> im Linux Homeverzeichnis bzw. C:\Benutzer\[Benutzername]<br/><br/>
+Bitte beachten:<br/>
+Downloads von den oben genannten Websites könnten nicht lizensierte Streaming-Quellen enthalten. Für deren Nutzung ist ausschließlich der Anwender dieses Programms verantwortlich.
 
 <h3>Zusammenstellen einer eigenen IPTV-Playlist:</h3>
 Voraussetzung: Internet-Download Playlists<br/>
@@ -178,8 +179,10 @@ Nähere Informationen siehe [Installationsanleitung.txt](https://github.com/rkm-
 <h4>Windows: Version >= 3.0.21</h4>
 <h4>Linux:   Version >= 3.0.20</h4>
 <h4>MacOS:   Version >= 3.0.22</h4>
-Hinweis für VLC als Linux Snap-/Flathub-App:<br/>
-VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.
+<h4>Hinweis zu verfügbaren Installationspaketen:</h4>
+Alle außer dem Arch-Linux-Installer kommen mit eingebetteter VLC-Bibliothek. Sie benötigen keinen separat installierten VLC-Player und erfüllen diese Systemvoraussetzung 'out of the box'.
+<h4>Hinweis für Entwickler und Linux-Arch-Installationen:</h4>
+VLC muss aus dem Repository installiert sein. Snap- oder Flathub-Apps laufen in einer Sandbox, die keinen Zugriff auf die VLC-Bibliothek libvlc zulässt.<br/>
 
 <h2>Hinweise für Entwickler</h2>
 Der Quellcode des Programms ist im Ordner source beigefügt. Für eigene Versuche wird empfohlen, ein virtuelles Python Environment zu erzeugen und die erforderlichen Module mithilfe der Datei requirements.txt dort zu installieren.<br/><br/>
