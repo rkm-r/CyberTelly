@@ -1460,9 +1460,9 @@ class ConfigManager():
                 parts = line.split(';')
                 if len(parts) == 3 and parts[0].strip().lower() == 'vlcoption':
                     opSys = parts[1].strip().lower()
-                    if opSys == 'windows' and sys.platform.startswith('win') or \
-                       opSys == 'linux' and sys.platform.startswith('linux') or \
-                       opSys == 'macos' and sys.platform == 'darwin' or \
+                    if opSys == 'windows' and platform.system() == 'Windows' or \
+                       opSys == 'linux' and platform.system() == 'Linux' or \
+                       opSys == 'macos' and platform.system() == 'Darwin' or \
                        opSys == 'allos':
                         args.append(parts[2].strip())
             bugManager.pop(errorType)
@@ -3348,7 +3348,7 @@ class BugManager():
 # Calculate average screen dpi: Necessary if system has two or more screens with different scaling factors.
 def getDpi():
     screens = []
-    if sys.platform != 'darwin':
+    if platform.system() != 'Darwin':
         scrData = scInfo.get_monitors()
         for screen in scrData:
             data = {'widthPx' : screen.width,
@@ -3499,7 +3499,7 @@ def getSystemLanguage():
     sysLanguage = 'de'
     try:
         language = 'de'
-        if sys.platform != "darwin":
+        if platform.system() != 'Darwin':
             language = locale.getlocale()[0]
         else:
             try:
@@ -3584,7 +3584,7 @@ def getErrorDescription(key=None, language='de', singleString=False):
 # Determine if X11 or wayland is running (Linux)
 def getSessionType():
     sessionType = 'x11'
-    if sys.platform.startswith('linux'):
+    if platform.system() == 'Linux':
         envVar = os.environ['XDG_SESSION_TYPE']
         if envVar.lower() == 'wayland':
             sessionType = 'wayland'
