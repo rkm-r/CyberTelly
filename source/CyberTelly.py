@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # CyberTelly: Mediaplayer for TVHeadend, Sat-IP and IPTV
 # Copyright (C) 2025,2026 Rudolf Ringel
 
@@ -44,8 +46,11 @@ import requests
 from functools import partial
 from PySide6 import QtCore, QtGui, QtWidgets
 
-# Set VLC-Path for Pyinstaller-Package
+# Set VLC-Path for Flatpak and Pyinstaller-Package
 # Important: Must be done before import vlc
+# filePath = os.path.join(progPath,'INSTALLTYPE.txt')
+# if os.path.isfile(filePath):
+
 if getattr(sys, 'frozen', False):
     os.environ['LD_LIBRARY_PATH'] = sys._MEIPASS + os.pathsep + os.environ.get('LD_LIBRARY_PATH', '')
     if platform.system() == 'Linux':
@@ -128,6 +133,16 @@ if getattr(sys, 'frozen', False):
             os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ.get('PATH', '')
         os.environ['VLC_PLUGIN_PATH'] = os.path.join(sys._MEIPASS, 'plugins')
         os.environ['PYTHON_VLC_LIB_PATH'] = os.path.join(sys._MEIPASS, 'libvlc.dll')
+elif os.path.exists('/.flatpak-info'):
+    os.environ['LD_LIBRARY_PATH'] = '/app/lib' + os.pathsep + os.environ.get('LD_LIBRARY_PATH', '')
+    vlc_plugin_dir = '/app/lib/vlc/plugins'
+    if os.path.isdir(vlc_plugin_dir):
+        os.environ['VLC_PLUGIN_PATH'] = vlc_plugin_dir
+    try:
+        ctypes.CDLL('/app/lib/libvlccore.so', mode=ctypes.RTLD_GLOBAL)
+        ctypes.CDLL('/app/lib/libvlc.so', mode=ctypes.RTLD_GLOBAL)
+    except Exception as e:
+        pass
 
 import vlc
 
@@ -143,10 +158,17 @@ sansSerifFont = None
 monoSpaceFont = None
 errorDic = {'de': {}, 'en': {}}
 version = '2.0.0'
-build = '260130'
+build = '260212'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 installType = 'Python-Sourcecode'
 bugManager = None
+
+# Sound profile definitions
+sndStandard = 'standard'
+sndNews = 'news'
+sndSpeech = 'treble'
+sndCinema = 'cinema'
+soundProfiles = [sndStandard, sndNews, sndSpeech, sndCinema]
 
 # Import for MacOS to determine screen size
 # pip install pyobjc-framework-Quartz
@@ -177,7 +199,19 @@ def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
     vlcSetupOk = False
     vlcErrorType = 1
 
+    activeProfile = ''
+    activeEqualizer = None
+    # SoundMatrix: { 'key': [B0,   B1,    B2,    B3,    B4,   B5,   B6,   B7,    B8,    B9],    Preamp }
+    # Frequencies / Preamp: [60Hz, 170Hz, 310Hz, 600Hz, 1kHz, 3kHz, 6kHz, 12kHz, 14kHz, 16kHz], (200%=6.02 225%=7.04 250%=7.96) }
+    soundProfileMatrix = {
+        sndStandard: ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 6.02),
+        sndNews:     ([-10.0, -5.0, 0.0, 3.0, 5.0, 7.0, 5.0, 0.0, -5.0, -10.0], 6.02),
+        sndSpeech:   ([-4.0, -2.0, 0.0, 0.0, 2.0, 5.0, 7.0, 9.0, 10.0, 8.0], 4.0),
+        sndCinema:   ([10.0, 6.0, 0.0, -5.0, -7.0, -5.0, 0.0, 4.0, 7.0, 10.0], 6.02)
+    }
+
     def setupVlc(winID, vlcArgs, errorType):
+        global activeEqualizer
         vlcInstance = None
         mediaPlayer = None
         vlcSetupOk = False
@@ -230,6 +264,23 @@ def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
             result = (state,volume)
         return result
 
+    def createEqualizer(profileName=sndStandard):
+        eq = None
+        try:
+            eq = vlc.libvlc_audio_equalizer_new_from_preset(0)
+            amplitudes, preamp = soundProfileMatrix[profileName]
+            if platform.system() == 'Linux' and profileName == sndStandard:
+                preamp = 0.01
+            eq.set_preamp(preamp)
+            for i in range(10):
+                amp = float(amplitudes[i])
+                if amp == 0.0:
+                    amp = 0.001
+                eq.set_amp_at_index(amp,i)
+        except Exception as ex:
+            eq = None
+        return eq, activeEqualizer
+    
     # VLC Worker main
     cmd = ''
     while cmd != 'exit':
@@ -245,6 +296,14 @@ def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
                 url = queueData[1]
                 media = vlcInstance.media_new(url)
                 mediaPlayer.set_media(media)
+            elif cmd == 'setEqualizer':
+                if activeProfile != queueData[1]:
+                    equalizer, freeEqualizer = createEqualizer(profileName=queueData[1])
+                    if equalizer:
+                        activeEqualizer = equalizer
+                        mediaPlayer.set_equalizer(activeEqualizer)
+                        vlc.libvlc_audio_equalizer_release(freeEqualizer)
+                        activeProfile = queueData[1]
             elif cmd == 'play':
                 mediaPlayer.play()
                 workerQueue.put(['play',queueData[1]])
@@ -258,6 +317,7 @@ def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
                 vlcInstance, mediaPlayer, vlcSetupOk, vlcErrorType = setupVlc(queueData[1], queueData[2], queueData[3])
         except:
             bugQueue.put([vlcErrorType,'cmdLoop: Error handling cmd ' + cmd, True])
+    vlc.libvlc_audio_equalizer_release(activeEqualizer)
 
 # Main program window
 class Window(QtWidgets.QMainWindow):
@@ -385,6 +445,23 @@ class Window(QtWidgets.QMainWindow):
             self.actionLanguageEnglish = QtGui.QAction(self)
             self.actionLanguageEnglish.setCheckable(True)
             self.actionLanguageEnglish.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+
+            self.actionSoundStandard = QtGui.QAction(self)
+            self.actionSoundStandard.setCheckable(True)
+            self.actionSoundStandard.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+
+            self.actionSoundNews = QtGui.QAction(self)
+            self.actionSoundNews.setCheckable(True)
+            self.actionSoundNews.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+
+            self.actionSoundTreble = QtGui.QAction(self)
+            self.actionSoundTreble.setCheckable(True)
+            self.actionSoundTreble.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+
+            self.actionSoundCinema = QtGui.QAction(self)
+            self.actionSoundCinema.setCheckable(True)
+            self.actionSoundCinema.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+
             bugManager.pop(bugManager.mainProgram)
 
             # Create keyboard shortcuts
@@ -441,6 +518,11 @@ class Window(QtWidgets.QMainWindow):
             # -- User language
             self.actionLanguageGerman.triggered.connect(partial(self.setUserLanguage,'de'))
             self.actionLanguageEnglish.triggered.connect(partial(self.setUserLanguage,'en'))
+            # -- Sound profiles
+            self.actionSoundStandard.triggered.connect(partial(self.setEqualizer,sndStandard))
+            self.actionSoundNews.triggered.connect(partial(self.setEqualizer,sndNews))
+            self.actionSoundTreble.triggered.connect(partial(self.setEqualizer,sndSpeech))
+            self.actionSoundCinema.triggered.connect(partial(self.setEqualizer,sndCinema))
             bugManager.pop(bugManager.mainProgram)
 
             # toolbar.size().height() only returns valid value if window is visible
@@ -471,6 +553,12 @@ class Window(QtWidgets.QMainWindow):
             self.context = QtWidgets.QMenu(self)
             self.context.setFont(cyberTellyApp.font())
             self.context.setStyleSheet('background-color: lightgrey; color: black; selection-background-color: darkgrey; selection-color: white;')
+            self.context.addAction(self.actionSelectChannel)
+            self.context.addAction(self.actionToggleVolumeMuted)
+            self.context.addAction(self.actionStop)
+            self.context.addAction(self.actionPlay)
+            self.context.addAction(self.actionVolumeControl)
+            self.context.addSeparator()
             self.viewMenu = self.context.addMenu('Ansicht')
             self.viewMenu.setFont(font)
             self.viewMenu.addAction(self.actionFullscreen)
@@ -482,14 +570,17 @@ class Window(QtWidgets.QMainWindow):
             self.userLanguageMenu.setFont(font)
             self.userLanguageMenu.addAction(self.actionLanguageGerman)
             self.userLanguageMenu.addAction(self.actionLanguageEnglish)
-            self.context.addAction(self.actionSelectChannel)
-            self.context.addAction(self.actionPlay)
-            self.context.addAction(self.actionStop)
-            self.context.addAction(self.actionVolumeControl)
-            self.context.addAction(self.actionToggleVolumeMuted)
+            self.userSoundProfileMenu = self.context.addMenu('Audioprofil')
+            self.userSoundProfileMenu.setFont(font)
+            self.userSoundProfileMenu.addAction(self.actionSoundStandard)
+            self.userSoundProfileMenu.addAction(self.actionSoundNews)
+            self.userSoundProfileMenu.addAction(self.actionSoundTreble)
+            self.userSoundProfileMenu.addAction(self.actionSoundCinema)
+            self.context.addSeparator()
             self.context.addAction(self.actionSettings)
             self.context.addAction(self.actionHelp)
             self.context.addAction(self.actionAbout)
+            self.context.addSeparator()
             self.context.addAction(self.actionExit)
             self.customContextMenuRequested.connect(self.onContextMenu)
             bugManager.pop(bugManager.mainProgram)
@@ -556,7 +647,7 @@ class Window(QtWidgets.QMainWindow):
             # -- Create and configure VideoManager 
             self.videoManager = VideoManager(self, configManager=self.configManager, videoFrame=self.videoFrame, indicatorDic=self.indicatorDic)
             # -- Create and configure SoundManager
-            self.soundManager = SoundManager(self, indicatorDic=self.indicatorDic, volume=self.configManager.getVolume())
+            self.soundManager = SoundManager(self, indicatorDic=self.indicatorDic, volume=self.configManager.getVolume(), soundProfile=self.configManager.getSoundProfile())
             self.videoManager.setSoundManager(self.soundManager)
             # -- Create and configure EPGManager
             self.epgManager = EpgManager(configManager=self.configManager, videoManager=self.videoManager)
@@ -621,7 +712,7 @@ class Window(QtWidgets.QMainWindow):
 
             self.mainWindowOk = True
             self.setupTimer.start()
-        except:
+        except Exception as ex:
             try:
                 self.toolBar.setVisible(True)
             except:
@@ -635,6 +726,7 @@ class Window(QtWidgets.QMainWindow):
             if language == 'de':
                 self.viewMenu.setTitle('Ansicht')
                 self.userLanguageMenu.setTitle('Anwendersprache')
+                self.userSoundProfileMenu.setTitle('Audioprofil')
                 self.actionExit.setText(u"Beenden")
                 self.actionExit.setToolTip("Programm beenden")
                 self.actionAbout.setText(u"Info")
@@ -649,8 +741,8 @@ class Window(QtWidgets.QMainWindow):
                 self.actionToolbarOnOff.setText(u"Toolbar sichtbar")
                 self.actionSetAspectRatio16x9.setText(u"Bildformat 16:9")
                 self.actionFullscreen.setText(u"Vollbild")
-                self.actionSettings.setText(u"Einstellungen")
-                self.actionSettings.setToolTip(u"Einstellungen")
+                self.actionSettings.setText(u"TV-Einstellungen")
+                self.actionSettings.setToolTip(u"TV-Einstellungen")
                 self.actionStop.setText(u"Streaming stoppen")
                 self.actionStop.setToolTip(u"Streaming stoppen")
                 self.actionMinimize.setText(u"Minimieren")
@@ -659,9 +751,14 @@ class Window(QtWidgets.QMainWindow):
                 self.actionHelp.setToolTip(u"Programmhilfe")
                 self.actionLanguageGerman.setText(u"Deutsch")
                 self.actionLanguageEnglish.setText(u"Englisch")
+                self.actionSoundStandard.setText(u"Standard")
+                self.actionSoundNews.setText(u"Nachrichten")
+                self.actionSoundTreble.setText(u"Klarheit")
+                self.actionSoundCinema.setText(u"Kino")
             elif language == 'en':
                 self.viewMenu.setTitle('View')
                 self.userLanguageMenu.setTitle('User Language')
+                self.userSoundProfileMenu.setTitle('Sound Profile')
                 self.actionExit.setText(u"Quit")
                 self.actionExit.setToolTip("Quit Program")
                 self.actionAbout.setText(u"About")
@@ -676,8 +773,8 @@ class Window(QtWidgets.QMainWindow):
                 self.actionToolbarOnOff.setText(u"Toolbar visible")
                 self.actionSetAspectRatio16x9.setText(u"Aspect Ratio 16:9")
                 self.actionFullscreen.setText(u"Fullscreen")
-                self.actionSettings.setText(u"Settings")
-                self.actionSettings.setToolTip(u"Settings")
+                self.actionSettings.setText(u"TV Settings")
+                self.actionSettings.setToolTip(u"TV Settings")
                 self.actionStop.setText(u"Stop Streaming")
                 self.actionStop.setToolTip(u"Stop Streaming")
                 self.actionMinimize.setText(u"Minimize")
@@ -686,6 +783,10 @@ class Window(QtWidgets.QMainWindow):
                 self.actionHelp.setToolTip(u"Help")
                 self.actionLanguageGerman.setText(u"German")
                 self.actionLanguageEnglish.setText(u"English")
+                self.actionSoundStandard.setText(u"Standard")
+                self.actionSoundNews.setText(u"News")
+                self.actionSoundTreble.setText(u"Speech")
+                self.actionSoundCinema.setText(u"Cinema")
 
     # Some vars cannot be set in __init__ of main window.
     # This is done by setupTimer after windows has shown up
@@ -709,7 +810,7 @@ class Window(QtWidgets.QMainWindow):
                     infoDialog = None
                     if installType in [ 'Unknown', 'Python-Sourcecode', 'Linux-ARCH' ]:
                         infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcInitError', language=sysLanguage, singleString=False))
-                    else: # progrSource in [ 'Linux-DEB', 'Linux-RPM', 'Linux-FLATPAK-PyInstaller', 'Windows-EXE', 'MacOS-APP' ]
+                    else: # progrSource in [ 'Linux-DEB', 'Linux-RPM', 'Linux-FLATPAK-Source', 'Linux-FLATPAK-PyInstaller', 'Windows-EXE', 'MacOS-APP' ]
                         infoDialog = InfoDialog(self,caption=windowTitle, infoText=getErrorDescription('vlcStartupError', language=sysLanguage, singleString=False))
                     if infoDialog != None:
                         infoDialog.show()
@@ -923,6 +1024,17 @@ class Window(QtWidgets.QMainWindow):
             except:
                 bugManager.setError(bugManager.mainProgram)
         
+    # Set equalizer
+    def setEqualizer(self, sndProfile=sndStandard):
+        if self.mainWindowOk:
+            bugManager.push(bugManager.mainProgram,'setEqualizer')
+            try:
+                self.soundManager.setEqualizer(sndProfile=sndProfile, errorType=bugManager.soundManager)
+                self.configManager.setSoundProfile(self.soundManager.soundProfile)
+                bugManager.pop(bugManager.mainProgram)
+            except:
+                bugManager.setError(bugManager.mainProgram)
+        
     # If cursor is in resizeRect shape changes to CursorShape.SizeFDiagCursor
     def getResizeRect(self):
         localPos = self.mapFromGlobal(self.pos())
@@ -1032,12 +1144,12 @@ class Window(QtWidgets.QMainWindow):
                 self.actionToolbarOnOff.setChecked(self.toolBar.isVisible())
                 self.actionToggleVolumeMuted.setChecked(self.soundManager.isMuted())
                 self.actionFullscreen.setChecked(self.isFullScreen())
-                if self.configManager.getLanguage() == 'de':
-                    self.actionLanguageGerman.setChecked(True)
-                    self.actionLanguageEnglish.setChecked(False)
-                else:
-                    self.actionLanguageGerman.setChecked(False)
-                    self.actionLanguageEnglish.setChecked(True)
+                self.actionLanguageGerman.setChecked(True) if self.configManager.getLanguage() == 'de' else self.actionLanguageGerman.setChecked(False)
+                self.actionLanguageEnglish.setChecked(True) if self.configManager.getLanguage() != 'de' else self.actionLanguageEnglish.setChecked(False)
+                self.actionSoundStandard.setChecked(True) if self.soundManager.getEqualizer() == sndStandard else self.actionSoundStandard.setChecked(False)
+                self.actionSoundNews.setChecked(True) if self.soundManager.getEqualizer() == sndNews else self.actionSoundNews.setChecked(False)
+                self.actionSoundTreble.setChecked(True) if self.soundManager.getEqualizer() == sndSpeech else self.actionSoundTreble.setChecked(False)
+                self.actionSoundCinema.setChecked(True) if self.soundManager.getEqualizer() == sndCinema else self.actionSoundCinema.setChecked(False)
                 self.context.exec(self.mapToGlobal(pos))
                 self.fixVlcCursorIssue(self.cursor().pos(), errorType=bugManager.mainProgram)
                 bugManager.pop(bugManager.mainProgram)
@@ -1409,6 +1521,7 @@ class ConfigManager():
             'password': 'passw0rd'
         }
         config['m3uFile'] = 'IPTV-de-plus.m3u'
+        config['soundProfile'] = sndStandard
         return config
     
     # Read configuration from config.json with fallback initConfig
@@ -1515,6 +1628,9 @@ class ConfigManager():
                     self.configUpdated = True
                 if self.config['m3uFile'] != newConfig['m3uFile']:
                     self.config['m3uFile'] = newConfig['m3uFile']
+                    self.configUpdated = True
+                if self.config['soundProfile'] != newConfig['soundProfile']:
+                    self.config['soundProfile'] = newConfig['soundProfile']
                     self.configUpdated = True
             bugManager.pop(errorType)
         except:
@@ -1711,6 +1827,25 @@ class ConfigManager():
             bugManager.push(bugManager.configManager,'getM3uFilePath (Exception caught)', setNotification=True)
         return m3uFilePath
 
+    # Write soundProfile setting to configuration
+    def setSoundProfile(self, profile):
+        try:
+            if not str(profile).lower() in soundProfiles:
+                raise
+            self.config['soundProfile'] = str(profile).lower()
+        except:
+            bugManager.push(bugManager.configManager, 'Info: setSoundProfile Exception caught', setNotification=True)
+
+    # Get volume setting from configuration
+    def getSoundProfile(self):
+        try:
+            profile = self.config['soundProfile']
+        except:
+            profile = sndStandard
+            self.config['soundProfile'] = sndStandard
+            bugManager.push(bugManager.configManager, 'Info: getSoundProfile Exception caught', setNotification=True)
+        return profile
+    
 # Class ConfigDialog
 class ConfigDialog(QtWidgets.QDialog):
     def __init__(self, parent=None, configManager=None):
@@ -1954,6 +2089,7 @@ class ConfigDialog(QtWidgets.QDialog):
                 'password': self.lePassword.text()
             }
             config['m3uFile'] = self.cbVlcPlaylist.itemText(self.cbVlcPlaylist.currentIndex())
+            config['soundProfile'] = self.configManager.getSoundProfile()
             bugManager.pop(bugManager.configDialog)
         except:
             config = {}
@@ -2448,6 +2584,8 @@ class VideoManager(QtWidgets.QDialog):
                         cmdQueue.put(['setVolume',self.volume])
                         cmdQueue.put(['getInfo','getStateAndVolume'])
                         self.isPlaying = self.playerState == vlc.State.Playing
+                        if self.isPlaying:
+                            cmdQueue.put(['setEqualizer', self.soundManager.soundProfile])
                         bugManager.pop(bugManager.statusTimer)
 
                         bugManager.push(bugManager.statusTimer,'timerGetStatus - Show Error Indicator')
@@ -2497,10 +2635,13 @@ class VideoManager(QtWidgets.QDialog):
 
 # Class SoundManager
 class SoundManager(QtWidgets.QDialog):
-    def __init__(self, parent=None, indicatorDic=None, volume=50):
+    def __init__(self, parent=None, indicatorDic=None, volume=50, soundProfile=sndStandard):
         super().__init__(parent)
         # Basic settings
         self.soundManagerOk = False
+        self.soundProfile = sndStandard
+        if soundProfile.lower() in soundProfiles:
+            self.soundProfile = soundProfile.lower()
         try:
             bugManager.push(bugManager.soundManager,'__init__: Started')
 
@@ -2740,6 +2881,20 @@ class SoundManager(QtWidgets.QDialog):
                 bugManager.pop(errorType)
             except:
                 bugManager.setError(errorType)
+    
+    # Set equalizer
+    def setEqualizer(self, sndProfile=sndStandard, errorType= None):
+        if self.soundManagerOk:
+            bugManager.push(errorType,'setEqualizer '+sndProfile)
+            if sndProfile.lower() in soundProfiles:
+                cmdQueue.put(['setEqualizer', sndProfile.lower()])
+                self.soundProfile = sndProfile.lower()
+                bugManager.pop(errorType)
+            else:
+                bugManager.setError(errorType)
+    
+    def getEqualizer(self):
+        return self.soundProfile
 
     # Hide soundManager window and stop timer
     def hide(self):
@@ -3600,7 +3755,7 @@ def getVlcVersion():
     return version
 
 # Determine Installation Type
-# Possible Values: Unknown, Python-Sourcecode, Linux-DEB, Linux-RPM, Linux-ARCH, Linux-FLATPAK-PyInstaller, Windows-EXE, MacOS-APP
+# Possible Values: Unknown, Python-Sourcecode, Linux-DEB, Linux-RPM, Linux-ARCH, Linux-FLATPAK-Source, Linux-FLATPAK-PyInstaller, Windows-EXE, MacOS-APP
 def getInstallationType():
     source = 'Unknown'
     try: 
@@ -3617,6 +3772,8 @@ def getInstallationType():
                     lines = []
             if len(lines) > 0:
                 source = lines[0].strip()
+        elif os.path.exists('/.flatpak-info'):
+            source = "Linux-FLATPAK-Source"
         else:
             source = 'Python-Sourcecode'
     except:
