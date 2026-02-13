@@ -1,0 +1,105 @@
+Cybertelly QT - Troubleshooting Guide
+                Anleitung zur Fehlerbehebung siehe unten
+
+
+Troubleshooting Guide - Known Issues:
+*************************************
+01 Problem:  Streaming device (eg. Sat>IP server) in your local network has no picture and sound.
+   Solution: Enable inbound IP Address of the device in firewall configuration
+   ---
+02 Problem with channel in m3u playlist:
+     Channel doesn't stream video and immediately shows a streaming error indicator.
+   Possible reason: Certificate error
+   Possible Solution:
+     Open m3u playlist in text editor
+     Locate the faulty channel
+     Replace https with http
+     Save playlist, restart the program and give it another try ...
+   If this solution doesn't work there is no way to fix the problem, because    
+   embedded VLC doesn't allow disabling certificate checks permanently.
+   ---
+03 Problem with Windows 11 and NVIDIA High Definition Audio:
+     VLC process crashes when starting stream
+   Reason:
+     VLC conflict with NVIDIA Audio driver
+   Workaround for VLC 3.0.21:
+     Open CyberTelly/args.csv in user directory
+     Activate option --aout=waveout
+   Workaround for VLC >= 3.0.22:
+     Open CyberTelly/args.csv in user directory
+     Activate option --aout=directsound
+   ---
+04 Problem with Fedora 43 and Audio Driver:
+     VLC process crashes when starting stream
+   Ursache:
+     VLC conflict with audio driver
+   Solution:
+     Open CyberTelly/args.csv im user directory
+     Activate option --aout=pulse or --aout=alsa
+   ---
+05 Linux: Minor issues with proprietary NVIDIA drivers
+     Switching to / back from fullscreen occasionally can produce picture errors.
+   Solution:
+     a Switching back to the open source nouveau display driver resolves the problem.
+     b If using the nouveau driver is not possible:
+       Don't use mouse doubleclicks or keyboard shortcuts to trigger the command.
+       Start the action from the context menu. This reduces the frequency of occurrence.
+
+Troubleshooting Guide - Further Options:
+****************************************
+If you encounter a problem, that isn't known yet, you can have a look at the file args.csv,
+to be found in the following folder: C:\Users\<User Name>\CyberTelly on Windows machines
+or <Homedir>/CyberTelly on Macs or Linux PCs. It contains options that can be passed to the VLC
+process at program startup and instructions on how to use these options for troubleshooting.
+
+Anleitung zur Fehlerbehebung - Bekannte Probleme:
+*************************************************
+01 Problem: Kein Bild / kein Ton bei Streaming-Gerät(z.B. FritzBox Cable) im lokalen Netzwerk.
+   Lösung: IP-Adresse des Geräts in der Firewall freischalten (eingehend).
+   ---
+02 Problem mit Sender in M3u-Playlist:
+     Streaming startet nicht und zeigt sofort einen Streamingfehler an.
+   Mögliche Ursache: Zertifikatsfehler
+   Mögliche Lösung:
+     Playlist mit Sender in einem Texteditor öffnen 
+     Zeile mit fehlerhaftem Sender suchen
+     'https' durch 'http' ersetzen
+     Playlist speichern, Programm neu starten und testen
+   Wenn diese Lösung nicht greift, dann gibt es keine Möglichkeit das Problem zu lösen: Eingebettete
+   VLC-Bibliotheken haben keine Option, Zertifikats-Checks permanent zu deaktivieren.
+   ---  
+03 Problem mit Windows 11 und NVIDIA High Definition Audio:
+     VLC-Prozess stürzt ab beim Streaming-Start
+   Ursache:
+     VLC-Konflikt mit NVIDIA Audiotreiber
+   Lösung für VLC 3.0.21:
+     CyberTelly/args.csv im Userverzeichnis öffnen
+     Option --aout=waveout aktivieren
+   Lösung für VLC >= 3.0.22:
+     CyberTelly/args.csv im Userverzeichnis öffnen
+     Option --aout=directsound aktivieren
+   ---
+04 Problem mit Fedora 43 und Audiotreiber:
+     VLC-Prozess stürzt ab beim Streaming-Start
+   Ursache:
+     VLC-Konflikt mit Audiotreiber
+   Lösung:
+     CyberTelly/args.csv im Userverzeichnis öffnen
+     Option --aout=pulse oder --aout=alsa aktivieren
+   ---
+05 Linux: Kleinere Probleme mit proprietären NVIDIA-Treibern
+     Hin- und herschalten zwischen Fenster- und Vollbilddarstellung kann gelegentlich
+     zu Bildfehlern führen.
+   Lösung:
+     a Die Installation des Open Source Nouveau-Bildschirmtreibers beseitigt das Problem.
+     b Falls die Installation des Nouveau-Treibers nicht möglich ist:
+       Das Problem tritt vorwiegend bei Verwendung von Doppelklicks oder Tastenkürzeln auf.
+       Der Aufruf des Kommandos mit dem Kontextmenü minimiert die Fehlerhäufigkeit.
+
+Anleitung zur Fehlerbehebung - Weitere Optionen:
+************************************************
+Bei bisher unbekannten Problemen kann die Datei args.cs verwendet werden, um die Fehlerquelle
+zu identifizieren und zu bereinigen. args.csv befindet sich im Ordner C:\Users\<User Name>\CyberTelly
+auf Windows-Geräten bzw. in <Homedir>/CyberTelly auf Macs oder Linux-PCs. In der Datei enthalten
+sind Optionen, die beim Programmstart an den VLC-Prozess übergeben werden können sowie Hinweise, wie
+sie zur Fehlersuche eingesetzt werden können.
