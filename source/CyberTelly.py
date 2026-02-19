@@ -158,7 +158,7 @@ sansSerifFont = None
 monoSpaceFont = None
 errorDic = {'de': {}, 'en': {}}
 version = '2.0.0'
-build = '260212'
+build = '260220'
 versionInfo = 'CyberTelly' + ' ' + version + ' ' + build
 installType = 'Python-Sourcecode'
 bugManager = None
@@ -315,9 +315,12 @@ def vlcWorkerFunction(cmdQueue, statusQueue, workerQueue, bugQueue):
                     mediaPlayer.audio_set_volume(volume*2)
             elif cmd == 'setupVlc':
                 vlcInstance, mediaPlayer, vlcSetupOk, vlcErrorType = setupVlc(queueData[1], queueData[2], queueData[3])
+            elif cmd == 'exit':
+                if activeEqualizer:
+                    vlc.libvlc_audio_equalizer_release(activeEqualizer)
         except:
             bugQueue.put([vlcErrorType,'cmdLoop: Error handling cmd ' + cmd, True])
-    vlc.libvlc_audio_equalizer_release(activeEqualizer)
+    
 
 # Main program window
 class Window(QtWidgets.QMainWindow):
@@ -3474,8 +3477,8 @@ class BugManager():
             f.write('*  CyberTelly Log File  ')
             f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '  *\n')
             f.write('**********************************************\n')
-            f.write('* For bug fixing you may send this file to:  *\n')
-            f.write('* >>>>>>>>>>> info@cybertelly.tv <<<<<<<<<<  *\n')
+            f.write('* For bug fixing you may post this file on:  *\n')
+            f.write('* >> github.com/rkm-r/CyberTelly/issues  <<  *\n')
             f.write('* Please add a short error description.      *\n')
             f.write('**********************************************\n')
             for errType in self.errorDic.keys():
