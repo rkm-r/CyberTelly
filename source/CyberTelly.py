@@ -48,8 +48,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 # Set VLC-Path for Flatpak and Pyinstaller-Package
 # Important: Must be done before import vlc
-# filePath = os.path.join(progPath,'INSTALLTYPE.txt')
-# if os.path.isfile(filePath):
 
 if getattr(sys, 'frozen', False):
     os.environ['LD_LIBRARY_PATH'] = sys._MEIPASS + os.pathsep + os.environ.get('LD_LIBRARY_PATH', '')
