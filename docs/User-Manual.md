@@ -184,11 +184,9 @@ VLC must be set up from the distibution repository. Snap or Flathub apps are run
 
 <h2>Information for Developers</h2>
 Everybody who is interested in getting an idea how this program works, can have a look at the source code: Set up a virtual Python environment, install the required modules using requirements.txt and start coding!<br/><br/>
-The program deployment is not part of this publication. Information on that can be looked up in the following sources:
-<ul>
-<li>Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.</li>
-<li>https://docs.flatpak.org/en/latest/</li>
-</ul>
+The program deployment is not part of this publication. Information on that can be looked up in the following source:<br/>
+Fitzpatrick Martin, Create GUI Applications with Python & Qt6 (5th Edition, PyQt6), p. 651ff.
+
 <h2>Copyright and Licensing:</h2>
 <h4>Copyright (C) 2025, 2026 Rudolf Ringel</h4>
 This program is free software.  It is licensed
