@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+Sitemap: https://rkm-r.github.io/CyberTelly/site.xml
+Crawl-delay: 5
