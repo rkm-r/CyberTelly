@@ -1,3 +1,4 @@
 User-agent: *
 Disallow:
-Sitemap: https://www.cybertelly.tv/sitemap.xml
+Sitemap: https://rkm-r.github.io/CyberTelly/sitemap.xml
+Crawl-delay: 5
